@@ -35,13 +35,7 @@ namespace SharpQuake
         /// <summary>
         /// chase_active.value != 0
         /// </summary>
-        public static bool IsActive
-        {
-            get
-            {
-                return ( _Active.Value != 0 );
-            }
-        }
+        public static bool IsActive => ( Math.Abs( _Active.Value ) > 0.001f ); // fix code improvement warning for possible floating point precision problems
 
         private static cvar _Back;// = { "chase_back", "100" };
         private static cvar _Up;// = { "chase_up", "16" };
@@ -72,8 +66,7 @@ namespace SharpQuake
         public static void Update()
         {
             // if can't see player, reset
-            Vector3 forward, up, right;
-            mathlib.AngleVectors( ref client.cl.viewangles, out forward, out right, out up );
+            mathlib.AngleVectors( ref client.cl.viewangles, out Vector3 forward, out Vector3 right, out Vector3 up );
 
             // calc exact destination
             _Dest = render.RefDef.vieworg - forward * _Back.Value - right * _Right.Value;
@@ -82,13 +75,11 @@ namespace SharpQuake
             // find the spot the player is looking at
             Vector3 dest = render.RefDef.vieworg + forward * 4096;
 
-            Vector3 stop;
-            TraceLine( ref render.RefDef.vieworg, ref dest, out stop );
+            TraceLine( ref render.RefDef.vieworg, ref dest, out Vector3 stop );
 
             // calculate pitch to look at the same spot from camera
             stop -= render.RefDef.vieworg;
-            float dist;
-            Vector3.Dot( ref stop, ref forward, out dist );
+            Vector3.Dot( ref stop, ref forward, out float dist );
             if( dist < 1 )
                 dist = 1;
 

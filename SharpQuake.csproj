@@ -9,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SharpQuake</RootNamespace>
-    <AssemblyName>SharpQuake</AssemblyName>
+    <AssemblyName>Quake</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -29,13 +29,14 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>SharpQuake.mainwindow</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>Quake\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -46,11 +47,11 @@
     <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>Quake\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
@@ -59,17 +60,23 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>quake.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\quake.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <OutputPath>Quake\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>Quake\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NVorbis, Version=0.8.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\NVorbis.0.8.6\lib\net35\NVorbis.dll</HintPath>
+    <Reference Include="NVorbis, Version=0.8.6.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>lib\NVorbis.dll</HintPath>
     </Reference>
-    <Reference Include="NVorbis.OpenTKSupport, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\NVorbis.OpenTKSupport.1.2.0\lib\net35\NVorbis.OpenTKSupport.dll</HintPath>
+    <Reference Include="NVorbis.OpenTKSupport, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>lib\NVorbis.OpenTKSupport.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTK, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>packages\OpenTK.3.0.1\lib\net20\OpenTK.dll</HintPath>
+    <Reference Include="OpenTK, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4">
+      <HintPath>lib\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -158,11 +165,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="App.config" />
-    <None Include="OpenTK.dll.config">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -172,16 +174,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="SDL2-CS\.gitignore" />
-    <None Include="SDL2-CS\.gitlab-ci.yml" />
-    <None Include="SDL2-CS\gitlab-ci\build-net461.sh" />
-    <None Include="SDL2-CS\gitlab-ci\build-netcore.sh" />
-    <None Include="SDL2-CS\gitlab-ci\deploy.sh" />
-    <None Include="SDL2-CS\gitlab-ci\package.sh" />
-    <None Include="SDL2-CS\gitlab-ci\SDL2-CS.nuspec" />
-    <None Include="SDL2-CS\LICENSE" />
-    <None Include="SDL2-CS\Makefile" />
-    <None Include="SDL2-CS\README" />
     <None Include="SDL2-CS\SDL2-CS.dll.config" />
   </ItemGroup>
   <ItemGroup>
@@ -197,10 +189,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="quake.ico" />
-    <Content Include="SDL2-CS\SDL2-CS.Core.csproj" />
-    <Content Include="SDL2-CS\SDL2-CS.csproj" />
-    <Content Include="SDL2-CS\SDL2-CS.sln" />
+    <Content Include="Resources\quake.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

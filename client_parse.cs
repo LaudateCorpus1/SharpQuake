@@ -100,7 +100,6 @@ namespace SharpQuake
             // parse the message
             //
             net.Reader.Reset();
-            int i;
             while( true )
             {
                 if( net.Reader.IsBadRead )
@@ -124,6 +123,7 @@ namespace SharpQuake
                 ShowNet( _SvcStrings[cmd] );
 
                 // other commands
+                int i;
                 switch( cmd )
                 {
                     default:
@@ -363,9 +363,7 @@ namespace SharpQuake
                 if( ( bits & ( 1 << i ) ) != 0 )
                     _BitCounts[i]++;
 
-            bool forcelink = false;
-            if( ent.msgtime != cl.mtime[1] )
-                forcelink = true;	// no previous frame to lerp from
+            bool forcelink = false || Math.Abs( ent.msgtime - cl.mtime[1] ) > 0.001f;
 
             ent.msgtime = cl.mtime[0];
             int modnum;

@@ -81,7 +81,7 @@ namespace SharpQuake
                 Vector3 dist = b.end - b.start;
                 float yaw, pitch, forward;
 
-                if( dist.Y == 0 && dist.X == 0 )
+                if( Math.Abs( dist.Y ) < 0.001f && Math.Abs( dist.X ) < 0.001f )
                 {
                     yaw = 0;
                     if( dist.Z > 0 )

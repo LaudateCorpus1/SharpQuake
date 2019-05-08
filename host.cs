@@ -23,6 +23,8 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Windows.Forms;
+using OpenTK.Graphics.OpenGL;
 
 // host.c
 
@@ -33,141 +35,39 @@ namespace SharpQuake
     /// </summary>
     static partial class host
     {
-        public static quakeparms_t Params
-        {
-            get
-            {
-                return _Params;
-            }
-        }
+        public static quakeparms_t Params => _Params;
 
-        public static bool IsDedicated
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public static bool IsDedicated => false;
 
-        public static bool IsInitialized
-        {
-            get
-            {
-                return _IsInitialized;
-            }
-        }
+        public static bool IsInitialized => _IsInitialized;
 
-        public static double Time
-        {
-            get
-            {
-                return _Time;
-            }
-        }
+        public static double Time => _Time;
 
-        public static int FrameCount
-        {
-            get
-            {
-                return _FrameCount;
-            }
-        }
+        public static int FrameCount => _FrameCount;
 
-        public static bool IsDeveloper
-        {
-            get
-            {
-                return ( _Developer != null ? _Developer.Value != 0 : false );
-            }
-        }
+        public static bool IsDeveloper => ( _Developer != null ? _Developer.Value != 0 : false );
 
-        public static byte[] ColorMap
-        {
-            get
-            {
-                return _ColorMap;
-            }
-        }
+        public static byte[] ColorMap => _ColorMap;
 
-        public static float TeamPlay
-        {
-            get
-            {
-                return _Teamplay.Value;
-            }
-        }
+        public static float TeamPlay => _Teamplay.Value;
 
-        public static byte[] BasePal
-        {
-            get
-            {
-                return _BasePal;
-            }
-        }
+        public static byte[] BasePal => _BasePal;
 
-        public static bool IsCoop
-        {
-            get
-            {
-                return _Coop.Value != 0;
-            }
-        }
+        public static bool IsCoop => _Coop.Value != 0;
 
-        public static float Skill
-        {
-            get
-            {
-                return _Skill.Value;
-            }
-        }
+        public static float Skill => _Skill.Value;
 
-        public static float Deathmatch
-        {
-            get
-            {
-                return _Deathmatch.Value;
-            }
-        }
+        public static float Deathmatch => _Deathmatch.Value;
 
-        public static int ClientNum
-        {
-            get
-            {
-                return Array.IndexOf( server.svs.clients, host.HostClient );
-            }
-        }
+        public static int ClientNum => Array.IndexOf( server.svs.clients, host.HostClient );
 
-        public static float FragLimit
-        {
-            get
-            {
-                return _FragLimit.Value;
-            }
-        }
+        public static float FragLimit => _FragLimit.Value;
 
-        public static float TimeLimit
-        {
-            get
-            {
-                return _TimeLimit.Value;
-            }
-        }
+        public static float TimeLimit => _TimeLimit.Value;
 
-        public static BinaryReader VcrReader
-        {
-            get
-            {
-                return _VcrReader;
-            }
-        }
+        public static BinaryReader VcrReader => _VcrReader;
 
-        public static BinaryWriter VcrWriter
-        {
-            get
-            {
-                return _VcrWriter;
-            }
-        }
+        public static BinaryWriter VcrWriter => _VcrWriter;
 
         public static double FrameTime;
         public static double RealTime;
@@ -365,6 +265,8 @@ namespace SharpQuake
             {
                 _ShutdownDepth--;
             }
+            
+            
         }
 
         /// <summary>
@@ -381,7 +283,7 @@ namespace SharpQuake
 
                 Scr.EndLoadingPlaque();		// reenable screen updates
 
-                string message = ( args.Length > 0 ? String.Format( error, args ) : error );
+                string message = ( args.Length > 0 ? string.Format( error, args ) : error );
                 Con.Print( "Host_Error: {0}\n", message );
 
                 if( server.sv.active )
@@ -406,7 +308,7 @@ namespace SharpQuake
         /// </summary>
         public static void EndGame( string message, params object[] args )
         {
-            string str = String.Format( message, args );
+            string str = string.Format( message, args );
             Con.DPrint( "Host_EndGame: {0}\n", str );
 
             if( server.IsActive )
@@ -461,7 +363,7 @@ namespace SharpQuake
         /// </summary>
         public static void ClientCommands( string fmt, params object[] args )
         {
-            string tmp = String.Format( fmt, args );
+            string tmp = string.Format( fmt, args );
             HostClient.message.WriteByte( protocol.svc_stufftext );
             HostClient.message.WriteString( tmp );
         }
@@ -741,12 +643,12 @@ namespace SharpQuake
             }
 
             // update video
-            if( _Speeds.Value != 0 )
+            if( Math.Abs( _Speeds.Value ) > 0.001f )
                 _Time1 = sys.GetFloatTime();
 
             Scr.UpdateScreen();
 
-            if( _Speeds.Value != 0 )
+            if( Math.Abs( _Speeds.Value ) > 0.001f )
                 _Time2 = sys.GetFloatTime();
 
             // update audio
@@ -760,7 +662,7 @@ namespace SharpQuake
 
             cd_audio.Update();
 
-            if( _Speeds.Value != 0 )
+            if( Math.Abs( _Speeds.Value ) > 0.001f )
             {
                 int pass1 = (int)( ( _Time1 - _Time3 ) * 1000 );
                 _Time3 = sys.GetFloatTime();
@@ -807,7 +709,7 @@ namespace SharpQuake
             while( true )
             {
                 string cmd = sys.ConsoleInput();
-                if( String.IsNullOrEmpty( cmd ) )
+                if( string.IsNullOrEmpty( cmd ) )
                     break;
 
                 Cbuf.AddText( cmd );

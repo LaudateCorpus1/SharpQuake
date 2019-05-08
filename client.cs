@@ -64,13 +64,7 @@ namespace SharpQuake
     //
     internal struct kbutton_t
     {
-        public bool IsDown
-        {
-            get
-            {
-                return ( this.state & 1 ) != 0;
-            }
-        }
+        public bool IsDown => ( this.state & 1 ) != 0;
 
         public int down0, down1;        // key nums holding it down
         public int state;			// low bit is down state
@@ -78,157 +72,49 @@ namespace SharpQuake
 
     static partial class client
     {
-        public static client_static_t cls
-        {
-            get
-            {
-                return _Static;
-            }
-        }
+        public static client_static_t cls => _Static;
 
-        public static client_state_t cl
-        {
-            get
-            {
-                return _State;
-            }
-        }
+        public static client_state_t cl => _State;
 
-        public static entity_t[] Entities
-        {
-            get
-            {
-                return _Entities;
-            }
-        }
+        public static entity_t[] Entities => _Entities;
 
         /// <summary>
         /// cl_entities[cl.viewentity]
         /// Player model (visible when out of body)
         /// </summary>
-        public static entity_t ViewEntity
-        {
-            get
-            {
-                return _Entities[_State.viewentity];
-            }
-        }
+        public static entity_t ViewEntity => _Entities[_State.viewentity];
 
         /// <summary>
         /// cl.viewent
         /// Weapon model (only visible from inside body)
         /// </summary>
-        public static entity_t ViewEnt
-        {
-            get
-            {
-                return _State.viewent;
-            }
-        }
+        public static entity_t ViewEnt => _State.viewent;
 
-        public static float ForwardSpeed
-        {
-            get
-            {
-                return _ForwardSpeed.Value;
-            }
-        }
+        public static float ForwardSpeed => _ForwardSpeed.Value;
 
-        public static bool LookSpring
-        {
-            get
-            {
-                return ( _LookSpring.Value != 0 );
-            }
-        }
+        public static bool LookSpring => ( Math.Abs( _LookSpring.Value ) > 0.001f );
 
-        public static bool LookStrafe
-        {
-            get
-            {
-                return ( _LookStrafe.Value != 0 );
-            }
-        }
+        public static bool LookStrafe => ( Math.Abs( _LookStrafe.Value ) > 0.001f );
 
-        public static dlight_t[] DLights
-        {
-            get
-            {
-                return _DLights;
-            }
-        }
+        public static dlight_t[] DLights => _DLights;
 
-        public static lightstyle_t[] LightStyle
-        {
-            get
-            {
-                return _LightStyle;
-            }
-        }
+        public static lightstyle_t[] LightStyle => _LightStyle;
 
-        public static entity_t[] VisEdicts
-        {
-            get
-            {
-                return _VisEdicts;
-            }
-        }
+        public static entity_t[] VisEdicts => _VisEdicts;
 
-        public static float Sensitivity
-        {
-            get
-            {
-                return _Sensitivity.Value;
-            }
-        }
+        public static float Sensitivity => _Sensitivity.Value;
 
-        public static float MSide
-        {
-            get
-            {
-                return _MSide.Value;
-            }
-        }
+        public static float MSide => _MSide.Value;
 
-        public static float MYaw
-        {
-            get
-            {
-                return _MYaw.Value;
-            }
-        }
+        public static float MYaw => _MYaw.Value;
 
-        public static float MPitch
-        {
-            get
-            {
-                return _MPitch.Value;
-            }
-        }
+        public static float MPitch => _MPitch.Value;
 
-        public static float MForward
-        {
-            get
-            {
-                return _MForward.Value;
-            }
-        }
+        public static float MForward => _MForward.Value;
 
-        public static string Name
-        {
-            get
-            {
-                return _Name.String;
-            }
-        }
+        public static string Name => _Name.String;
 
-        public static float Color
-        {
-            get
-            {
-                return _Color.Value;
-            }
-        }
+        public static float Color => _Color.Value;
 
         public const int SIGNONS = 4;	// signon messages to receive before connected
         public const int MAX_DLIGHTS = 32;

@@ -94,7 +94,7 @@ namespace SharpQuake
             // start the map up
             //
             if( c > 2 )
-                cmd.ExecuteString( String.Format( "map {0}", cmd.Argv( 2 ) ), cmd_source_t.src_command );
+                cmd.ExecuteString( $"map {cmd.Argv( 2 )}", cmd_source_t.src_command );
 
             //
             // open the demo file
@@ -172,12 +172,8 @@ namespace SharpQuake
             string name = Path.ChangeExtension( cmd.Argv( 1 ), ".dem" );
 
             Con.Print( "Playing demo from {0}.\n", name );
-            if( cls.demofile != null )
-            {
-                cls.demofile.Dispose();
-            }
-            DisposableWrapper<BinaryReader> reader;
-            common.FOpenFile( name, out reader );
+            cls.demofile?.Dispose();
+            common.FOpenFile( name, out DisposableWrapper<BinaryReader> reader );
             cls.demofile = reader;
             if( cls.demofile == null )
             {
@@ -191,11 +187,10 @@ namespace SharpQuake
             cls.forcetrack = 0;
 
             BinaryReader s = reader.Object;
-            int c;
             bool neg = false;
             while( true )
             {
-                c = s.ReadByte();
+                int c = s.ReadByte();
                 if( c == '\n' )
                     break;
 
@@ -314,7 +309,7 @@ namespace SharpQuake
             // the first frame didn't count
             int frames = ( host.FrameCount - cls.td_startframe ) - 1;
             float time = (float)host.RealTime - cls.td_starttime;
-            if( time == 0 )
+            if( Math.Abs( time ) < 0.001f )
                 time = 1;
             Con.Print( "{0} frames {1:F5} seconds {2:F2} fps\n", frames, time, frames / time );
         }

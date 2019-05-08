@@ -115,10 +115,10 @@ namespace SharpQuake
 
             Scr.BeginLoadingPlaque();
 
-            if( String.IsNullOrEmpty( cls.demos[cls.demonum] ) || cls.demonum == MAX_DEMOS )
+            if( string.IsNullOrEmpty( cls.demos[cls.demonum] ) || cls.demonum == MAX_DEMOS )
             {
                 cls.demonum = 0;
-                if( String.IsNullOrEmpty( cls.demos[cls.demonum] ) )
+                if( string.IsNullOrEmpty( cls.demos[cls.demonum] ) )
                 {
                     Con.Print( "No demos listed with startdemos\n" );
                     cls.demonum = -1;
@@ -126,7 +126,7 @@ namespace SharpQuake
                 }
             }
 
-            Cbuf.InsertText( String.Format( "playdemo {0}\n", cls.demos[cls.demonum] ) );
+            Cbuf.InsertText( $"playdemo {cls.demos[cls.demonum]}\n" );
             cls.demonum++;
         }
 
@@ -181,7 +181,7 @@ namespace SharpQuake
             for( int i = 0; i < MAX_DLIGHTS; i++ )
             {
                 dlight_t dl = _DLights[i];
-                if( dl.die < cl.time || dl.radius == 0 )
+                if( dl.die < cl.time || Math.Abs( dl.radius ) < 0.001f )
                     continue;
 
                 dl.radius -= time * dl.decay;
@@ -261,7 +261,7 @@ namespace SharpQuake
                 ParseServerMessage();
             } while( ret != 0 && cls.state == cactive_t.ca_connected );
 
-            if( _ShowNet.Value != 0 )
+            if( Math.Abs( _ShowNet.Value ) > 0.001f )
                 Con.Print( "\n" );
 
             //
@@ -550,7 +550,7 @@ namespace SharpQuake
         private static float LerpPoint()
         {
             double f = cl.mtime[0] - cl.mtime[1];
-            if( f == 0 || _NoLerp.Value != 0 || cls.timedemo || server.IsActive )
+            if( Math.Abs( f ) < 0.001f || Math.Abs( _NoLerp.Value ) > 0.001f || cls.timedemo || server.IsActive )
             {
                 cl.time = cl.mtime[0];
                 return 1;

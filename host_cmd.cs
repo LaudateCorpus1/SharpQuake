@@ -107,8 +107,8 @@ namespace SharpQuake
                 flag = false;
 
             StringBuilder sb = new StringBuilder( 256 );
-            sb.Append( String.Format( "host:    {0}\n", cvar.GetString( "hostname" ) ) );
-            sb.Append( String.Format( "version: {0:F2}\n", QDef.VERSION ) );
+            sb.Append( $"host:    {cvar.GetString( "hostname" )}\n" );
+            sb.Append( $"version: {QDef.VERSION:F2}\n" );
             if( net.TcpIpAvailable )
             {
                 sb.Append( "tcp/ip:  " );
@@ -119,7 +119,7 @@ namespace SharpQuake
             sb.Append( "map:     " );
             sb.Append( server.sv.name );
             sb.Append( '\n' );
-            sb.Append( String.Format( "players: {0} active ({1} max)\n\n", net.ActiveConnections, server.svs.maxclients ) );
+            sb.Append( $"players: {net.ActiveConnections} active ({server.svs.maxclients} max)\n\n" );
             for( int j = 0; j < server.svs.maxclients; j++ )
             {
                 client_t client = server.svs.clients[j];
@@ -137,7 +137,7 @@ namespace SharpQuake
                 }
                 else
                     hours = 0;
-                sb.Append( String.Format( "#{0,-2} {1,-16}  {2}  {2}:{4,2}:{5,2}",
+                sb.Append( string.Format( "#{0,-2} {1,-16}  {2}  {2}:{4,2}:{5,2}",
                     j + 1, client.name, (int)client.edict.v.frags, hours, minutes, seconds ) );
                 sb.Append( "   " );
                 sb.Append( client.netconnection.address );
@@ -378,8 +378,7 @@ namespace SharpQuake
         /// </summary>
         private static string SavegameComment()
         {
-            string result = String.Format( "{0} kills:{1,3}/{2,3}", client.cl.levelname,
-                client.cl.stats[QStats.STAT_MONSTERS], client.cl.stats[QStats.STAT_TOTALMONSTERS] );
+            string result = $"{client.cl.levelname} kills:{client.cl.stats[QStats.STAT_MONSTERS],3}/{client.cl.stats[QStats.STAT_TOTALMONSTERS],3}";
 
             // convert space to _ to make stdio happy
             result = result.Replace( ' ', '_' );
@@ -467,7 +466,7 @@ namespace SharpQuake
 
                 for( int i = 0; i < QDef.MAX_LIGHTSTYLES; i++ )
                 {
-                    if( !String.IsNullOrEmpty( server.sv.lightstyles[i] ) )
+                    if( !string.IsNullOrEmpty( server.sv.lightstyles[i] ) )
                         writer.WriteLine( server.sv.lightstyles[i] );
                     else
                         writer.WriteLine( "m" );
@@ -574,7 +573,7 @@ namespace SharpQuake
                     {
                         int length = 1 + sb.Length - ( line.Length - idx );
                         string data = common.Parse( sb.ToString( 0, length ) );
-                        if( String.IsNullOrEmpty( common.Token ) )
+                        if( string.IsNullOrEmpty( common.Token ) )
                             break; // end of file
                         if( common.Token != "{" )
                             sys.Error( "First token isn't a brace" );
@@ -643,7 +642,7 @@ namespace SharpQuake
                 return;
             }
 
-            if( !String.IsNullOrEmpty( host.HostClient.name ) && host.HostClient.name != "unconnected" )
+            if( !string.IsNullOrEmpty( host.HostClient.name ) && host.HostClient.name != "unconnected" )
                 if( host.HostClient.name != newName )
                     Con.Print( "{0} renamed to {1}\n", host.HostClient.name, newName );
 
@@ -1092,7 +1091,7 @@ namespace SharpQuake
                     }
                     message = message.Trim();
                 }
-                if( !String.IsNullOrEmpty( message ) )
+                if( !string.IsNullOrEmpty( message ) )
                     server.ClientPrint( "Kicked by {0}: {1}\n", who, message );
                 else
                     server.ClientPrint( "Kicked by {0}\n", who );
@@ -1119,7 +1118,7 @@ namespace SharpQuake
             string t = cmd.Argv( 1 );
             int v = common.atoi( cmd.Argv( 2 ) );
 
-            if( String.IsNullOrEmpty( t ) )
+            if( string.IsNullOrEmpty( t ) )
                 return;
 
             switch( t[0] )

@@ -40,37 +40,13 @@ namespace SharpQuake
     /// </summary>
     internal static class Drawer
     {
-        public static PixelInternalFormat AlphaFormat
-        {
-            get
-            {
-                return _AlphaFormat;
-            }
-        }
+        public static PixelInternalFormat AlphaFormat => _AlphaFormat;
 
-        public static PixelInternalFormat SolidFormat
-        {
-            get
-            {
-                return _SolidFormat;
-            }
-        }
+        public static PixelInternalFormat SolidFormat => _SolidFormat;
 
-        public static glpic_t Disc
-        {
-            get
-            {
-                return _Disc;
-            }
-        }
+        public static glpic_t Disc => _Disc;
 
-        public static float glMaxSize
-        {
-            get
-            {
-                return _glMaxSize.Value;
-            }
-        }
+        public static float glMaxSize => _glMaxSize.Value;
 
         public static int CurrentTexture = -1;
 
@@ -224,7 +200,7 @@ namespace SharpQuake
             wad.SwapPic( cbHeader );
 
             // hack the version number directly into the pic
-            string ver = String.Format( "(c# {0,7:F2}) {1,7:F2}", (float)QDef.CSQUAKE_VERSION, (float)QDef.VERSION );
+            string ver = $"(c# {(float) QDef.CSQUAKE_VERSION,7:F2}) {(float) QDef.VERSION,7:F2}";
             int offset2 = Marshal.SizeOf( typeof( dqpicheader_t ) ) + 320 * 186 + 320 - 11 - 8 * ver.Length;
             int y = ver.Length;
             for( int x = 0; x < y; x++ )
@@ -360,8 +336,12 @@ namespace SharpQuake
                 _ScrapDirty = true;
                 int k = 0;
                 for( int i = 0; i < gl.height; i++ )
+                {
                     for( int j = 0; j < gl.width; j++, k++ )
+                    {
                         _ScrapTexels[texnum][( y + i ) * BLOCK_WIDTH + x + j] = wad.Data[offset + k];// p->data[k];
+                    }
+                }
                 texnum += _ScrapTexNum;
                 gl.texnum = texnum;
                 gl.sl = (float)( ( x + 0.01 ) / (float)BLOCK_WIDTH );
@@ -835,10 +815,8 @@ namespace SharpQuake
         {
             int scaled_width, scaled_height;
 
-            for( scaled_width = 1; scaled_width < width; scaled_width <<= 1 )
-                ;
-            for( scaled_height = 1; scaled_height < height; scaled_height <<= 1 )
-                ;
+            for( scaled_width = 1; scaled_width < width; scaled_width <<= 1 ){};
+            for( scaled_height = 1; scaled_height < height; scaled_height <<= 1 ){};
 
             scaled_width >>= (int)_glPicMip.Value;
             scaled_height >>= (int)_glPicMip.Value;
@@ -879,8 +857,7 @@ namespace SharpQuake
             try
             {
                 IntPtr ptr = h.AddrOfPinnedObject();
-                GL.TexImage2D( TextureTarget.Texture2D, 0, samples, scaled_width, scaled_height, 0,
-                    PixelFormat.Rgba, PixelType.UnsignedByte, ptr );
+                GL.TexImage2D( TextureTarget.Texture2D, 0, samples, scaled_width, scaled_height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, ptr );
                 ErrorCode err = GL.GetError(); // debug
                 if( mipmap )
                 {
@@ -895,8 +872,7 @@ namespace SharpQuake
                         if( scaled_height < 1 )
                             scaled_height = 1;
                         miplevel++;
-                        GL.TexImage2D( TextureTarget.Texture2D, miplevel, samples, scaled_width, scaled_height, 0,
-                            PixelFormat.Rgba, PixelType.UnsignedByte, ptr );
+                        GL.TexImage2D( TextureTarget.Texture2D, miplevel, samples, scaled_width, scaled_height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, ptr );
                     }
                 }
             }

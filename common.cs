@@ -139,67 +139,28 @@ namespace SharpQuake
 
     internal static class common
     {
-        public static bool IsBigEndian
-        {
-            get
-            {
-                return !BitConverter.IsLittleEndian;
-            }
-        }
+        public static bool IsBigEndian => !BitConverter.IsLittleEndian;
 
-        public static string GameDir
-        {
-            get
-            {
-                return _GameDir;
-            }
-        }
+        public static string GameDir => _GameDir;
 
-        public static GameKind GameKind
-        {
-            get
-            {
-                return _GameKind;
-            }
-        }
+        public static GameKind GameKind => _GameKind;
 
-        public static int Argc
-        {
-            get
-            {
-                return _Argv.Length;
-            }
-        }
+        public static int Argc => _Argv.Length;
 
         public static string[] Args
         {
-            get
-            {
-                return _Argv;
-            }
+            get => _Argv;
             set
             {
                 _Argv = new string[value.Length];
                 value.CopyTo(_Argv, 0);
-                _Args = String.Join(" ", value);
+                _Args = string.Join(" ", value);
             }
         }
 
-        public static string Token
-        {
-            get
-            {
-                return _Token;
-            }
-        }
+        public static string Token => _Token;
 
-        public static bool IsRegistered
-        {
-            get
-            {
-                return _Registered.Value != 0;
-            }
-        }
+        public static bool IsRegistered => Math.Abs( _Registered.Value ) > 0.001f;
 
         public const int MAX_FILES_IN_PACK = 2048;
 
@@ -296,7 +257,7 @@ namespace SharpQuake
         public static void InitArgv(string[] argv)
         {
             // reconstitute the command line for the cmdline externally visible cvar
-            _Args = String.Join(" ", argv);
+            _Args = string.Join(" ", argv);
             _Argv = new string[argv.Length];
             argv.CopyTo(_Argv, 0);
 
@@ -335,9 +296,9 @@ namespace SharpQuake
         /// </summary>
         public static string Parse(string data)
         {
-            _Token = String.Empty;
+            _Token = string.Empty;
 
-            if (String.IsNullOrEmpty(data))
+            if (string.IsNullOrEmpty(data))
                 return null;
 
             // skip whitespace
@@ -426,8 +387,7 @@ namespace SharpQuake
         public static byte[] LoadFile(string path)
         {
             // look for it in the filesystem or pack files
-            DisposableWrapper<BinaryReader> file;
-            int length = OpenFile(path, out file);
+            int length = OpenFile(path, out DisposableWrapper<BinaryReader> file);
             if (file == null)
                 return null;
 
@@ -542,7 +502,7 @@ namespace SharpQuake
 
         public static int atoi(string s)
         {
-            if (String.IsNullOrEmpty(s))
+            if (string.IsNullOrEmpty(s))
                 return 0;
 
             int sign = 1;
@@ -584,19 +544,18 @@ namespace SharpQuake
 
         public static float atof(string s)
         {
-            float v;
-            float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out v);
+            float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out float v);
             return v;
         }
 
         public static bool SameText(string a, string b)
         {
-            return (String.Compare(a, b, true) == 0);
+            return (string.Compare(a, b, true) == 0);
         }
 
         public static bool SameText(string a, string b, int count)
         {
-            return (String.Compare(a, 0, b, 0, count, true) == 0);
+            return (string.Compare(a, 0, b, 0, count, true) == 0);
         }
 
         public static short BigShort(short l)
@@ -720,7 +679,7 @@ namespace SharpQuake
             while (count < src.Length && src[count] != 0)
                 count++;
 
-            return (count > 0 ? Encoding.ASCII.GetString(src, 0, count) : String.Empty);
+            return (count > 0 ? Encoding.ASCII.GetString(src, 0, count) : string.Empty);
         }
 
         public static Vector3 ToVector(ref v3f v)
@@ -777,7 +736,7 @@ namespace SharpQuake
         {
             file = null;
 
-            string cachepath = String.Empty;
+            string cachepath = string.Empty;
 
             //
             // search through the path, one element at a time
@@ -827,7 +786,7 @@ namespace SharpQuake
                         continue;
 
                     // see if the file needs to be updated in the cache
-                    if (String.IsNullOrEmpty(_CacheDir))// !com_cachedir[0])
+                    if (string.IsNullOrEmpty(_CacheDir))// !com_cachedir[0])
                     {
                         cachepath = netpath; //  strcpy(cachepath, netpath);
                     }
@@ -933,7 +892,7 @@ namespace SharpQuake
             // -basedir <path>
             // Overrides the system supplied base directory (under GAMENAME)
             //
-            string basedir = String.Empty;
+            string basedir = string.Empty;
             int i = CheckParm("-basedir");
             if ((i > 0) && (i < _Argv.Length - 1))
             {
@@ -945,7 +904,7 @@ namespace SharpQuake
                 qparam.globalbasedir = basedir;
             }
 
-            if (!String.IsNullOrEmpty(basedir))
+            if (!string.IsNullOrEmpty(basedir))
             {
                 basedir.TrimEnd('\\', '/');
             }
@@ -959,17 +918,17 @@ namespace SharpQuake
             if ((i > 0) && (i < _Argv.Length - 1))
             {
                 if (_Argv[i + 1][0] == '-')
-                    _CacheDir = String.Empty;
+                    _CacheDir = string.Empty;
                 else
                     _CacheDir = _Argv[i + 1];
             }
-            else if (!String.IsNullOrEmpty(host.Params.cachedir))
+            else if (!string.IsNullOrEmpty(host.Params.cachedir))
             {
                 _CacheDir = host.Params.cachedir;
             }
             else
             {
-                _CacheDir = String.Empty;
+                _CacheDir = string.Empty;
             }
 
             //
@@ -1011,7 +970,7 @@ namespace SharpQuake
                 _SearchPaths.Clear();
                 while (++i < _Argv.Length)
                 {
-                    if (String.IsNullOrEmpty(_Argv[i]) || _Argv[i][0] == '+' || _Argv[i][0] == '-')
+                    if (string.IsNullOrEmpty(_Argv[i]) || _Argv[i][0] == '+' || _Argv[i][0] == '-')
                         break;
 
                     _SearchPaths.Insert(0, new searchpath_t(_Argv[i]));
@@ -1037,7 +996,7 @@ namespace SharpQuake
             //
             for (int i = 0; ; i++)
             {
-                string pakfile = String.Format("{0}/PAK{1}.PAK", dir, i);
+                string pakfile = $"{dir}/PAK{i}.PAK";
                 pack_t pak = LoadPackFile(pakfile);
                 if (pak == null)
                     break;
@@ -1068,29 +1027,11 @@ namespace SharpQuake
         private link_t _Prev, _Next;
         private object _Owner;
 
-        public link_t Prev
-        {
-            get
-            {
-                return _Prev;
-            }
-        }
+        public link_t Prev => _Prev;
 
-        public link_t Next
-        {
-            get
-            {
-                return _Next;
-            }
-        }
+        public link_t Next => _Next;
 
-        public object Owner
-        {
-            get
-            {
-                return _Owner;
-            }
-        }
+        public object Owner => _Owner;
 
         public link_t(object owner)
         {
@@ -1135,29 +1076,11 @@ namespace SharpQuake
     // MSG_WriteXxx() functions
     internal class MsgWriter
     {
-        public byte[] Data
-        {
-            get
-            {
-                return _Buffer;
-            }
-        }
+        public byte[] Data => _Buffer;
 
-        public bool IsEmpty
-        {
-            get
-            {
-                return (_Count == 0);
-            }
-        }
+        public bool IsEmpty => (_Count == 0);
 
-        public int Length
-        {
-            get
-            {
-                return _Count;
-            }
-        }
+        public int Length => _Count;
 
         public bool AllowOverflow
         {
@@ -1171,14 +1094,8 @@ namespace SharpQuake
 
         public int Capacity
         {
-            get
-            {
-                return _Buffer.Length;
-            }
-            set
-            {
-                SetBufferSize(value);
-            }
+            get => _Buffer.Length;
+            set => SetBufferSize(value);
         }
 
         private byte[] _Buffer;
@@ -1278,7 +1195,7 @@ namespace SharpQuake
         public void WriteString(string s)
         {
             int count = 1;
-            if (!String.IsNullOrEmpty(s))
+            if (!string.IsNullOrEmpty(s))
                 count += s.Length;
 
             NeedRoom(count);
@@ -1427,24 +1344,12 @@ namespace SharpQuake
         /// <summary>
         /// msg_badread
         /// </summary>
-        public bool IsBadRead
-        {
-            get
-            {
-                return _IsBadRead;
-            }
-        }
+        public bool IsBadRead => _IsBadRead;
 
         /// <summary>
         /// msg_readcount
         /// </summary>
-        public int Position
-        {
-            get
-            {
-                return _Count;
-            }
-        }
+        public int Position => _Count;
 
         private MsgWriter _Source;
         private bool _IsBadRead;
@@ -1538,7 +1443,7 @@ namespace SharpQuake
                 l++;
             } while (l < _Tmp.Length - 1);
 
-            return new String(_Tmp, 0, l);
+            return new string(_Tmp, 0, l);
         }
 
         // float MSG_ReadCoord (void)
@@ -1630,12 +1535,10 @@ namespace SharpQuake
 
         public static void Swap4b(byte[] buff, int offset)
         {
-            byte b1, b2, b3, b4;
-
-            b1 = buff[offset + 0];
-            b2 = buff[offset + 1];
-            b3 = buff[offset + 2];
-            b4 = buff[offset + 3];
+            byte b1 = buff[offset + 0];
+            byte b2 = buff[offset + 1];
+            byte b3 = buff[offset + 2];
+            byte b4 = buff[offset + 3];
 
             buff[offset + 0] = b4;
             buff[offset + 1] = b3;
@@ -1746,7 +1649,7 @@ namespace SharpQuake
 
         public override string ToString()
         {
-            return String.Format("{0}, at {1}, {2} bytes}", this.name, this.filepos, this.filelen);
+            return $"{this.name}, at {this.filepos}, {this.filelen} bytes";
         }
     } // packfile_t;
 
@@ -1795,13 +1698,7 @@ namespace SharpQuake
 
     internal class DisposableWrapper<T> : IDisposable where T : class, IDisposable
     {
-        public T Object
-        {
-            get
-            {
-                return _Object;
-            }
-        }
+        public T Object => _Object;
 
         private T _Object;
         private bool _Owned;
@@ -1839,29 +1736,11 @@ namespace SharpQuake
 
     internal class ByteArraySegment
     {
-        public byte[] Data
-        {
-            get
-            {
-                return _Segment.Array;
-            }
-        }
+        public byte[] Data => _Segment.Array;
 
-        public int StartIndex
-        {
-            get
-            {
-                return _Segment.Offset;
-            }
-        }
+        public int StartIndex => _Segment.Offset;
 
-        public int Length
-        {
-            get
-            {
-                return _Segment.Count;
-            }
-        }
+        public int Length => _Segment.Count;
 
         private ArraySegment<byte> _Segment;
 
@@ -1879,7 +1758,7 @@ namespace SharpQuake
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof( array ));
             }
             if (length == -1)
             {

@@ -47,41 +47,17 @@ namespace SharpQuake
 
     internal static class cmd
     {
-        public static cmd_source_t Source
-        {
-            get
-            {
-                return _Source;
-            }
-        }
+        public static cmd_source_t Source => _Source;
 
-        public static int Argc
-        {
-            get
-            {
-                return _Argc;
-            }
-        }
+        public static int Argc => _Argc;
 
         // char	*Cmd_Args (void);
-        public static string Args
-        {
-            get
-            {
-                return _Args;
-            }
-        }
+        public static string Args => _Args;
 
         internal static bool Wait
         {
-            get
-            {
-                return _Wait;
-            }
-            set
-            {
-                _Wait = value;
-            }
+            get => _Wait;
+            set => _Wait = value;
         }
 
         private const int MAX_ALIAS_NAME = 32;
@@ -139,7 +115,7 @@ namespace SharpQuake
         // returns NULL if nothing fits
         public static string[] Complete( string partial )
         {
-            if( String.IsNullOrEmpty( partial ) )
+            if( string.IsNullOrEmpty( partial ) )
                 return null;
 
             List<string> result = new List<string>();
@@ -157,7 +133,7 @@ namespace SharpQuake
         public static string Argv( int arg )
         {
             if( arg < 0 || arg >= _Argc )
-                return String.Empty;
+                return string.Empty;
 
             return _Argv[arg];
         }
@@ -180,14 +156,14 @@ namespace SharpQuake
             _Argv = null;
 
             List<string> argv = new List<string>( MAX_ARGS );
-            while( !String.IsNullOrEmpty( text ) )
+            while( !string.IsNullOrEmpty( text ) )
             {
                 if( _Argc == 1 )
                     _Args = text;
 
                 text = common.Parse( text );
 
-                if( String.IsNullOrEmpty( common.Token ) )
+                if( string.IsNullOrEmpty( common.Token ) )
                     break;
 
                 if( _Argc < MAX_ARGS )
@@ -225,7 +201,7 @@ namespace SharpQuake
             {
                 // check alias
                 string alias = FindAlias( _Argv[0] ); // must search with compare func like Q_strcasecmp
-                if( !String.IsNullOrEmpty( alias ) )
+                if( !string.IsNullOrEmpty( alias ) )
                 {
                     Cbuf.InsertText( alias );
                 }
@@ -273,20 +249,18 @@ namespace SharpQuake
 
         public static string JoinArgv()
         {
-            return String.Join( " ", _Argv );
+            return string.Join( " ", _Argv );
         }
 
         private static xcommand_t Find( string name )
         {
-            xcommand_t result;
-            _Functions.TryGetValue( name, out result );
+            _Functions.TryGetValue( name, out xcommand_t result );
             return result;
         }
 
         private static string FindAlias( string name )
         {
-            string result;
-            _Aliases.TryGetValue( name, out result );
+            _Aliases.TryGetValue( name, out string result );
             return result;
         }
 
@@ -309,7 +283,7 @@ namespace SharpQuake
             StringBuilder sb = new StringBuilder( 1024 );
             for( int i = 1; i < _Argc; i++ )
             {
-                if( !String.IsNullOrEmpty( _Argv[i] ) )
+                if( !string.IsNullOrEmpty( _Argv[i] ) )
                 {
                     sb.Append( _Argv[i] );
                     if( i + 1 < _Argc )
@@ -443,7 +417,7 @@ namespace SharpQuake
         // the text is added to the end of the command buffer.
         public static void AddText( string text )
         {
-            if( String.IsNullOrEmpty( text ) )
+            if( string.IsNullOrEmpty( text ) )
                 return;
 
             int len = text.Length;
@@ -510,7 +484,7 @@ namespace SharpQuake
                 }
 
                 // execute the command line
-                if( !String.IsNullOrEmpty( line ) )
+                if( !string.IsNullOrEmpty( line ) )
                 {
                     cmd.ExecuteString( line, cmd_source_t.src_command );
 

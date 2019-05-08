@@ -93,7 +93,7 @@ namespace SharpQuake
         {
             int k;
             string c = cmd.Argv( 1 );
-            if( !String.IsNullOrEmpty( c ) )
+            if( !string.IsNullOrEmpty( c ) )
                 k = int.Parse( c );
             else
                 k = -1;	// typed manually at the console for continuous down
@@ -120,7 +120,7 @@ namespace SharpQuake
         {
             int k;
             string c = cmd.Argv( 1 );
-            if( !String.IsNullOrEmpty( c ) )
+            if( !string.IsNullOrEmpty( c ) )
                 k = int.Parse( c );
             else
             {
@@ -465,7 +465,7 @@ namespace SharpQuake
             cl.viewangles.X -= speed * _PitchSpeed.Value * up;
             cl.viewangles.X += speed * _PitchSpeed.Value * down;
 
-            if( up != 0 || down != 0 )
+            if( Math.Abs( up ) > 0.001f || Math.Abs( down ) > 0.001f )
                 view.StopPitchDrift();
 
             if( cl.viewangles.X > 80 )

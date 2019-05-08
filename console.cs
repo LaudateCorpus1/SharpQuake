@@ -31,45 +31,21 @@ namespace SharpQuake
     /// </summary>
     internal static class Con
     {
-        public static bool IsInitialized
-        {
-            get
-            {
-                return _IsInitialized;
-            }
-        }
+        public static bool IsInitialized => _IsInitialized;
 
         public static bool ForcedUp
         {
-            get
-            {
-                return _ForcedUp;
-            }
-            set
-            {
-                _ForcedUp = value;
-            }
+            get => _ForcedUp;
+            set => _ForcedUp = value;
         }
 
         public static int NotifyLines
         {
-            get
-            {
-                return _NotifyLines;
-            }
-            set
-            {
-                _NotifyLines = value;
-            }
+            get => _NotifyLines;
+            set => _NotifyLines = value;
         }
 
-        public static int TotalLines
-        {
-            get
-            {
-                return _TotalLines;
-            }
-        }
+        public static int TotalLines => _TotalLines;
 
         public static int BackScroll;
         private const string LOG_FILE_NAME = "qconsole.log";
@@ -288,7 +264,7 @@ namespace SharpQuake
                 if( i < 0 )
                     continue;
                 double time = _Times[i % NUM_CON_TIMES];
-                if( time == 0 )
+                if( Math.Abs( time ) < 0.001f )
                     continue;
                 time = host.RealTime - time;
                 if( time > _NotifyTime.Value )

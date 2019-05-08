@@ -33,13 +33,7 @@ namespace SharpQuake
     /// </summary>
     internal static class input
     {
-        public static bool IsMouseActive
-        {
-            get
-            {
-                return _IsMouseActive;
-            }
-        }
+        public static bool IsMouseActive => _IsMouseActive;
 
         public static Point WindowCenter
         {

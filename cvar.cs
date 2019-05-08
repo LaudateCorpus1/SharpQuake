@@ -31,61 +31,19 @@ namespace SharpQuake
 {
     internal class cvar
     {
-        public static cvar First
-        {
-            get
-            {
-                return _Vars;
-            }
-        }
+        public static cvar First => _Vars;
 
-        public string Name
-        {
-            get
-            {
-                return _Name;
-            }
-        }
+        public string Name => _Name;
 
-        public string String
-        {
-            get
-            {
-                return _String;
-            }
-        }
+        public string String => _String;
 
-        public float Value
-        {
-            get
-            {
-                return _Value;
-            }
-        }
+        public float Value => _Value;
 
-        public bool IsArchive
-        {
-            get
-            {
-                return _Flags[Flags.Archive];
-            }
-        }
+        public bool IsArchive => _Flags[Flags.Archive];
 
-        public bool IsServer
-        {
-            get
-            {
-                return _Flags[Flags.Server];
-            }
-        }
+        public bool IsServer => _Flags[Flags.Server];
 
-        public cvar Next
-        {
-            get
-            {
-                return _Next;
-            }
-        }
+        public cvar Next => _Next;
 
         private static cvar _Vars;
 
@@ -144,13 +102,13 @@ namespace SharpQuake
             {
                 return var._String;
             }
-            return String.Empty;
+            return string.Empty;
         }
 
         // Cvar_CompleteVariable()
         public static string[] CompleteName( string partial )
         {
-            if( String.IsNullOrEmpty( partial ) )
+            if( string.IsNullOrEmpty( partial ) )
                 return null;
 
             List<string> result = new List<string>();
@@ -231,7 +189,7 @@ namespace SharpQuake
 
         public void Set( string value )
         {
-            bool changed = ( String.Compare( _String, value ) != 0 );
+            bool changed = ( string.CompareOrdinal( _String, value ) != 0 );
             if( !changed )
                 return;
 
@@ -262,20 +220,20 @@ namespace SharpQuake
 
         public cvar( string name, string value, bool archive, bool server )
         {
-            if( String.IsNullOrEmpty( name ) )
+            if( string.IsNullOrEmpty( name ) )
             {
-                throw new ArgumentNullException( "name" );
+                throw new ArgumentNullException( nameof( name ) );
             }
             cvar var = Find( name );
             if( var != null )
             {
-                throw new ArgumentException( String.Format( "Can't register variable {0}, already defined!\n", name ) );
+                throw new ArgumentException( $"Can't register variable {name}, already defined!\n" );
                 //Con_Printf("Can't register variable %s, allready defined\n", variable->name);
                 //return;
             }
             if( cmd.Exists( name ) )
             {
-                throw new ArgumentException( String.Format( "Can't register variable: {0} is a command!\n", name ) );
+                throw new ArgumentException( $"Can't register variable: {name} is a command!\n" );
             }
             _Next = _Vars;
             _Vars = this;

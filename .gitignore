@@ -1,6 +1,7 @@
-SharpQuake.csproj.user
-packages/
+lib/
 obj/
 \.vs/
 bin/
 Quake/
+\.idea/
+*.user

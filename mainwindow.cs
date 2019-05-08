@@ -20,6 +20,7 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using OpenTK;
 using OpenTK.Graphics;
@@ -30,43 +31,19 @@ namespace SharpQuake
 {
     public class mainwindow : GameWindow
     {
-        public static mainwindow Instance
-        {
-            get
-            {
-                return (mainwindow)_Instance.Target;
-            }
-        }
+        public static mainwindow Instance => (mainwindow)_Instance.Target;
 
         public static DisplayDevice DisplayDevice
         {
-            get
-            {
-                return _DisplayDevice;
-            }
-            set
-            {
-                _DisplayDevice = value;
-            }
+            get => _DisplayDevice;
+            set => _DisplayDevice = value;
         }
 
-        public static bool IsFullscreen
-        {
-            get
-            {
-                return (Instance.WindowState == WindowState.Fullscreen);
-            }
-        }
+        public static bool IsFullscreen => (Instance.WindowState == WindowState.Fullscreen);
 
         public bool ConfirmExit = true;
 
-        private static string DumpFilePath
-        {
-            get
-            {
-                return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "error.txt");
-            }
-        }
+        private static string DumpFilePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "error.txt");
 
         private static byte[] _KeyTable = new byte[130]
         {
@@ -108,7 +85,7 @@ namespace SharpQuake
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             // Turned this of as I hate this prompt so much 
-            /*if (this.ConfirmExit)
+            if (this.ConfirmExit && this.PromptExit)
             {
                 int button_id;
                 SDL.SDL_MessageBoxButtonData[] buttons = new SDL.SDL_MessageBoxButtonData[2];
@@ -121,29 +98,29 @@ namespace SharpQuake
                 buttons[1].buttonid = 1;
                 buttons[1].text = "yes";
 
-                SDL.SDL_MessageBoxData messageBoxData = new SDL.SDL_MessageBoxData();
-                messageBoxData.flags = SDL.SDL_MessageBoxFlags.SDL_MESSAGEBOX_INFORMATION;
-                messageBoxData.window = IntPtr.Zero;
-                messageBoxData.title = "test";
-                messageBoxData.message = "test";
-                messageBoxData.numbuttons = 2;
-                messageBoxData.buttons = buttons;
-                SDL.SDL_ShowMessageBox(ref messageBoxData, out button_id);
-
-                if (button_id == -1)
+                SDL.SDL_MessageBoxData messageBoxData = new SDL.SDL_MessageBoxData
                 {
-                    "error displaying message box"
-                }
-                else
-                {
-                   "selection was %s"
-                }
-
+                    flags      = SDL.SDL_MessageBoxFlags.SDL_MESSAGEBOX_INFORMATION,
+                    window     = IntPtr.Zero,
+                    title      = "Confirm Exit",
+                    message    = "Are you sure you want to quit?",
+                    numbuttons = 2,
+                    buttons    = buttons
+                };
+                button_id = SDL.SDL_ShowMessageBox(ref messageBoxData, out button_id);
+                
+                if(button_id == 0)
+                    return;
+                
                 // e.Cancel = (MessageBox.Show("Are you sure you want to quit?",
                 //"Confirm Exit", MessageBoxButtons.YesNo) != DialogResult.Yes);
             }
-            */
             base.OnClosing(e);
+        }
+
+        public bool PromptExit
+        {
+            get { return false; }
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -186,7 +163,7 @@ namespace SharpQuake
                     Exception ex1 = ex;
                     while (ex1 != null)
                     {
-                        writer.WriteLine("[" + DateTime.Now.ToString() + "] Unhandled exception:");
+                        writer.WriteLine("[" + DateTime.Now.ToString( CultureInfo.InvariantCulture ) + "] Unhandled exception:");
                         writer.WriteLine(ex1.Message);
                         writer.WriteLine();
                         writer.WriteLine("Stack trace:");
@@ -233,7 +210,7 @@ namespace SharpQuake
         private static int Main(string[] args)
         {
             //Workaround for SDL2 mouse input issues
-            var options = new ToolkitOptions();
+            ToolkitOptions options = new ToolkitOptions();
             options.Backend = PlatformBackend.PreferNative;
             options.EnableHighResolution = true; //Just for testing
             Toolkit.Init(options);

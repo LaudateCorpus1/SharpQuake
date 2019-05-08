@@ -55,152 +55,79 @@ namespace SharpQuake
 
         public static keydest_t Destination
         {
-            get
-            {
-                return _KeyDest;
-            }
-            set
-            {
-                _KeyDest = value;
-            }
+            get => _KeyDest;
+            set => _KeyDest = value;
         }
 
         public static bool TeamMessage
         {
-            get
-            {
-                return _TeamMessage;
-            }
-            set
-            {
-                _TeamMessage = value;
-            }
+            get => _TeamMessage;
+            set => _TeamMessage = value;
         }
 
-        public static char[][] Lines
-        {
-            get
-            {
-                return _Lines;
-            }
-        }
+        public static char[][] Lines => _Lines;
 
-        public static int EditLine
-        {
-            get
-            {
-                return _EditLine;
-            }
-        }
+        public static int EditLine => _EditLine;
 
-        public static string ChatBuffer
-        {
-            get
-            {
-                return _ChatBuffer.ToString();
-            }
-        }
+        public static string ChatBuffer => _ChatBuffer.ToString();
 
-        public static int LastPress
-        {
-            get
-            {
-                return _LastPress;
-            }
-        }
+        public static int LastPress => _LastPress;
 
-        public static string[] Bindings
-        {
-            get
-            {
-                return _Bindings;
-            }
-        }
+        public static string[] Bindings => _Bindings;
 
         //
         // these are the key numbers that should be passed to Key_Event
         //
         public const int K_TAB = 9;
-
         public const int K_ENTER = 13;
-
         public const int K_ESCAPE = 27;
-
         public const int K_SPACE = 32;
-
         public const int K_BACKSPACE = 127;
 
         // normal keys should be passed as lowercased ascii
         public const int K_UPARROW = 128;
-
         public const int K_DOWNARROW = 129;
-
         public const int K_LEFTARROW = 130;
-
         public const int K_RIGHTARROW = 131;
 
         public const int K_ALT = 132;
-
         public const int K_CTRL = 133;
-
         public const int K_SHIFT = 134;
 
         public const int K_F1 = 135;
-
         public const int K_F2 = 136;
-
         public const int K_F3 = 137;
-
         public const int K_F4 = 138;
-
         public const int K_F5 = 139;
-
         public const int K_F6 = 140;
-
         public const int K_F7 = 141;
-
         public const int K_F8 = 142;
-
         public const int K_F9 = 143;
-
         public const int K_F10 = 144;
-
         public const int K_F11 = 145;
-
         public const int K_F12 = 146;
-
+        
         public const int K_INS = 147;
-
         public const int K_DEL = 148;
-
         public const int K_PGDN = 149;
-
         public const int K_PGUP = 150;
-
         public const int K_HOME = 151;
-
         public const int K_END = 152;
-
         public const int K_PAUSE = 255;
 
         //
         // mouse buttons generate virtual keys
         //
         public const int K_MOUSE1 = 200;
-
         public const int K_MOUSE2 = 201;
-
         public const int K_MOUSE3 = 202;
 
         //
         // joystick buttons
         //
         public const int K_JOY1 = 203;
-
         public const int K_JOY2 = 204;
-
         public const int K_JOY3 = 205;
-
         public const int K_JOY4 = 206;
 
         //
@@ -208,67 +135,36 @@ namespace SharpQuake
         // the normal binding process
         //
         public const int K_AUX1 = 207;
-
         public const int K_AUX2 = 208;
-
         public const int K_AUX3 = 209;
-
         public const int K_AUX4 = 210;
-
         public const int K_AUX5 = 211;
-
         public const int K_AUX6 = 212;
-
         public const int K_AUX7 = 213;
-
         public const int K_AUX8 = 214;
-
         public const int K_AUX9 = 215;
-
         public const int K_AUX10 = 216;
-
         public const int K_AUX11 = 217;
-
         public const int K_AUX12 = 218;
-
         public const int K_AUX13 = 219;
-
         public const int K_AUX14 = 220;
-
         public const int K_AUX15 = 221;
-
         public const int K_AUX16 = 222;
-
         public const int K_AUX17 = 223;
-
         public const int K_AUX18 = 224;
-
         public const int K_AUX19 = 225;
-
         public const int K_AUX20 = 226;
-
         public const int K_AUX21 = 227;
-
         public const int K_AUX22 = 228;
-
         public const int K_AUX23 = 229;
-
         public const int K_AUX24 = 230;
-
         public const int K_AUX25 = 231;
-
         public const int K_AUX26 = 232;
-
         public const int K_AUX27 = 233;
-
         public const int K_AUX28 = 234;
-
         public const int K_AUX29 = 235;
-
         public const int K_AUX30 = 236;
-
         public const int K_AUX31 = 237;
-
         public const int K_AUX32 = 238;
 
         public const int K_MWHEELUP = 239;
@@ -277,7 +173,6 @@ namespace SharpQuake
         public const int K_MWHEELDOWN = 240;
 
         public static int LinePos;
-
         public static int KeyCount;
 
         private const int MAXCMDLINE = 256;
@@ -417,7 +312,7 @@ namespace SharpQuake
                     return; // ignore most autorepeats
                 }
 
-                if( key >= 200 && String.IsNullOrEmpty( _Bindings[key] ) )
+                if( key >= 200 && string.IsNullOrEmpty( _Bindings[key] ) )
                     Con.Print( "{0} is unbound, hit F4 to set.\n", KeynumToString( key ) );
             }
 
@@ -464,15 +359,15 @@ namespace SharpQuake
             if( !down )
             {
                 string kb = _Bindings[key];
-                if( !String.IsNullOrEmpty( kb ) && kb.StartsWith( "+" ) )
+                if( !string.IsNullOrEmpty( kb ) && kb.StartsWith( "+" ) )
                 {
-                    Cbuf.AddText( String.Format( "-{0} {1}\n", kb.Substring( 1 ), key ) );
+                    Cbuf.AddText( $"-{kb.Substring( 1 )} {key}\n" );
                 }
                 if( _KeyShift[key] != key )
                 {
                     kb = _Bindings[_KeyShift[key]];
-                    if( !String.IsNullOrEmpty( kb ) && kb.StartsWith( "+" ) )
-                        Cbuf.AddText( String.Format( "-{0} {1}\n", kb.Substring( 1 ), key ) );
+                    if( !string.IsNullOrEmpty( kb ) && kb.StartsWith( "+" ) )
+                        Cbuf.AddText( $"-{kb.Substring( 1 )} {key}\n" );
                 }
                 return;
             }
@@ -494,12 +389,12 @@ namespace SharpQuake
                 ( _KeyDest == keydest_t.key_game && ( !Con.ForcedUp || !_ConsoleKeys[key] ) ) )
             {
                 string kb = _Bindings[key];
-                if( !String.IsNullOrEmpty( kb ) )
+                if( !string.IsNullOrEmpty( kb ) )
                 {
                     if( kb.StartsWith( "+" ) )
                     {
                         // button commands add keynum as a parm
-                        Cbuf.AddText( String.Format( "{0} {1}\n", kb, key ) );
+                        Cbuf.AddText( $"{kb} {key}\n" );
                     }
                     else
                     {
@@ -615,7 +510,7 @@ namespace SharpQuake
             StringBuilder sb = new StringBuilder( 4096 );
             for( int i = 0; i < 256; i++ )
             {
-                if( !String.IsNullOrEmpty( _Bindings[i] ) )
+                if( !string.IsNullOrEmpty( _Bindings[i] ) )
                 {
                     sb.Append( "bind \"" );
                     sb.Append( KeynumToString( i ) );
@@ -680,7 +575,7 @@ namespace SharpQuake
         // the K_* names are matched up.
         private static int StringToKeynum( string str )
         {
-            if( String.IsNullOrEmpty( str ) )
+            if( string.IsNullOrEmpty( str ) )
                 return -1;
             if( str.Length == 1 )
                 return str[0];
@@ -716,7 +611,7 @@ namespace SharpQuake
         private static void UnbindAll_f()
         {
             for( int i = 0; i < 256; i++ )
-                if( !String.IsNullOrEmpty( _Bindings[i] ) )
+                if( !string.IsNullOrEmpty( _Bindings[i] ) )
                     SetBinding( i, null );
         }
 
@@ -739,7 +634,7 @@ namespace SharpQuake
 
             if( c == 2 )
             {
-                if( !String.IsNullOrEmpty( _Bindings[b] ) )// keybindings[b])
+                if( !string.IsNullOrEmpty( _Bindings[b] ) )// keybindings[b])
                     Con.Print( "\"{0}\" = \"{1}\"\n", cmd.Argv( 1 ), _Bindings[b] );
                 else
                     Con.Print( "\"{0}\" is not bound\n", cmd.Argv( 1 ) );
@@ -809,7 +704,7 @@ namespace SharpQuake
         {
             if( key == K_ENTER )
             {
-                string line = new String( _Lines[_EditLine] ).TrimEnd( '\0', ' ' );
+                string line = new string( _Lines[_EditLine] ).TrimEnd( '\0', ' ' );
                 string cmd = line.Substring( 1 );
                 Cbuf.AddText( cmd );	// skip the >
                 Cbuf.AddText( "\n" );
@@ -827,7 +722,7 @@ namespace SharpQuake
             if( key == K_TAB )
             {
                 // command completion
-                string txt = new String( _Lines[_EditLine], 1, MAXCMDLINE - 1 ).TrimEnd( '\0', ' ' );
+                string txt = new string( _Lines[_EditLine], 1, MAXCMDLINE - 1 ).TrimEnd( '\0', ' ' );
                 string[] cmds = cmd.Complete( txt );
                 string[] vars = cvar.CompleteName( txt );
                 string match = null;
@@ -850,10 +745,10 @@ namespace SharpQuake
                         foreach( string s in vars )
                             Con.Print( "  {0}\n", s );
                     }
-                    else if( match == null )
+                    else //if( match == null ) // ??? always true
                         match = vars[0];
                 }
-                if( !String.IsNullOrEmpty( match ) )
+                if( !string.IsNullOrEmpty( match ) )
                 {
                     int len = Math.Min( match.Length, MAXCMDLINE - 3 );
                     for( int i = 0; i < len; i++ )
