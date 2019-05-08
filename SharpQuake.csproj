@@ -69,20 +69,6 @@
     <OutputPath>Quake\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NVorbis, Version=0.8.6.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>lib\NVorbis.dll</HintPath>
-    </Reference>
-    <Reference Include="NVorbis.OpenTKSupport, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>lib\NVorbis.OpenTKSupport.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4">
-      <HintPath>lib\OpenTK.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="anorm_dots.cs" />
     <Compile Include="anorms.cs" />
     <Compile Include="bsp_file.cs" />
@@ -190,6 +176,20 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\quake.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="NVorbis, Version=0.8.6.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>lib\NVorbis.dll</HintPath>
+    </Reference>
+    <Reference Include="NVorbis.OpenTKSupport, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>lib\NVorbis.OpenTKSupport.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4">
+      <HintPath>lib\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
