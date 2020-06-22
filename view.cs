@@ -96,10 +96,10 @@ namespace SharpQuake
         private static cvar _CenterSpeed;// = { "v_centerspeed", "500" };
 
         private static byte[] _GammaTable; // [256];	// palette is sent through this
-        private static cshift_t _CShift_empty;// = { { 130, 80, 50 }, 0 };
-        private static cshift_t _CShift_water;// = { { 130, 80, 50 }, 128 };
-        private static cshift_t _CShift_slime;// = { { 0, 25, 5 }, 150 };
-        private static cshift_t _CShift_lava;// = { { 255, 80, 0 }, 150 };
+        private static QColorShift _CShift_empty;// = { { 130, 80, 50 }, 0 };
+        private static QColorShift _CShift_water;// = { { 130, 80, 50 }, 128 };
+        private static QColorShift _CShift_slime;// = { { 0, 25, 5 }, 150 };
+        private static QColorShift _CShift_lava;// = { { 255, 80, 0 }, 150 };
 
         // v_blend[4]		// rgba 0.0 - 1.0
         private static byte[,] _Ramps = new byte[3, 256]; // ramps[3][256]
@@ -178,19 +178,19 @@ namespace SharpQuake
                 return;
 
             // don't allow cheats in multiplayer
-            if( client.cl.maxclients > 1 )
+            if( QClient.cl.maxclients > 1 )
             {
                 cvar.Set( "scr_ofsx", "0" );
                 cvar.Set( "scr_ofsy", "0" );
                 cvar.Set( "scr_ofsz", "0" );
             }
 
-            if( client.cl.intermission > 0 )
+            if( QClient.cl.intermission > 0 )
             {
                 // intermission / finale rendering
                 CalcIntermissionRefDef();
             }
-            else if( !client.cl.paused )
+            else if( !QClient.cl.paused )
                 CalcRefDef();
 
             render.PushDlights();
@@ -260,8 +260,8 @@ namespace SharpQuake
 
             bool isnew = false;
 
-            client_state_t cl = client.cl;
-            for( int i = 0; i < ColorShift.NUM_CSHIFTS; i++ )
+            QClientState cl = QClient.cl;
+            for( int i = 0; i < QViewFlashFlag.NUM_CSHIFTS; i++ )
             {
                 if( cl.cshifts[i].percent != cl.prev_cshifts[i].percent )
                 {
@@ -277,14 +277,14 @@ namespace SharpQuake
             }
 
             // drop the damage value
-            cl.cshifts[ColorShift.CSHIFT_DAMAGE].percent -= (int)( host.FrameTime * 150 );
-            if( cl.cshifts[ColorShift.CSHIFT_DAMAGE].percent < 0 )
-                cl.cshifts[ColorShift.CSHIFT_DAMAGE].percent = 0;
+            cl.cshifts[QViewFlashFlag.CSHIFT_DAMAGE].percent -= (int)( host.FrameTime * 150 );
+            if( cl.cshifts[QViewFlashFlag.CSHIFT_DAMAGE].percent < 0 )
+                cl.cshifts[QViewFlashFlag.CSHIFT_DAMAGE].percent = 0;
 
             // drop the bonus value
-            cl.cshifts[ColorShift.CSHIFT_BONUS].percent -= (int)( host.FrameTime * 100 );
-            if( cl.cshifts[ColorShift.CSHIFT_BONUS].percent < 0 )
-                cl.cshifts[ColorShift.CSHIFT_BONUS].percent = 0;
+            cl.cshifts[QViewFlashFlag.CSHIFT_BONUS].percent -= (int)( host.FrameTime * 100 );
+            if( cl.cshifts[QViewFlashFlag.CSHIFT_BONUS].percent < 0 )
+                cl.cshifts[QViewFlashFlag.CSHIFT_BONUS].percent = 0;
 
             bool force = CheckGamma();
             if( !isnew && !force )
@@ -338,7 +338,7 @@ namespace SharpQuake
         // V_StartPitchDrift
         public static void StartPitchDrift()
         {
-            client_state_t cl = client.cl;
+            QClientState cl = QClient.cl;
             if( cl.laststop == cl.time )
             {
                 return; // something else is keeping it from drifting
@@ -354,7 +354,7 @@ namespace SharpQuake
         // V_StopPitchDrift
         public static void StopPitchDrift()
         {
-            client_state_t cl = client.cl;
+            QClientState cl = QClient.cl;
             cl.laststop = cl.time;
             cl.nodrift = true;
             cl.pitchvel = 0;
@@ -370,11 +370,11 @@ namespace SharpQuake
             float b = 0;
             float a = 0;
 
-            cshift_t[] cshifts = client.cl.cshifts;
+            QColorShift[] cshifts = QClient.cl.cshifts;
 
             if( _glCShiftPercent.Value != 0 )
             {
-                for( int j = 0; j < ColorShift.NUM_CSHIFTS; j++ )
+                for( int j = 0; j < QViewFlashFlag.NUM_CSHIFTS; j++ )
                 {
                     float a2 = ( ( cshifts[j].percent * _glCShiftPercent.Value ) / 100.0f ) / 255.0f;
 
@@ -411,38 +411,38 @@ namespace SharpQuake
             if( count < 10 )
                 count = 10;
 
-            client_state_t cl = client.cl;
+            QClientState cl = QClient.cl;
             cl.faceanimtime = (float)cl.time + 0.2f; // put sbar face into pain frame
 
-            cl.cshifts[ColorShift.CSHIFT_DAMAGE].percent += (int)( 3 * count );
-            if( cl.cshifts[ColorShift.CSHIFT_DAMAGE].percent < 0 )
-                cl.cshifts[ColorShift.CSHIFT_DAMAGE].percent = 0;
-            if( cl.cshifts[ColorShift.CSHIFT_DAMAGE].percent > 150 )
-                cl.cshifts[ColorShift.CSHIFT_DAMAGE].percent = 150;
+            cl.cshifts[QViewFlashFlag.CSHIFT_DAMAGE].percent += (int)( 3 * count );
+            if( cl.cshifts[QViewFlashFlag.CSHIFT_DAMAGE].percent < 0 )
+                cl.cshifts[QViewFlashFlag.CSHIFT_DAMAGE].percent = 0;
+            if( cl.cshifts[QViewFlashFlag.CSHIFT_DAMAGE].percent > 150 )
+                cl.cshifts[QViewFlashFlag.CSHIFT_DAMAGE].percent = 150;
 
             if( armor > blood )
             {
-                cl.cshifts[ColorShift.CSHIFT_DAMAGE].destcolor[0] = 200;
-                cl.cshifts[ColorShift.CSHIFT_DAMAGE].destcolor[1] = 100;
-                cl.cshifts[ColorShift.CSHIFT_DAMAGE].destcolor[2] = 100;
+                cl.cshifts[QViewFlashFlag.CSHIFT_DAMAGE].destcolor[0] = 200;
+                cl.cshifts[QViewFlashFlag.CSHIFT_DAMAGE].destcolor[1] = 100;
+                cl.cshifts[QViewFlashFlag.CSHIFT_DAMAGE].destcolor[2] = 100;
             }
             else if( armor != 0 )
             {
-                cl.cshifts[ColorShift.CSHIFT_DAMAGE].destcolor[0] = 220;
-                cl.cshifts[ColorShift.CSHIFT_DAMAGE].destcolor[1] = 50;
-                cl.cshifts[ColorShift.CSHIFT_DAMAGE].destcolor[2] = 50;
+                cl.cshifts[QViewFlashFlag.CSHIFT_DAMAGE].destcolor[0] = 220;
+                cl.cshifts[QViewFlashFlag.CSHIFT_DAMAGE].destcolor[1] = 50;
+                cl.cshifts[QViewFlashFlag.CSHIFT_DAMAGE].destcolor[2] = 50;
             }
             else
             {
-                cl.cshifts[ColorShift.CSHIFT_DAMAGE].destcolor[0] = 255;
-                cl.cshifts[ColorShift.CSHIFT_DAMAGE].destcolor[1] = 0;
-                cl.cshifts[ColorShift.CSHIFT_DAMAGE].destcolor[2] = 0;
+                cl.cshifts[QViewFlashFlag.CSHIFT_DAMAGE].destcolor[0] = 255;
+                cl.cshifts[QViewFlashFlag.CSHIFT_DAMAGE].destcolor[1] = 0;
+                cl.cshifts[QViewFlashFlag.CSHIFT_DAMAGE].destcolor[2] = 0;
             }
 
             //
             // calculate view angle kicks
             //
-            entity_t ent = client.Entities[cl.viewentity];
+            entity_t ent = QClient.Entities[cl.viewentity];
 
             from -= ent.origin; //  VectorSubtract (from, ent->origin, from);
             mathlib.Normalize( ref from );
@@ -468,21 +468,21 @@ namespace SharpQuake
         {
             switch( contents )
             {
-                case BSPContentFlag.CONTENTS_EMPTY:
-                case BSPContentFlag.CONTENTS_SOLID:
-                    client.cl.cshifts[ColorShift.CSHIFT_CONTENTS] = _CShift_empty;
+                case QBSPContentFlag.CONTENTS_EMPTY:
+                case QBSPContentFlag.CONTENTS_SOLID:
+                    QClient.cl.cshifts[QViewFlashFlag.CSHIFT_CONTENTS] = _CShift_empty;
                     break;
 
-                case BSPContentFlag.CONTENTS_LAVA:
-                    client.cl.cshifts[ColorShift.CSHIFT_CONTENTS] = _CShift_lava;
+                case QBSPContentFlag.CONTENTS_LAVA:
+                    QClient.cl.cshifts[QViewFlashFlag.CSHIFT_CONTENTS] = _CShift_lava;
                     break;
 
-                case BSPContentFlag.CONTENTS_SLIME:
-                    client.cl.cshifts[ColorShift.CSHIFT_CONTENTS] = _CShift_slime;
+                case QBSPContentFlag.CONTENTS_SLIME:
+                    QClient.cl.cshifts[QViewFlashFlag.CSHIFT_CONTENTS] = _CShift_slime;
                     break;
 
                 default:
-                    client.cl.cshifts[ColorShift.CSHIFT_CONTENTS] = _CShift_water;
+                    QClient.cl.cshifts[QViewFlashFlag.CSHIFT_CONTENTS] = _CShift_water;
                     break;
             }
         }
@@ -525,21 +525,21 @@ namespace SharpQuake
         // When you run over an item, the server sends this command
         private static void BonusFlash_f()
         {
-            client_state_t cl = client.cl;
-            cl.cshifts[ColorShift.CSHIFT_BONUS].destcolor[0] = 215;
-            cl.cshifts[ColorShift.CSHIFT_BONUS].destcolor[1] = 186;
-            cl.cshifts[ColorShift.CSHIFT_BONUS].destcolor[2] = 69;
-            cl.cshifts[ColorShift.CSHIFT_BONUS].percent = 50;
+            QClientState cl = QClient.cl;
+            cl.cshifts[QViewFlashFlag.CSHIFT_BONUS].destcolor[0] = 215;
+            cl.cshifts[QViewFlashFlag.CSHIFT_BONUS].destcolor[1] = 186;
+            cl.cshifts[QViewFlashFlag.CSHIFT_BONUS].destcolor[2] = 69;
+            cl.cshifts[QViewFlashFlag.CSHIFT_BONUS].percent = 50;
         }
 
         // V_CalcIntermissionRefdef
         private static void CalcIntermissionRefDef()
         {
             // ent is the player model (visible when out of body)
-            entity_t ent = client.ViewEntity;
+            entity_t ent = QClient.ViewEntity;
 
             // view is the weapon model (only visible from inside body)
-            entity_t view = client.ViewEnt;
+            entity_t view = QClient.ViewEnt;
 
             refdef_t rdef = render.RefDef;
             rdef.vieworg = ent.origin;
@@ -556,19 +556,19 @@ namespace SharpQuake
             DriftPitch();
 
             // ent is the player model (visible when out of body)
-            entity_t ent = client.ViewEntity;
+            entity_t ent = QClient.ViewEntity;
             // view is the weapon model (only visible from inside body)
-            entity_t view = client.ViewEnt;
+            entity_t view = QClient.ViewEnt;
 
             // transform the view offset by the model's matrix to get the offset from
             // model origin for the view
-            ent.angles.Y = client.cl.viewangles.Y;	// the model should face the view dir
-            ent.angles.X = -client.cl.viewangles.X;	// the model should face the view dir
+            ent.angles.Y = QClient.cl.viewangles.Y;	// the model should face the view dir
+            ent.angles.X = -QClient.cl.viewangles.X;	// the model should face the view dir
 
             float bob = CalcBob();
 
             refdef_t rdef = render.RefDef;
-            client_state_t cl = client.cl;
+            QClientState cl = QClient.cl;
 
             // refresh position
             rdef.vieworg = ent.origin;
@@ -642,8 +642,8 @@ namespace SharpQuake
             else
                 _OldZ = ent.origin.Z;
 
-            if( chase.IsActive )
-                chase.Update();
+            if( QChase.IsActive )
+                QChase.Update();
         }
 
         // V_AddIdle
@@ -651,7 +651,7 @@ namespace SharpQuake
         // Idle swaying
         private static void AddIdle( float idleScale )
         {
-            double time = client.cl.time;
+            double time = QClient.cl.time;
             Vector3 v = new Vector3(
                 (float)( Math.Sin( time * _IPitchCycle.Value ) * _IPitchLevel.Value ),
                 (float)( Math.Sin( time * _IYawCycle.Value ) * _IYawLevel.Value ),
@@ -661,7 +661,7 @@ namespace SharpQuake
 
         // V_DriftPitch
         //
-        // Moves the client pitch angle towards cl.idealpitch sent by the server.
+        // Moves the QClient pitch angle towards cl.idealpitch sent by the server.
         //
         // If the user is adjusting pitch manually, either with lookup/lookdown,
         // mlook and mouse, or klook and keyboard, pitch drifting is constantly stopped.
@@ -670,8 +670,8 @@ namespace SharpQuake
         // lookspring is non 0, or when
         private static void DriftPitch()
         {
-            client_state_t cl = client.cl;
-            if( host.NoClipAngleHack || !cl.onground || client.cls.demoplayback )
+            QClientState cl = QClient.cl;
+            if( host.NoClipAngleHack || !cl.onground || QClient.cls.demoplayback )
             {
                 cl.driftmove = 0;
                 cl.pitchvel = 0;
@@ -681,7 +681,7 @@ namespace SharpQuake
             // don't count small mouse motion
             if( cl.nodrift )
             {
-                if( Math.Abs( cl.cmd.forwardmove ) < client.ForwardSpeed )
+                if( Math.Abs( cl.cmd.forwardmove ) < QClient.ForwardSpeed )
                     cl.driftmove = 0;
                 else
                     cl.driftmove += (float)host.FrameTime;
@@ -726,7 +726,7 @@ namespace SharpQuake
         // V_CalcBob
         private static float CalcBob()
         {
-            client_state_t cl = client.cl;
+            QClientState cl = QClient.cl;
             float bobCycle = _ClBobCycle.Value;
             float bobUp = _ClBobUp.Value;
             float cycle = (float)( cl.time - (int)( cl.time / bobCycle ) * bobCycle );
@@ -753,9 +753,9 @@ namespace SharpQuake
         // Roll is induced by movement and damage
         private static void CalcViewRoll()
         {
-            client_state_t cl = client.cl;
+            QClientState cl = QClient.cl;
             refdef_t rdef = render.RefDef;
-            float side = CalcRoll( ref client.ViewEntity.angles, ref cl.velocity );
+            float side = CalcRoll( ref QClient.ViewEntity.angles, ref cl.velocity );
             rdef.viewangles.Z += side;
 
             if( _DmgTime > 0 )
@@ -775,7 +775,7 @@ namespace SharpQuake
         // V_BoundOffsets
         private static void BoundOffsets()
         {
-            entity_t ent = client.ViewEntity;
+            entity_t ent = QClient.ViewEntity;
 
             // absolutely bound refresh reletive to entity clipping hull
             // so the view can never be inside a solid wall
@@ -841,7 +841,7 @@ namespace SharpQuake
             _OldYaw = yaw;
             _OldPitch = pitch;
 
-            client_state_t cl = client.cl;
+            QClientState cl = QClient.cl;
             cl.viewent.angles.Y = rdef.viewangles.Y + yaw;
             cl.viewent.angles.X = -( rdef.viewangles.X + pitch );
 
@@ -863,37 +863,37 @@ namespace SharpQuake
         // V_CalcPowerupCshift
         private static void CalcPowerupCshift()
         {
-            client_state_t cl = client.cl;
+            QClientState cl = QClient.cl;
             if( cl.HasItems( QItems.IT_QUAD ) )
             {
-                cl.cshifts[ColorShift.CSHIFT_POWERUP].destcolor[0] = 0;
-                cl.cshifts[ColorShift.CSHIFT_POWERUP].destcolor[1] = 0;
-                cl.cshifts[ColorShift.CSHIFT_POWERUP].destcolor[2] = 255;
-                cl.cshifts[ColorShift.CSHIFT_POWERUP].percent = 30;
+                cl.cshifts[QViewFlashFlag.CSHIFT_POWERUP].destcolor[0] = 0;
+                cl.cshifts[QViewFlashFlag.CSHIFT_POWERUP].destcolor[1] = 0;
+                cl.cshifts[QViewFlashFlag.CSHIFT_POWERUP].destcolor[2] = 255;
+                cl.cshifts[QViewFlashFlag.CSHIFT_POWERUP].percent = 30;
             }
             else if( cl.HasItems( QItems.IT_SUIT ) )
             {
-                cl.cshifts[ColorShift.CSHIFT_POWERUP].destcolor[0] = 0;
-                cl.cshifts[ColorShift.CSHIFT_POWERUP].destcolor[1] = 255;
-                cl.cshifts[ColorShift.CSHIFT_POWERUP].destcolor[2] = 0;
-                cl.cshifts[ColorShift.CSHIFT_POWERUP].percent = 20;
+                cl.cshifts[QViewFlashFlag.CSHIFT_POWERUP].destcolor[0] = 0;
+                cl.cshifts[QViewFlashFlag.CSHIFT_POWERUP].destcolor[1] = 255;
+                cl.cshifts[QViewFlashFlag.CSHIFT_POWERUP].destcolor[2] = 0;
+                cl.cshifts[QViewFlashFlag.CSHIFT_POWERUP].percent = 20;
             }
             else if( cl.HasItems( QItems.IT_INVISIBILITY ) )
             {
-                cl.cshifts[ColorShift.CSHIFT_POWERUP].destcolor[0] = 100;
-                cl.cshifts[ColorShift.CSHIFT_POWERUP].destcolor[1] = 100;
-                cl.cshifts[ColorShift.CSHIFT_POWERUP].destcolor[2] = 100;
-                cl.cshifts[ColorShift.CSHIFT_POWERUP].percent = 100;
+                cl.cshifts[QViewFlashFlag.CSHIFT_POWERUP].destcolor[0] = 100;
+                cl.cshifts[QViewFlashFlag.CSHIFT_POWERUP].destcolor[1] = 100;
+                cl.cshifts[QViewFlashFlag.CSHIFT_POWERUP].destcolor[2] = 100;
+                cl.cshifts[QViewFlashFlag.CSHIFT_POWERUP].percent = 100;
             }
             else if( cl.HasItems( QItems.IT_INVULNERABILITY ) )
             {
-                cl.cshifts[ColorShift.CSHIFT_POWERUP].destcolor[0] = 255;
-                cl.cshifts[ColorShift.CSHIFT_POWERUP].destcolor[1] = 255;
-                cl.cshifts[ColorShift.CSHIFT_POWERUP].destcolor[2] = 0;
-                cl.cshifts[ColorShift.CSHIFT_POWERUP].percent = 30;
+                cl.cshifts[QViewFlashFlag.CSHIFT_POWERUP].destcolor[0] = 255;
+                cl.cshifts[QViewFlashFlag.CSHIFT_POWERUP].destcolor[1] = 255;
+                cl.cshifts[QViewFlashFlag.CSHIFT_POWERUP].destcolor[2] = 0;
+                cl.cshifts[QViewFlashFlag.CSHIFT_POWERUP].percent = 30;
             }
             else
-                cl.cshifts[ColorShift.CSHIFT_POWERUP].percent = 0;
+                cl.cshifts[QViewFlashFlag.CSHIFT_POWERUP].percent = 0;
         }
 
         // V_CheckGamma
@@ -921,10 +921,10 @@ namespace SharpQuake
         {
             _GammaTable = new byte[256];
 
-            _CShift_empty = new cshift_t( new[] { 130, 80, 50 }, 0 );
-            _CShift_water = new cshift_t( new[] { 130, 80, 50 }, 128 );
-            _CShift_slime = new cshift_t( new[] { 0, 25, 5 }, 150 );
-            _CShift_lava = new cshift_t( new[] { 255, 80, 0 }, 150 );
+            _CShift_empty = new QColorShift( new[] { 130, 80, 50 }, 0 );
+            _CShift_water = new QColorShift( new[] { 130, 80, 50 }, 128 );
+            _CShift_slime = new QColorShift( new[] { 0, 25, 5 }, 150 );
+            _CShift_lava = new QColorShift( new[] { 255, 80, 0 }, 150 );
         }
     }
 }

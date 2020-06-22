@@ -375,7 +375,7 @@ namespace SharpQuake
             //
             // during demo playback, most keys bring up the main menu
             //
-            if( client.cls.demoplayback && down && _ConsoleKeys[key] && _KeyDest == keydest_t.key_game )
+            if( QClient.cls.demoplayback && down && _ConsoleKeys[key] && _KeyDest == keydest_t.key_game )
             {
                 menu.ToggleMenu_f();
                 return;
@@ -713,7 +713,7 @@ namespace SharpQuake
                 _HistoryLine = _EditLine;
                 _Lines[_EditLine][0] = ']';
                 Key.LinePos = 1;
-                if( client.cls.state == cactive_t.ca_disconnected )
+                if( QClient.cls.state == ServerType.DISCONNECTED )
                     Scr.UpdateScreen();	// force an update, because the command
                 // may take some time
                 return;

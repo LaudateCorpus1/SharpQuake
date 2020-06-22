@@ -29,7 +29,7 @@ namespace SharpQuake
         private const short C8000 = -32768;
 
         private static int[,] _ScaleTable = new int[32, 256];
-        private static PortableSamplePair[] _PaintBuffer = new PortableSamplePair[PAINTBUFFER_SIZE]; // paintbuffer[PAINTBUFFER_SIZE]
+        private static QPortableSamplePair[] _PaintBuffer = new QPortableSamplePair[PAINTBUFFER_SIZE]; // paintbuffer[PAINTBUFFER_SIZE]
 
         // SND_InitScaletable
         private static void InitScaletable()
@@ -247,7 +247,7 @@ namespace SharpQuake
                 // handle recirculating buffer issues
                 int lpos = lpaintedtime & ( ( _shm.samples >> 1 ) - 1 );
                 //int destOffset = (lpos << 2); // in bytes!!!
-                int snd_linear_count = ( _shm.samples >> 1 ) - lpos; // in PortableSamplePair's!!!
+                int snd_linear_count = ( _shm.samples >> 1 ) - lpos; // in QPortableSamplePair's!!!
                 if( lpaintedtime + snd_linear_count > endtime )
                     snd_linear_count = endtime - lpaintedtime;
 

@@ -445,8 +445,8 @@ namespace SharpQuake
         {
             if( Key.Destination != keydest_t.key_menu )
             {
-                _SaveDemoNum = client.cls.demonum;
-                client.cls.demonum = -1;
+                _SaveDemoNum = QClient.cls.demonum;
+                QClient.cls.demonum = -1;
             }
 
             base.Show();
@@ -462,9 +462,9 @@ namespace SharpQuake
                 case Key.K_ESCAPE:
                     //Key.Destination = keydest_t.key_game;
                     MenuBase.Hide();
-                    client.cls.demonum = _SaveDemoNum;
-                    if( client.cls.demonum != -1 && !client.cls.demoplayback && client.cls.state != cactive_t.ca_connected )
-                        client.NextDemo();
+                    QClient.cls.demonum = _SaveDemoNum;
+                    if( QClient.cls.demonum != -1 && !QClient.cls.demoplayback && QClient.cls.state != ServerType.CONNECTED )
+                        QClient.NextDemo();
                     break;
 
                 case Key.K_DOWNARROW:
@@ -701,7 +701,7 @@ namespace SharpQuake
         {
             if( !server.sv.active )
                 return;
-            if( client.cl.intermission != 0 )
+            if( QClient.cl.intermission != 0 )
                 return;
             if( server.svs.maxclients != 1 )
                 return;
@@ -987,7 +987,7 @@ namespace SharpQuake
             menu.DrawSlider( 220, 64, r );
 
             menu.Print( 16, 72, "           Mouse Speed" );
-            r = ( client.Sensitivity - 1 ) / 10;
+            r = ( QClient.Sensitivity - 1 ) / 10;
             menu.DrawSlider( 220, 72, r );
 
             menu.Print( 16, 80, "       CD Music Volume" );
@@ -999,16 +999,16 @@ namespace SharpQuake
             menu.DrawSlider( 220, 88, r );
 
             menu.Print( 16, 96, "            Always Run" );
-            menu.DrawCheckbox( 220, 96, client.ForwardSpeed > 200 );
+            menu.DrawCheckbox( 220, 96, QClient.ForwardSpeed > 200 );
 
             menu.Print( 16, 104, "          Invert Mouse" );
-            menu.DrawCheckbox( 220, 104, client.MPitch < 0 );
+            menu.DrawCheckbox( 220, 104, QClient.MPitch < 0 );
 
             menu.Print( 16, 112, "            Lookspring" );
-            menu.DrawCheckbox( 220, 112, client.LookSpring );
+            menu.DrawCheckbox( 220, 112, QClient.LookSpring );
 
             menu.Print( 16, 120, "            Lookstrafe" );
-            menu.DrawCheckbox( 220, 120, client.LookStrafe );
+            menu.DrawCheckbox( 220, 120, QClient.LookStrafe );
 
             /*if( VideoMenu != null )
                 Menu.Print( 16, 128, "         Video Options" );*/
@@ -1054,7 +1054,7 @@ namespace SharpQuake
                     break;
 
                 case 5:	// mouse speed
-                    value = client.Sensitivity + dir * 0.5f;
+                    value = QClient.Sensitivity + dir * 0.5f;
                     if( value < 1 )
                         value = 1;
                     if( value > 11 )
@@ -1081,7 +1081,7 @@ namespace SharpQuake
                     break;
 
                 case 8:	// allways run
-                    if( client.ForwardSpeed > 200 )
+                    if( QClient.ForwardSpeed > 200 )
                     {
                         cvar.Set( "cl_forwardspeed", 200f );
                         cvar.Set( "cl_backspeed", 200f );
@@ -1094,15 +1094,15 @@ namespace SharpQuake
                     break;
 
                 case 9:	// invert mouse
-                    cvar.Set( "m_pitch", -client.MPitch );
+                    cvar.Set( "m_pitch", -QClient.MPitch );
                     break;
 
                 case 10:	// lookspring
-                    cvar.Set( "lookspring", !client.LookSpring ? 1f : 0f );
+                    cvar.Set( "lookspring", !QClient.LookSpring ? 1f : 0f );
                     break;
 
                 case 11:	// lookstrafe
-                    cvar.Set( "lookstrafe", !client.LookStrafe ? 1f : 0f );
+                    cvar.Set( "lookstrafe", !QClient.LookStrafe ? 1f : 0f );
                     break;
 
 #if _WIN32
@@ -1585,10 +1585,10 @@ namespace SharpQuake
         /// </summary>
         public override void Show()
         {
-            _MyName = client.Name;
+            _MyName = QClient.Name;
             _HostName = net.HostName;
-            _Top = _OldTop = ( (int)client.Color ) >> 4;
-            _Bottom = _OldBottom = ( (int)client.Color ) & 15;
+            _Top = _OldTop = ( (int)QClient.Color ) >> 4;
+            _Bottom = _OldBottom = ( (int)QClient.Color ) & 15;
 
             base.Show();
         }
@@ -1644,7 +1644,7 @@ forward:
                         goto forward;
 
                     // _Cursor == 4 (OK)
-                    if( _MyName != client.Name )
+                    if( _MyName != QClient.Name )
                         Cbuf.AddText( String.Format( "name \"{0}\"\n", _MyName ) );
                     if( net.HostName != _HostName )
                         cvar.Set( "hostname", _HostName );

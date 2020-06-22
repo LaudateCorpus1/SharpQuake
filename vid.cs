@@ -341,7 +341,7 @@ namespace SharpQuake
             bool temp = Scr.IsDisabledForLoading;
             Scr.IsDisabledForLoading = true;
 
-            CDAudio.Pause();
+            QCDAudio.Pause();
 
             // Set either the fullscreen or windowed mode
             DisplayDevice dev = mainwindow.DisplayDevice;
@@ -398,7 +398,7 @@ namespace SharpQuake
 
             vid.numpages = 2;
 
-            CDAudio.Resume();
+            QCDAudio.Resume();
             Scr.IsDisabledForLoading = temp;
 
             _ModeNum = modenum;

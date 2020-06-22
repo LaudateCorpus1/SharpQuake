@@ -43,19 +43,19 @@ namespace SharpQuake
 
             _DlightFrameCount = _FrameCount + 1;	// because the count hasn't advanced yet for this frame
 
-            for( int i = 0; i < client.MAX_DLIGHTS; i++ )
+            for( int i = 0; i < QClient.MAX_DLIGHTS; i++ )
             {
-                dlight_t l = client.DLights[i];
-                if( l.die < client.cl.time || l.radius == 0 )
+                QDynamicLight l = QClient.DLights[i];
+                if( l.die < QClient.cl.time || l.radius == 0 )
                     continue;
-                render.MarkLights( l, 1 << i, client.cl.worldmodel.nodes[0] );
+                render.MarkLights( l, 1 << i, QClient.cl.worldmodel.nodes[0] );
             }
         }
 
         /// <summary>
         /// R_MarkLights
         /// </summary>
-        private static void MarkLights( dlight_t light, int bit, mnodebase_t node )
+        private static void MarkLights( QDynamicLight light, int bit, mnodebase_t node )
         {
             if( node.contents < 0 )
                 return;
@@ -78,7 +78,7 @@ namespace SharpQuake
             // mark the polygons
             for( int i = 0; i < n.numsurfaces; i++ )
             {
-                msurface_t surf = client.cl.worldmodel.surfaces[n.firstsurface + i];
+                msurface_t surf = QClient.cl.worldmodel.surfaces[n.firstsurface + i];
                 if( surf.dlightframe != _DlightFrameCount )
                 {
                     surf.dlightbits = 0;
@@ -97,7 +97,7 @@ namespace SharpQuake
         private static void RenderDlights()
         {
             //int i;
-            //dlight_t* l;
+            //QDynamicLight* l;
 
             if( _glFlashBlend.Value == 0 )
                 return;
@@ -110,10 +110,10 @@ namespace SharpQuake
             GL.Enable( EnableCap.Blend );
             GL.BlendFunc( BlendingFactor.One, BlendingFactor.One );
 
-            for( int i = 0; i < client.MAX_DLIGHTS; i++ )
+            for( int i = 0; i < QClient.MAX_DLIGHTS; i++ )
             {
-                dlight_t l = client.DLights[i];
-                if( l.die < client.cl.time || l.radius == 0 )
+                QDynamicLight l = QClient.DLights[i];
+                if( l.die < QClient.cl.time || l.radius == 0 )
                     continue;
 
                 RenderDlight( l );
@@ -134,15 +134,15 @@ namespace SharpQuake
             //
             // light animations
             // 'm' is normal light, 'a' is no light, 'z' is double bright
-            int i = (int)( client.cl.time * 10 );
+            int i = (int)( QClient.cl.time * 10 );
             for( int j = 0; j < QDef.MAX_LIGHTSTYLES; j++ )
             {
-                if( String.IsNullOrEmpty( client.LightStyle[j].map ) )
+                if( String.IsNullOrEmpty( QClient.LightStyle[j].map ) )
                 {
                     _LightStyleValue[j] = 256;
                     continue;
                 }
-                string map = client.LightStyle[j].map;
+                string map = QClient.LightStyle[j].map;
                 int k = i % map.Length;
                 k = map[k] - 'a';
                 k = k * 22;
@@ -155,13 +155,13 @@ namespace SharpQuake
         /// </summary>
         private static int LightPoint( ref Vector3 p )
         {
-            if( client.cl.worldmodel.lightdata == null )
+            if( QClient.cl.worldmodel.lightdata == null )
                 return 255;
 
             Vector3 end = p;
             end.Z -= 2048;
 
-            int r = RecursiveLightPoint( client.cl.worldmodel.nodes[0], ref p, ref end );
+            int r = RecursiveLightPoint( QClient.cl.worldmodel.nodes[0], ref p, ref end );
             if( r == -1 )
                 r = 0;
 
@@ -201,7 +201,7 @@ namespace SharpQuake
             _LightSpot = mid;
             _LightPlane = plane;
 
-            msurface_t[] surf = client.cl.worldmodel.surfaces;
+            msurface_t[] surf = QClient.cl.worldmodel.surfaces;
             int offset = n.firstsurface;
             for( int i = 0; i < n.numsurfaces; i++, offset++ )
             {
@@ -236,7 +236,7 @@ namespace SharpQuake
                 {
                     lmOffset += dt * ( ( extents[0] >> 4 ) + 1 ) + ds;
 
-                    for( int maps = 0; maps < BSPFile.MAXLIGHTMAPS && surf[offset].styles[maps] != 255; maps++ )
+                    for( int maps = 0; maps < QBSPFile.MAXLIGHTMAPS && surf[offset].styles[maps] != 255; maps++ )
                     {
                         int scale = _LightStyleValue[surf[offset].styles[maps]];
                         r += lightmap[lmOffset] * scale;
@@ -256,7 +256,7 @@ namespace SharpQuake
         /// <summary>
         /// R_RenderDlight
         /// </summary>
-        private static void RenderDlight( dlight_t light )
+        private static void RenderDlight( QDynamicLight light )
         {
             float rad = light.radius * 0.35f;
             Vector3 v = light.origin - render.Origin;

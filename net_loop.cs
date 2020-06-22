@@ -51,7 +51,7 @@ namespace SharpQuake
 
         public void Init()
         {
-            if( client.cls.state == cactive_t.ca_dedicated )
+            if( QClient.cls.state == ServerType.DEDICATED )
                 return;// -1;
 
             _IsInitialized = true;

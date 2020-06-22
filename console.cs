@@ -210,14 +210,14 @@ namespace SharpQuake
             if( !_IsInitialized )
                 return;
 
-            if( client.cls.state == cactive_t.ca_dedicated )
+            if( QClient.cls.state == ServerType.DEDICATED )
                 return;		// no graphics mode
 
             // write it to the scrollable buffer
             Print( msg );
 
             // update the screen if the console is displayed
-            if( client.cls.signon != client.SIGNONS && !Scr.IsDisabledForLoading )
+            if( QClient.cls.signon != QClient.SIGNONS && !Scr.IsDisabledForLoading )
                 Scr.UpdateScreen();
         }
 
@@ -316,7 +316,7 @@ namespace SharpQuake
         {
             if( Key.Destination == keydest_t.key_console )
             {
-                if( client.cls.state == cactive_t.ca_connected )
+                if( QClient.cls.state == ServerType.CONNECTED )
                 {
                     Key.Destination = keydest_t.key_game;
                     Key.Lines[Key.EditLine][1] = '\0';	// clear any typing

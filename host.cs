@@ -116,7 +116,7 @@ namespace SharpQuake
         private static BinaryReader _VcrReader; // vcrFile
         private static BinaryWriter _VcrWriter; // vcrFile
 
-        // client_t* host_client;			// current client
+        // client_t* host_client;			// current QClient
 
         private static double _TimeTotal; // static double timetotal from Host_Frame
         private static int _TimeCount; // static int timecount from Host_Frame
@@ -135,9 +135,9 @@ namespace SharpQuake
             Con.DPrint( "Clearing memory\n" );
 
             Mod.ClearAll();
-            client.cls.signon = 0;
+            QClient.cls.signon = 0;
             server.sv.Clear();
-            client.cl.Clear();
+            QClient.cl.Clear();
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace SharpQuake
             // check for new clients
             server.CheckForNewClients();
 
-            // read client messages
+            // read QClient messages
             server.RunClients();
 
             // move things around and think
@@ -174,7 +174,7 @@ namespace SharpQuake
             Cbuf.Init();
             cmd.Init();
             view.Init();
-            chase.Init();
+            QChase.Init();
             InitVCR( parms );
             common.Init( parms.basedir, parms.argv );
             InitLocal();
@@ -192,7 +192,7 @@ namespace SharpQuake
 
             render.InitTextures();		// needed even for dedicated servers
 
-            if( client.cls.state != cactive_t.ca_dedicated )
+            if( QClient.cls.state != ServerType.DEDICATED )
             {
                 _BasePal = common.LoadFile( "gfx/palette.lmp" );
                 if( _BasePal == null )
@@ -208,9 +208,9 @@ namespace SharpQuake
                 Scr.Init();
                 render.Init();
                 QSound.Init();
-                CDAudio.Init();
+                QCDAudio.Init();
                 sbar.Init();
-                client.Init();
+                QClient.Init();
             }
 
             Cbuf.InsertText( "exec quake.rc\n" );
@@ -236,7 +236,7 @@ namespace SharpQuake
 
                 WriteConfiguration();
 
-                CDAudio.Shutdown();
+                QCDAudio.Shutdown();
                 net.Shutdown();
                 QSound.Shutdown();
                 input.Shutdown();
@@ -254,7 +254,7 @@ namespace SharpQuake
                     _VcrReader = null;
                 }
 
-                if( client.cls.state != cactive_t.ca_dedicated )
+                if( QClient.cls.state != ServerType.DEDICATED )
                 {
                     vid.Shutdown();
                 }
@@ -271,7 +271,7 @@ namespace SharpQuake
 
         /// <summary>
         /// Host_Error
-        /// This shuts down both the client and server
+        /// This shuts down both the QClient and server
         /// </summary>
         public static void Error( string error, params object[] args )
         {
@@ -289,11 +289,11 @@ namespace SharpQuake
                 if( server.sv.active )
                     ShutdownServer( false );
 
-                if( client.cls.state == cactive_t.ca_dedicated )
+                if( QClient.cls.state == ServerType.DEDICATED )
                     sys.Error( "Host_Error: {0}\n", message );	// dedicated servers exit
 
-                client.Disconnect();
-                client.cls.demonum = -1;
+                QClient.Disconnect();
+                QClient.cls.demonum = -1;
 
                 throw new EndGameException(); // longjmp (host_abortserver, 1);
             }
@@ -314,13 +314,13 @@ namespace SharpQuake
             if( server.IsActive )
                 host.ShutdownServer( false );
 
-            if( client.cls.state == cactive_t.ca_dedicated )
+            if( QClient.cls.state == ServerType.DEDICATED )
                 sys.Error( "Host_EndGame: {0}\n", str );	// dedicated servers exit
 
-            if( client.cls.demonum != -1 )
-                client.NextDemo();
+            if( QClient.cls.demonum != -1 )
+                QClient.NextDemo();
             else
-                client.Disconnect();
+                QClient.Disconnect();
 
             throw new EndGameException();  //longjmp (host_abortserver, 1);
         }
@@ -359,7 +359,7 @@ namespace SharpQuake
 
         /// <summary>
         /// Host_ClientCommands
-        /// Send text over to the client to be executed
+        /// Send text over to the QClient to be executed
         /// </summary>
         public static void ClientCommands( string fmt, params object[] args )
         {
@@ -379,9 +379,9 @@ namespace SharpQuake
 
             server.sv.active = false;
 
-            // stop all client sounds immediately
-            if( client.cls.state == cactive_t.ca_connected )
-                client.Disconnect();
+            // stop all QClient sounds immediately
+            if( QClient.cls.state == ServerType.CONNECTED )
+                QClient.Disconnect();
 
             // flush any pending messages - like the score!!!
             double start = sys.GetFloatTime();
@@ -490,14 +490,14 @@ namespace SharpQuake
         private static void FindMaxClients()
         {
             server_static_t svs = server.svs;
-            client_static_t cls = client.cls;
+            QStaticClient cls = QClient.cls;
 
             svs.maxclients = 1;
 
             int i = common.CheckParm( "-dedicated" );
             if( i > 0 )
             {
-                cls.state = cactive_t.ca_dedicated;
+                cls.state = ServerType.DEDICATED;
                 if( i != ( common.Argc - 1 ) )
                 {
                     svs.maxclients = common.atoi( common.Argv( i + 1 ) );
@@ -506,12 +506,12 @@ namespace SharpQuake
                     svs.maxclients = 8;
             }
             else
-                cls.state = cactive_t.ca_disconnected;
+                cls.state = ServerType.DISCONNECTED;
 
             i = common.CheckParm( "-listen" );
             if( i > 0 )
             {
-                if( cls.state == cactive_t.ca_dedicated )
+                if( cls.state == ServerType.DEDICATED )
                     sys.Error( "Only one of -dedicated or -listen can be specified" );
                 if( i != ( common.Argc - 1 ) )
                     svs.maxclients = common.atoi( common.Argv( i + 1 ) );
@@ -609,7 +609,7 @@ namespace SharpQuake
 
             // if running the server locally, make intentions now
             if( server.sv.active )
-                client.SendCmd();
+                QClient.SendCmd();
 
             //-------------------
             //
@@ -625,21 +625,21 @@ namespace SharpQuake
 
             //-------------------
             //
-            // client operations
+            // QClient operations
             //
             //-------------------
 
             // if running the server remotely, send intentions now after
             // the incoming messages have been read
             if( !server.sv.active )
-                client.SendCmd();
+                QClient.SendCmd();
 
             _Time += FrameTime;
 
             // fetch results from server
-            if( client.cls.state == cactive_t.ca_connected )
+            if( QClient.cls.state == ServerType.CONNECTED )
             {
-                client.ReadFromServer();
+                QClient.ReadFromServer();
             }
 
             // update video
@@ -652,15 +652,15 @@ namespace SharpQuake
                 _Time2 = sys.GetFloatTime();
 
             // update audio
-            if( client.cls.signon == client.SIGNONS )
+            if( QClient.cls.signon == QClient.SIGNONS )
             {
                 QSound.Update( ref render.Origin, ref render.ViewPn, ref render.ViewRight, ref render.ViewUp );
-                client.DecayLights();
+                QClient.DecayLights();
             }
             else
                 QSound.Update( ref common.ZeroVector, ref common.ZeroVector, ref common.ZeroVector, ref common.ZeroVector );
 
-            CDAudio.Update();
+            QCDAudio.Update();
 
             if( Math.Abs( _Speeds.Value ) > 0.001f )
             {
@@ -682,7 +682,7 @@ namespace SharpQuake
         {
             host.RealTime += time;
 
-            if( !client.cls.timedemo && RealTime - _OldRealTime < 1.0 / 72.0 )
+            if( !QClient.cls.timedemo && RealTime - _OldRealTime < 1.0 / 72.0 )
                 return false;	// framerate is too high
 
             FrameTime = RealTime - _OldRealTime;

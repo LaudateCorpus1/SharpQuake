@@ -45,7 +45,7 @@ namespace SharpQuake
         //static v3f origin  - this must be a reference to _Player.v.origin
         //static Vector3 velocity - this must be a reference to _Player.v.velocity
 
-        private static usercmd_t _Cmd; // cmd
+        private static QUserCmd _Cmd; // cmd
 
         private static Vector3 _Forward; // forward
         private static Vector3 _Right; // right
@@ -69,13 +69,13 @@ namespace SharpQuake
 
                 if( !ReadClientMessage() )
                 {
-                    DropClient( false );	// client misbehaved...
+                    DropClient( false );	// QClient misbehaved...
                     continue;
                 }
 
                 if( !host.HostClient.spawned )
                 {
-                    // clear client movement until a new packet is received
+                    // clear QClient movement until a new packet is received
                     host.HostClient.cmd.Clear();
                     continue;
                 }
@@ -146,7 +146,7 @@ namespace SharpQuake
 
         /// <summary>
         /// SV_ReadClientMessage
-        /// Returns false if the client should be killed
+        /// Returns false if the QClient should be killed
         /// </summary>
         private static bool ReadClientMessage()
         {
@@ -261,7 +261,7 @@ namespace SharpQuake
         /// <summary>
         /// SV_ReadClientMove
         /// </summary>
-        private static void ReadClientMove( ref usercmd_t move )
+        private static void ReadClientMove( ref QUserCmd move )
         {
             client_t client = host.HostClient;
 

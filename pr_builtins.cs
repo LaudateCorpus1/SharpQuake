@@ -55,7 +55,7 @@ namespace SharpQuake
                         edict_t ent = server.ProgToEdict( progs.GlobalStruct.msg_entity );
                         int entnum = server.NumForEdict( ent );
                         if( entnum < 1 || entnum > server.svs.maxclients )
-                            progs.RunError( "WriteDest: not a client" );
+                            progs.RunError( "WriteDest: not a QClient" );
                         return server.svs.clients[entnum - 1].message;
 
                     case MSG_ALL:
@@ -103,10 +103,10 @@ namespace SharpQuake
             PF_Find,	// entity(entity start, .string fld, string match) find = #18;
             PF_precache_sound,	// void(string s) precache_sound		= #19;
             PF_precache_model,	// void(string s) precache_model		= #20;
-            PF_stuffcmd,	// void(entity client, string s)stuffcmd = #21;
+            PF_stuffcmd,	// void(entity QClient, string s)stuffcmd = #21;
             PF_findradius,	// entity(vector org, float rad) findradius = #22;
             PF_bprint,	// void(string s) bprint				= #23;
-            PF_sprint,	// void(entity client, string s) sprint = #24;
+            PF_sprint,	// void(entity QClient, string s) sprint = #24;
             PF_dprint,	// void(string s) dprint				= #25;
             PF_ftos,	// void(string s) ftos				= #26;
             PF_vtos,	// void(string s) vtos				= #27;
@@ -171,7 +171,7 @@ namespace SharpQuake
             PF_setspawnparms
         };
 
-        private static byte[] _CheckPvs = new byte[BSPFile.MAX_MAP_LEAFS / 8]; // checkpvs
+        private static byte[] _CheckPvs = new byte[QBSPFile.MAX_MAP_LEAFS / 8]; // checkpvs
 
         private static int _TempString = -1;
 
@@ -579,7 +579,7 @@ namespace SharpQuake
 
         /// <summary>
         /// PF_sprint
-        /// single print to a specific client
+        /// single print to a specific QClient
         /// sprint(clientent, value)
         /// </summary>
         private static void PF_sprint()
@@ -589,7 +589,7 @@ namespace SharpQuake
 
             if( entnum < 1 || entnum > server.svs.maxclients )
             {
-                Con.Print( "tried to sprint to a non-client\n" );
+                Con.Print( "tried to sprint to a non-QClient\n" );
                 return;
             }
 
@@ -603,7 +603,7 @@ namespace SharpQuake
         =================
         PF_centerprint
 
-        single print to a specific client
+        single print to a specific QClient
 
         centerprint(clientent, value)
         =================
@@ -616,7 +616,7 @@ namespace SharpQuake
 
             if( entnum < 1 || entnum > server.svs.maxclients )
             {
-                Con.Print( "tried to centerprint to a non-client\n" );
+                Con.Print( "tried to centerprint to a non-QClient\n" );
                 return;
             }
 
@@ -919,7 +919,7 @@ namespace SharpQuake
                 if( ( (int)ent.v.flags & EdictFlags.FL_NOTARGET ) != 0 )
                     continue;
 
-                // anything that is a client, or has a client as an enemy
+                // anything that is a QClient, or has a QClient as an enemy
                 break;
             }
 
@@ -934,7 +934,7 @@ namespace SharpQuake
 
         /// <summary>
         /// PF_checkclient
-        /// Returns a client (or object that has a client enemy) that would be a
+        /// Returns a QClient (or object that has a QClient enemy) that would be a
         /// valid target.
         ///
         /// If there are more than one valid options, they are cycled each frame
@@ -982,14 +982,14 @@ namespace SharpQuake
 
         /// <summary>
         /// PF_stuffcmd
-        /// Sends text over to the client's execution buffer
+        /// Sends text over to the QClient's execution buffer
         /// stuffcmd (clientent, value)
         /// </summary>
         private static void PF_stuffcmd()
         {
             int entnum = server.NumForEdict( GetEdict( OFS.OFS_PARM0 ) );
             if( entnum < 1 || entnum > server.svs.maxclients )
-                progs.RunError( "Parm 0 not a client" );
+                progs.RunError( "Parm 0 not a QClient" );
             string str = GetString( OFS.OFS_PARM1 );
 
             client_t old = host.HostClient;
@@ -1000,7 +1000,7 @@ namespace SharpQuake
 
         /// <summary>
         /// PF_localcmd
-        /// Sends text over to the client's execution buffer
+        /// Sends text over to the QClient's execution buffer
         /// localcmd (string)
         /// </summary>
         private static void PF_localcmd()
@@ -1553,7 +1553,7 @@ namespace SharpQuake
             edict_t ent = GetEdict( OFS.OFS_PARM0 );
             int i = server.NumForEdict( ent );
             if( i < 1 || i > server.svs.maxclients )
-                progs.RunError( "Entity is not a client" );
+                progs.RunError( "Entity is not a QClient" );
 
             // copy spawn parms out of the client_t
             client_t client = server.svs.clients[i - 1];

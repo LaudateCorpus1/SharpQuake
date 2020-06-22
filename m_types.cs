@@ -108,7 +108,7 @@ namespace SharpQuake
 
         public texture_t()
         {
-            offsets = new int[BSPFile.MIPLEVELS];
+            offsets = new int[QBSPFile.MIPLEVELS];
         }
     } //texture_t;
 
@@ -212,8 +212,8 @@ namespace SharpQuake
         {
             texturemins = new short[2];
             extents = new short[2];
-            styles = new byte[BSPFile.MAXLIGHTMAPS];
-            cached_light = new int[BSPFile.MAXLIGHTMAPS];
+            styles = new byte[QBSPFile.MAXLIGHTMAPS];
+            cached_light = new int[QBSPFile.MAXLIGHTMAPS];
             // samples is allocated when needed
         }
     } //msurface_t;
@@ -272,14 +272,14 @@ namespace SharpQuake
 
         public mleaf_t()
         {
-            this.ambient_sound_level = new byte[BSPAmbientFlag.NUM_AMBIENTS];
+            this.ambient_sound_level = new byte[QBSPAmbientFlag.NUM_AMBIENTS];
         }
     } //mleaf_t;
 
     // !!! if this is changed, it must be changed in asm_i386.h too !!!
     class hull_t
     {
-        public BSPClipNode[] clipnodes;
+        public QBSPClipNode[] clipnodes;
         public mplane_t[] planes;
         public int firstclipnode;
         public int lastclipnode;
@@ -461,7 +461,7 @@ namespace SharpQuake
         public int firstmodelsurface, nummodelsurfaces;
 
         public int numsubmodels;
-        public BSPModel[] submodels;
+        public QBSPModel[] submodels;
 
         public int numplanes;
         public mplane_t[] planes; // mplane_t*
@@ -488,7 +488,7 @@ namespace SharpQuake
         public int[] surfedges; // int *surfedges;
 
         public int numclipnodes;
-        public BSPClipNode[] clipnodes; // public BSPClipNode* clipnodes;
+        public QBSPClipNode[] clipnodes; // public QBSPClipNode* clipnodes;
 
         public int nummarksurfaces;
         public msurface_t[] marksurfaces; // msurface_t **marksurfaces;
@@ -509,7 +509,7 @@ namespace SharpQuake
 
         public model_t()
         {
-            this.hulls = new hull_t[BSPFile.MAX_MAP_HULLS];
+            this.hulls = new hull_t[QBSPFile.MAX_MAP_HULLS];
             for (int i = 0; i < this.hulls.Length; i++)
                 this.hulls[i] = new hull_t();
         }

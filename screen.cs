@@ -261,11 +261,11 @@ namespace SharpQuake
                     DrawLoading();
                     sbar.Draw();
                 }
-                else if( client.cl.intermission == 1 && Key.Destination == keydest_t.key_game )
+                else if( QClient.cl.intermission == 1 && Key.Destination == keydest_t.key_game )
                 {
                     sbar.IntermissionOverlay();
                 }
-                else if( client.cl.intermission == 2 && Key.Destination == keydest_t.key_game )
+                else if( QClient.cl.intermission == 2 && Key.Destination == keydest_t.key_game )
                 {
                     sbar.FinaleOverlay();
                     CheckDrawCenterString();
@@ -320,7 +320,7 @@ namespace SharpQuake
             {
                 _IsMouseWindowed = true;
                 if(Key.Destination == keydest_t.key_game && !input.IsMouseActive &&
-                    client.cls.state != cactive_t.ca_disconnected )// && ActiveApp)
+                    QClient.cls.state != ServerType.DISCONNECTED )// && ActiveApp)
                 {
                     input.ActivateMouse();
                     input.HideMouse();
@@ -344,7 +344,7 @@ namespace SharpQuake
         {
             _CenterString = str;
             CenterTimeOff = _CenterTime.Value;
-            _CenterTimeStart = (float)client.cl.time;
+            _CenterTimeStart = (float)QClient.cl.time;
 
             // count the number of lines for centering
             _CenterLines = 1;
@@ -372,9 +372,9 @@ namespace SharpQuake
         {
             QSound.StopAllSounds( true );
 
-            if( client.cls.state != cactive_t.ca_connected )
+            if( QClient.cls.state != ServerType.CONNECTED )
                 return;
-            if( client.cls.signon != client.SIGNONS )
+            if( QClient.cls.signon != QClient.SIGNONS )
                 return;
 
             // redraw with no console and the loading plaque
@@ -399,7 +399,7 @@ namespace SharpQuake
         /// </summary>
         public static bool ModalMessage( string text )
         {
-            if( client.cls.state == cactive_t.ca_dedicated )
+            if( QClient.cls.state == ServerType.DEDICATED )
                 return true;
 
             _NotifyString = text;
@@ -544,7 +544,7 @@ namespace SharpQuake
 
             // intermission is always full screen
             float size;
-            if( client.cl.intermission > 0 )
+            if( QClient.cl.intermission > 0 )
                 size = 120;
             else
                 size = _ViewSize.Value;
@@ -565,7 +565,7 @@ namespace SharpQuake
             else
                 size = _ViewSize.Value;
 
-            if( client.cl.intermission > 0 )
+            if( QClient.cl.intermission > 0 )
             {
                 full = true;
                 size = 100;
@@ -623,7 +623,7 @@ namespace SharpQuake
                 return;     // never a console with loading plaque
 
             // decide on the height of the console
-            Con.ForcedUp = ( client.cl.worldmodel == null ) || ( client.cls.signon != client.SIGNONS );
+            Con.ForcedUp = ( QClient.cl.worldmodel == null ) || ( QClient.cls.signon != QClient.SIGNONS );
 
             if( Con.ForcedUp )
             {
@@ -733,7 +733,7 @@ namespace SharpQuake
 
             CenterTimeOff -= (float)host.FrameTime;
 
-            if( CenterTimeOff <= 0 && client.cl.intermission == 0 )
+            if( CenterTimeOff <= 0 && QClient.cl.intermission == 0 )
                 return;
             if( Key.Destination != keydest_t.key_game )
                 return;
@@ -777,9 +777,9 @@ namespace SharpQuake
         // SCR_DrawNet
         private static void DrawNet()
         {
-            if( host.RealTime - client.cl.last_received_message < 0.3 )
+            if( host.RealTime - QClient.cl.last_received_message < 0.3 )
                 return;
-            if( client.cls.demoplayback )
+            if( QClient.cls.demoplayback )
                 return;
 
             Drawer.DrawPic( _VRect.x + 64, _VRect.y, _Net );
@@ -791,7 +791,7 @@ namespace SharpQuake
             if( _ShowPause.Value == 0 )	// turn off for screenshots
                 return;
 
-            if( !client.cl.paused )
+            if( !QClient.cl.paused )
                 return;
 
             glpic_t pic = Drawer.CachePic( "gfx/pause.lmp" );
@@ -820,8 +820,8 @@ namespace SharpQuake
             int remaining;
 
             // the finale prints the characters one at a time
-            if( client.cl.intermission > 0 )
-                remaining = (int)( _PrintSpeed.Value * ( client.cl.time - _CenterTimeStart ) );
+            if( QClient.cl.intermission > 0 )
+                remaining = (int)( _PrintSpeed.Value * ( QClient.cl.time - _CenterTimeStart ) );
             else
                 remaining = 9999;
 

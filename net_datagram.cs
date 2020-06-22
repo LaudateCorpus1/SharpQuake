@@ -456,7 +456,7 @@ namespace SharpQuake
                 return null;
             }
 
-            // connect to the client
+            // connect to the QClient
             if( net.LanDriver.Connect( newsock, clientaddr ) == -1 )
             {
                 net.LanDriver.CloseSocket( newsock );

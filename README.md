@@ -5,28 +5,27 @@
 SharpQuake is a **[GLQuake](https://github.com/dpteam/GLQuake3D)** reimplementation in C# using the **[OpenTK](https://github.com/opentk/opentk)** library.
 
 ### Dependencies
-* OpenTK 3.0.1
-* NVorbis 0.8.6
+* OpenTK 3.2.0
+* NVorbis 0.10.1
 * **[OpenAL](https://www.openal.org/downloads/)** (Windows) / libopenal on Linux
 * **[SDL2](https://www.libsdl.org/download-2.0.php)** (Windows and macOS) / libsdl2-2.0 on Linux (Runtime binaries)
   
 ### Building
 
-**Project is built against and tested for Visual Studio 2019 on .NET 4.7.2**
+**Project is built against and tested for Jetbrains Rider on .NET 4.8.0 (C# 8.0)**
 
-1) **Add the OpenTK nuget package with the package manager console in Visual Studio.**
-    - `Install-Package OpenTK -Version 3.0.1`
-    - `Install-Package NVorbis -Version 0.8.6`
-    - `Install-Package NVorbis.OpenTKSupport -Version 1.2.0`
+1) **Add the required packages if needed by searching for them in the NuGet package manager or installing them manually with:**
+    - `Install-Package OpenTK -Version 3.2.0`
+    - `Install-Package NVorbis -Version 0.10.1`
+    - `Install-Package NVorbis.OpenTKSupport -Version 1.4.0`
+    - Other Requirements will be added automatically by Rider.
 
-2) **Initialize git submodules**
-
-3) **Add dependencies for your target architecture in your output directory (defaults to `<project root>/Quake`).**
+2) **Add dependencies for your target architecture in your output directory (defaults to `<project root>/Quake`).**
     - See links under dependencies header above
-4) **Add ld1, hipnotic, and rogue (minimum ld1) data directories to `<project root>/Quake`.**
+3) **Add ld1, hipnotic, and rogue (minimum ld1) data directories to `<project root>/Quake`.**
     - You only need the `<mod>\pak0.pak`, etc. and `<mod>\config.cfg` files of each directory if copying from a steam install.
 
-5) **Build solution.**
+4) **Build solution.**
 
 ### Running
 
@@ -53,7 +52,7 @@ Enjoy! 🙂
 ### Credits
 * Made by **[yurykiselev](https://sourceforge.net/u/yurykiselev/profile/)** and **Uze** and brought to Github by **[Memorix101](https://github.com/Memorix101)**
 
-* Updated to .NET 4.7.1 and OpenTK 3.0.1 by **[Daniel Cornelius (Kerfuffles/NukeAndBeans)](https://github.com/Kerfuffles)**
+* Updated to .NET 4.8.0 (C# 8.0), NVorbis 0.10.1, and OpenTK 3.2.0 by **[Daniel Cornelius (Kerfuffles/NukeAndBeans)](https://github.com/Kerfuffles)**
 
 * Engine additions and fixes by **[multiguy18](https://github.com/multiguy18)** and **[Memorix101](https://github.com/Memorix101)**
 

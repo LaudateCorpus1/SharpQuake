@@ -60,7 +60,7 @@ namespace SharpQuake
 
         private static QSoundFX[] _KnownSfx = new QSoundFX[MAX_SFX];                       // hunk allocated [MAX_SFX]
         private static int        _NumSfx;                                                 // num_sfx
-        private static QSoundFX[] _AmbientSfx = new QSoundFX[BSPAmbientFlag.NUM_AMBIENTS]; // *ambient_sfx[NUM_AMBIENTS]
+        private static QSoundFX[] _AmbientSfx = new QSoundFX[QBSPAmbientFlag.NUM_AMBIENTS]; // *ambient_sfx[NUM_AMBIENTS]
         private static bool       _Ambient    = true;                                      // snd_ambient
         private static QSoundData _shm        = new QSoundData();                          // shm
 
@@ -114,8 +114,8 @@ namespace SharpQuake
             Con.Print( "Sound sampling rate: {0}\n", _shm.speed );
 
             // provides a tick sound until washed clean
-            _AmbientSfx[BSPAmbientFlag.AMBIENT_WATER] = PrecacheSound( "ambience/water1.wav" );
-            _AmbientSfx[BSPAmbientFlag.AMBIENT_SKY]   = PrecacheSound( "ambience/wind2.wav" );
+            _AmbientSfx[QBSPAmbientFlag.AMBIENT_WATER] = PrecacheSound( "ambience/water1.wav" );
+            _AmbientSfx[QBSPAmbientFlag.AMBIENT_SKY]   = PrecacheSound( "ambience/wind2.wav" );
 
             StopAllSounds( true );
         }
@@ -240,7 +240,7 @@ namespace SharpQuake
 
             // if an identical sound has also been started this frame, offset the pos
             // a bit to keep it from just making the first one louder
-            for( int i = BSPAmbientFlag.NUM_AMBIENTS; i < BSPAmbientFlag.NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS; i++ )
+            for( int i = QBSPAmbientFlag.NUM_AMBIENTS; i < QBSPAmbientFlag.NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS; i++ )
             {
                 QSoundChannel check = _Channels[i];
                 if( check == target_chan )
@@ -314,7 +314,7 @@ namespace SharpQuake
 
             // update spatialization for static and dynamic sounds
             //QSoundChannel ch = channels + NUM_AMBIENTS;
-            for( int i = BSPAmbientFlag.NUM_AMBIENTS; i < _TotalChannels; i++ )
+            for( int i = QBSPAmbientFlag.NUM_AMBIENTS; i < _TotalChannels; i++ )
             {
                 QSoundChannel ch = _Channels[i]; // channels + NUM_AMBIENTS;
                 if( ch.sfx == null )
@@ -326,7 +326,7 @@ namespace SharpQuake
 
                 // try to combine static sounds with a previous channel of the same
                 // sound effect so we don't mix five torches every frame
-                if( i >= MAX_DYNAMIC_CHANNELS + BSPAmbientFlag.NUM_AMBIENTS )
+                if( i >= MAX_DYNAMIC_CHANNELS + QBSPAmbientFlag.NUM_AMBIENTS )
                 {
                     // see if it can just use the last one
                     if( combine != null && combine.sfx == ch.sfx )
@@ -338,9 +338,9 @@ namespace SharpQuake
                     }
 
                     // search for one
-                    combine = _Channels[MAX_DYNAMIC_CHANNELS + BSPAmbientFlag.NUM_AMBIENTS]; // channels + MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS;
+                    combine = _Channels[MAX_DYNAMIC_CHANNELS + QBSPAmbientFlag.NUM_AMBIENTS]; // channels + MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS;
                     int j;
-                    for( j = MAX_DYNAMIC_CHANNELS + BSPAmbientFlag.NUM_AMBIENTS; j < i; j++ )
+                    for( j = MAX_DYNAMIC_CHANNELS + QBSPAmbientFlag.NUM_AMBIENTS; j < i; j++ )
                     {
                         combine = _Channels[j];
                         if( combine.sfx == ch.sfx )
@@ -393,7 +393,7 @@ namespace SharpQuake
             if( !_Controller.IsInitialized )
                 return;
 
-            _TotalChannels = MAX_DYNAMIC_CHANNELS + BSPAmbientFlag.NUM_AMBIENTS; // no statics
+            _TotalChannels = MAX_DYNAMIC_CHANNELS + QBSPAmbientFlag.NUM_AMBIENTS; // no statics
 
             for( int i = 0; i < MAX_CHANNELS; i++ )
                 if( _Channels[i].sfx != null )
@@ -444,7 +444,7 @@ namespace SharpQuake
                 return;
             }
 
-            StartSound( client.cl.viewentity, -1, sfx, ref common.ZeroVector, 1, 1 );
+            StartSound( QClient.cl.viewentity, -1, sfx, ref common.ZeroVector, 1, 1 );
         }
 
         // S_Startup
@@ -587,7 +587,7 @@ namespace SharpQuake
         private static void Spatialize( QSoundChannel ch )
         {
             // anything coming from the view entity will allways be full volume
-            if( ch.entnum == client.cl.viewentity )
+            if( ch.entnum == QClient.cl.viewentity )
             {
                 ch.leftvol  = ch.master_vol;
                 ch.rightvol = ch.master_vol;
@@ -678,7 +678,7 @@ namespace SharpQuake
             // Check for replacement sound, or find the best one to replace
             int first_to_die = -1;
             int life_left    = 0x7fffffff;
-            for( int ch_idx = BSPAmbientFlag.NUM_AMBIENTS; ch_idx < BSPAmbientFlag.NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS; ch_idx++ )
+            for( int ch_idx = QBSPAmbientFlag.NUM_AMBIENTS; ch_idx < QBSPAmbientFlag.NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS; ch_idx++ )
             {
                 if( entchannel                  != 0 // channel 0 never overrides
                     && _Channels[ch_idx].entnum == entnum
@@ -690,7 +690,7 @@ namespace SharpQuake
                 }
 
                 // don't let monster sounds override player sounds
-                if( _Channels[ch_idx].entnum == client.cl.viewentity && entnum != client.cl.viewentity && _Channels[ch_idx].sfx != null )
+                if( _Channels[ch_idx].entnum == QClient.cl.viewentity && entnum != QClient.cl.viewentity && _Channels[ch_idx].sfx != null )
                     continue;
 
                 if( _Channels[ch_idx].end - _PaintedTime < life_left )
@@ -716,18 +716,18 @@ namespace SharpQuake
                 return;
 
             // calc ambient sound levels
-            if( client.cl.worldmodel == null )
+            if( QClient.cl.worldmodel == null )
                 return;
 
-            mleaf_t l = Mod.PointInLeaf( ref _ListenerOrigin, client.cl.worldmodel );
+            mleaf_t l = Mod.PointInLeaf( ref _ListenerOrigin, QClient.cl.worldmodel );
             if( l == null || _AmbientLevel.Value == 0 )
             {
-                for( int i = 0; i < BSPAmbientFlag.NUM_AMBIENTS; i++ )
+                for( int i = 0; i < QBSPAmbientFlag.NUM_AMBIENTS; i++ )
                     _Channels[i].sfx = null;
                 return;
             }
 
-            for( int i = 0; i < BSPAmbientFlag.NUM_AMBIENTS; i++ )
+            for( int i = 0; i < QBSPAmbientFlag.NUM_AMBIENTS; i++ )
             {
                 QSoundChannel chan = _Channels[i];
                 chan.sfx = _AmbientSfx[i];

@@ -88,7 +88,7 @@ namespace SharpQuake
         //==================
 
         //
-        // server to client
+        // server to QClient
         //
         public const int svc_bad = 0;
 
@@ -100,7 +100,7 @@ namespace SharpQuake
         public const int svc_sound = 6;	// <see code>
         public const int svc_time = 7;	// [float] server time
         public const int svc_print = 8;	// [string] null terminated string
-        public const int svc_stufftext = 9;	// [string] stuffed into client's console buffer
+        public const int svc_stufftext = 9;	// [string] stuffed into QClient's console buffer
 
         // the string should be \n terminated
         public const int svc_setangle = 10;	// [angle3] set the view angle to this absolute value
@@ -146,13 +146,13 @@ namespace SharpQuake
         public const int svc_cutscene = 34;
 
         //
-        // client to server
+        // QClient to server
         //
         public const int clc_bad = 0;
 
         public const int clc_nop = 1;
         public const int clc_disconnect = 2;
-        public const int clc_move = 3;			// [usercmd_t]
+        public const int clc_move = 3;			// [QUserCmd]
         public const int clc_stringcmd = 4;		// [string] message
 
         //

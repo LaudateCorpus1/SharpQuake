@@ -28,7 +28,7 @@ namespace SharpQuake
     partial class server
     {
         private static int _FatBytes; // fatbytes
-        private static byte[] _FatPvs = new byte[BSPFile.MAX_MAP_LEAFS / 8]; // fatpvs
+        private static byte[] _FatPvs = new byte[QBSPFile.MAX_MAP_LEAFS / 8]; // fatpvs
 
         // SV_Init
         public static void Init()
@@ -173,7 +173,7 @@ namespace SharpQuake
 
                 if( client.edict != null && client.spawned )
                 {
-                    // call the prog function for removing a client
+                    // call the prog function for removing a QClient
                     // this will set the body to a dead frame, among other things
                     int saveSelf = progs.GlobalStruct.self;
                     progs.GlobalStruct.self = EdictToProg( client.edict );
@@ -188,7 +188,7 @@ namespace SharpQuake
             net.Close( client.netconnection );
             client.netconnection = null;
 
-            // free the client (the body stays around)
+            // free the QClient (the body stays around)
             client.active = false;
             client.name = null;
             client.old_frags = -999999;
@@ -494,7 +494,7 @@ namespace SharpQuake
                     break;
 
                 //
-                // init a new client structure
+                // init a new QClient structure
                 //
                 int i;
                 for( i = 0; i < svs.maxclients; i++ )
@@ -512,7 +512,7 @@ namespace SharpQuake
 
         /// <summary>
         /// SV_SaveSpawnparms
-        /// Grabs the current state of each client for saving across the
+        /// Grabs the current state of each QClient for saving across the
         /// transition to another level
         /// </summary>
         public static void SaveSpawnparms()
@@ -525,7 +525,7 @@ namespace SharpQuake
                 if( !host.HostClient.active )
                     continue;
 
-                // call the progs to get default spawn parms for the new client
+                // call the progs to get default spawn parms for the new QClient
                 progs.GlobalStruct.self = EdictToProg( host.HostClient.edict );
                 progs.Execute( progs.GlobalStruct.SetChangeParms );
                 AssignGlobalSpawnparams( host.HostClient );
@@ -692,7 +692,7 @@ namespace SharpQuake
 
         /// <summary>
         /// SV_SendNop
-        /// Send a nop message without trashing or sending the accumulated client
+        /// Send a nop message without trashing or sending the accumulated QClient
         /// message buffer
         /// </summary>
         private static void SendNop( client_t client )
@@ -715,7 +715,7 @@ namespace SharpQuake
             msg.WriteByte( protocol.svc_time );
             msg.WriteFloat( (float)sv.time );
 
-            // add the client specific data to the datagram
+            // add the QClient specific data to the datagram
             WriteClientDataToMessage( client.edict, msg );
 
             WriteEntitiesToClient( client.edict, msg );
@@ -739,11 +739,11 @@ namespace SharpQuake
         /// </summary>
         private static void WriteEntitiesToClient( edict_t clent, MsgWriter msg )
         {
-            // find the client's PVS
+            // find the QClient's PVS
             Vector3 org = common.ToVector( ref clent.v.origin ) + common.ToVector( ref clent.v.view_ofs );
             byte[] pvs = FatPVS( ref org );
 
-            // send over all entities (except the client) that touch the pvs
+            // send over all entities (except the QClient) that touch the pvs
             for( int e = 1; e < sv.num_edicts; e++ )
             {
                 edict_t ent = sv.edicts[e];
@@ -866,8 +866,8 @@ namespace SharpQuake
 
         /// <summary>
         /// SV_AddToFatPVS
-        /// The PVS must include a small area around the client to allow head bobbing
-        /// or other small motion on the client side.  Otherwise, a bob might cause an
+        /// The PVS must include a small area around the QClient to allow head bobbing
+        /// or other small motion on the QClient side.  Otherwise, a bob might cause an
         /// entity that should be visible to not show up, especially when the bob
         /// crosses a waterline.
         /// </summary>
@@ -878,7 +878,7 @@ namespace SharpQuake
                 // if this is a leaf, accumulate the pvs bits
                 if( node.contents < 0 )
                 {
-                    if( node.contents != BSPContentFlag.CONTENTS_SOLID )
+                    if( node.contents != QBSPContentFlag.CONTENTS_SOLID )
                     {
                         byte[] pvs = Mod.LeafPVS( (mleaf_t)node, sv.worldmodel );
                         for( int i = 0; i < _FatBytes; i++ )
@@ -977,7 +977,7 @@ namespace SharpQuake
             }
             else
             {
-                // call the progs to get default spawn parms for the new client
+                // call the progs to get default spawn parms for the new QClient
                 progs.Execute( progs.GlobalStruct.SetNewParms );
 
                 AssignGlobalSpawnparams( client );
@@ -1011,7 +1011,7 @@ namespace SharpQuake
 
         /// <summary>
         /// SV_SendServerinfo
-        /// Sends the first message from the server to a connected client.
+        /// Sends the first message from the server to a connected QClient.
         /// This will be sent on the initial connection and upon each server load.
         /// </summary>
         private static void SendServerInfo( client_t client )
@@ -1080,7 +1080,7 @@ namespace SharpQuake
             msg.WriteString( "reconnect\n" );
             net.SendToAll( msg, 5 );
 
-            if( client.cls.state != cactive_t.ca_dedicated )
+            if( QClient.cls.state != ServerType.DEDICATED )
                 cmd.ExecuteString( "reconnect\n", cmd_source_t.src_command );
         }
 

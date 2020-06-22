@@ -56,7 +56,7 @@ namespace SharpQuake
             _EMins = ent.origin + entmodel.mins;
             _EMaxs = ent.origin + entmodel.maxs;
 
-            SplitEntityOnNode( client.cl.worldmodel.nodes[0] );
+            SplitEntityOnNode( QClient.cl.worldmodel.nodes[0] );
             ent.topnode = _EfragTopNode;
         }
 
@@ -65,7 +65,7 @@ namespace SharpQuake
         /// </summary>
         private static void SplitEntityOnNode( mnodebase_t node )
         {
-            if( node.contents == BSPContentFlag.CONTENTS_SOLID )
+            if( node.contents == QBSPContentFlag.CONTENTS_SOLID )
                 return;
 
             // add an efrag if the node is a leaf
@@ -77,13 +77,13 @@ namespace SharpQuake
                 mleaf_t leaf = (mleaf_t)(object)node;
 
                 // grab an efrag off the free list
-                efrag_t ef = client.cl.free_efrags;
+                efrag_t ef = QClient.cl.free_efrags;
                 if( ef == null )
                 {
                     Con.Print( "Too many efrags!\n" );
                     return;	// no free fragments...
                 }
-                client.cl.free_efrags = client.cl.free_efrags.entnext;
+                QClient.cl.free_efrags = QClient.cl.free_efrags.entnext;
 
                 ef.entity = _AddEnt;
 
@@ -148,9 +148,9 @@ namespace SharpQuake
                     case modtype_t.mod_alias:
                     case modtype_t.mod_brush:
                     case modtype_t.mod_sprite:
-                        if( ( pent.visframe != _FrameCount ) && ( client.NumVisEdicts < client.MAX_VISEDICTS ) )
+                        if( ( pent.visframe != _FrameCount ) && ( QClient.NumVisEdicts < QClient.MAX_VISEDICTS ) )
                         {
-                            client.VisEdicts[client.NumVisEdicts++] = pent;
+                            QClient.VisEdicts[QClient.NumVisEdicts++] = pent;
 
                             // mark that we've recorded this entity for this frame
                             pent.visframe = _FrameCount;

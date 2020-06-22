@@ -333,10 +333,10 @@ namespace SharpQuake
             }
             HostPort = _DefHostPort;
 
-            if( common.HasParam( "-listen" ) || client.cls.state == cactive_t.ca_dedicated )
+            if( common.HasParam( "-listen" ) || QClient.cls.state == ServerType.DEDICATED )
                 _IsListening = true;
             int numsockets = server.svs.maxclientslimit;
-            if( client.cls.state != cactive_t.ca_dedicated )
+            if( QClient.cls.state != ServerType.DEDICATED )
                 numsockets++;
 
             _FreeSockets = new List<qsocket_t>( numsockets );
@@ -463,7 +463,7 @@ namespace SharpQuake
         // hostCacheCount
         /// <summary>
         /// NET_Connect
-        /// called by client to connect to a host.  Returns -1 if not able to connect
+        /// called by QClient to connect to a host.  Returns -1 if not able to connect
         /// </summary>
         public static qsocket_t Connect( string host )
         {

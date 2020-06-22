@@ -44,7 +44,7 @@ namespace SharpQuake
     public static class QStats
     {
         //
-        // stats are integers communicated to the client by the server
+        // stats are integers communicated to the QClient by the server
         //
         public static int MAX_CL_STATS = 32;
 
@@ -61,7 +61,7 @@ namespace SharpQuake
         public static int STAT_ACTIVEWEAPON = 10;
         public static int STAT_TOTALSECRETS = 11;
         public static int STAT_TOTALMONSTERS = 12;
-        public static int STAT_SECRETS = 13;		// bumped on client side by svc_foundsecret
+        public static int STAT_SECRETS = 13;		// bumped on QClient side by svc_foundsecret
         public static int STAT_MONSTERS = 14;		// bumped by svc_killedmonster
     }
 

@@ -109,7 +109,7 @@ namespace SharpQuake
 
             for( int j = 1; j < QDef.MAX_MODELS; j++ )
             {
-                model_t m = client.cl.model_precache[j];
+                model_t m = QClient.cl.model_precache[j];
                 if( m == null )
                     break;
 
@@ -347,7 +347,7 @@ namespace SharpQuake
             byte[] lightmap = surf.sample_base;// surf.samples;
 
             // set to full bright if no light data
-            if( _FullBright.Value != 0 || client.cl.worldmodel.lightdata == null )
+            if( _FullBright.Value != 0 || QClient.cl.worldmodel.lightdata == null )
             {
                 for( int i = 0; i < size; i++ )
                     _BlockLights[i] = 255 * 256;
@@ -360,7 +360,7 @@ namespace SharpQuake
 
                 // add all the lightmaps
                 if( lightmap != null )
-                    for( int maps = 0; maps < BSPFile.MAXLIGHTMAPS && surf.styles[maps] != 255; maps++ )
+                    for( int maps = 0; maps < QBSPFile.MAXLIGHTMAPS && surf.styles[maps] != 255; maps++ )
                     {
                         int scale = _LightStyleValue[surf.styles[maps]];
                         surf.cached_light[maps] = scale;	// 8.8 fraction
@@ -426,9 +426,9 @@ namespace SharpQuake
             int smax = ( surf.extents[0] >> 4 ) + 1;
             int tmax = ( surf.extents[1] >> 4 ) + 1;
             mtexinfo_t tex = surf.texinfo;
-            dlight_t[] dlights = client.DLights;
+            QDynamicLight[] dlights = QClient.DLights;
 
-            for( int lnum = 0; lnum < client.MAX_DLIGHTS; lnum++ )
+            for( int lnum = 0; lnum < QClient.MAX_DLIGHTS; lnum++ )
             {
                 if( ( surf.dlightbits & ( 1 << lnum ) ) == 0 )
                     continue;		// not lit by this light
@@ -504,9 +504,9 @@ namespace SharpQuake
             }
             else
             {
-                for( int i = 0; i < client.cl.worldmodel.numtextures; i++ )
+                for( int i = 0; i < QClient.cl.worldmodel.numtextures; i++ )
                 {
-                    texture_t t = client.cl.worldmodel.textures[i];
+                    texture_t t = QClient.cl.worldmodel.textures[i];
                     if( t == null )
                         continue;
 
@@ -558,9 +558,9 @@ namespace SharpQuake
                 //memset(solid, 0xff, (cl.worldmodel->numleafs + 7) >> 3);
             }
             else
-                vis = Mod.LeafPVS( _ViewLeaf, client.cl.worldmodel );
+                vis = Mod.LeafPVS( _ViewLeaf, QClient.cl.worldmodel );
 
-            model_t world = client.cl.worldmodel;
+            model_t world = QClient.cl.worldmodel;
             for( int i = 0; i < world.numleafs; i++ )
             {
                 if( vis[i >> 3] != 0 & ( 1 << ( i & 7 ) ) != 0 )
@@ -583,7 +583,7 @@ namespace SharpQuake
         private static void DrawWorld()
         {
             _TempEnt.Clear();
-            _TempEnt.model = client.cl.worldmodel;
+            _TempEnt.model = QClient.cl.worldmodel;
 
             _ModelOrg = _RefDef.vieworg;
             _CurrentEntity = _TempEnt;
@@ -679,7 +679,7 @@ namespace SharpQuake
                 }
                 return;
             }
-            model_t world = client.cl.worldmodel;
+            model_t world = QClient.cl.worldmodel;
             for( int i = 0; i < world.numtextures; i++ )
             {
                 texture_t t = world.textures[i];
@@ -743,7 +743,7 @@ namespace SharpQuake
 
             // check for lightmap modification
             bool modified = false;
-            for( int maps = 0; maps < BSPFile.MAXLIGHTMAPS && fa.styles[maps] != 255; maps++ )
+            for( int maps = 0; maps < QBSPFile.MAXLIGHTMAPS && fa.styles[maps] != 255; maps++ )
                 if( _LightStyleValue[fa.styles[maps]] != fa.cached_light[maps] )
                 {
                     modified = true;
@@ -815,7 +815,7 @@ namespace SharpQuake
         /// </summary>
         private static void RecursiveWorldNode( mnodebase_t node )
         {
-            if( node.contents == BSPContentFlag.CONTENTS_SOLID )
+            if( node.contents == QBSPContentFlag.CONTENTS_SOLID )
                 return;		// solid
 
             if( node.visframe != _VisFrameCount )
@@ -859,15 +859,15 @@ namespace SharpQuake
 
             switch( plane.type )
             {
-                case BSPPlaneFlag.PLANE_X:
+                case QBSPPlaneFlag.PLANE_X:
                     dot = _ModelOrg.X - plane.dist;
                     break;
 
-                case BSPPlaneFlag.PLANE_Y:
+                case QBSPPlaneFlag.PLANE_Y:
                     dot = _ModelOrg.Y - plane.dist;
                     break;
 
-                case BSPPlaneFlag.PLANE_Z:
+                case QBSPPlaneFlag.PLANE_Z:
                     dot = _ModelOrg.Z - plane.dist;
                     break;
 
@@ -886,7 +886,7 @@ namespace SharpQuake
 
             if( c != 0 )
             {
-                msurface_t[] surf = client.cl.worldmodel.surfaces;
+                msurface_t[] surf = QClient.cl.worldmodel.surfaces;
                 int offset = n.firstsurface;
 
                 if( dot < 0 - QDef.BACKFACE_EPSILON )
@@ -906,7 +906,7 @@ namespace SharpQuake
                     // if sorting by texture, just store it out
                     if( _glTexSort.Value != 0 )
                     {
-                        if( !_IsMirror || surf[offset].texinfo.texture != client.cl.worldmodel.textures[_MirrorTextureNum] )
+                        if( !_IsMirror || surf[offset].texinfo.texture != QClient.cl.worldmodel.textures[_MirrorTextureNum] )
                         {
                             surf[offset].texturechain = surf[offset].texinfo.texture.texturechain;
                             surf[offset].texinfo.texture.texturechain = surf[offset];
@@ -1166,7 +1166,7 @@ namespace SharpQuake
             if( t.anim_total == 0 )
                 return t;
 
-            int reletive = (int)( client.cl.time * 10 ) % t.anim_total;
+            int reletive = (int)( QClient.cl.time * 10 ) % t.anim_total;
             int count = 0;
             while( t.anim_min > reletive || t.anim_max <= reletive )
             {
@@ -1196,7 +1196,7 @@ namespace SharpQuake
 
             // check for lightmap modification
             bool flag = false;
-            for( int maps = 0; maps < BSPFile.MAXLIGHTMAPS && fa.styles[maps] != 255; maps++ )
+            for( int maps = 0; maps < QBSPFile.MAXLIGHTMAPS && fa.styles[maps] != 255; maps++ )
                 if( _LightStyleValue[fa.styles[maps]] != fa.cached_light[maps] )
                 {
                     flag = true;
@@ -1267,12 +1267,12 @@ namespace SharpQuake
             // instanced model
             if( clmodel.firstmodelsurface != 0 && _glFlashBlend.Value == 0 )
             {
-                for( int k = 0; k < client.MAX_DLIGHTS; k++ )
+                for( int k = 0; k < QClient.MAX_DLIGHTS; k++ )
                 {
-                    if( ( client.DLights[k].die < client.cl.time ) || ( client.DLights[k].radius == 0 ) )
+                    if( ( QClient.DLights[k].die < QClient.cl.time ) || ( QClient.DLights[k].radius == 0 ) )
                         continue;
 
-                    MarkLights( client.DLights[k], 1 << k, clmodel.nodes[clmodel.hulls[0].firstclipnode] );
+                    MarkLights( QClient.DLights[k], 1 << k, clmodel.nodes[clmodel.hulls[0].firstclipnode] );
                 }
             }
 

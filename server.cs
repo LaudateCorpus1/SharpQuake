@@ -113,7 +113,7 @@ namespace SharpQuake
         /// ED_Alloc
         /// Either finds a free edict, or allocates a new one.
         /// Try to avoid reusing an entity that was recently freed, because it
-        /// can cause the client to think the entity morphed into something else
+        /// can cause the QClient to think the entity morphed into something else
         /// instead of being removed and recreated, which can cause interpolated
         /// angles and bad trails.
         /// </summary>
@@ -325,7 +325,7 @@ namespace SharpQuake
 
     internal class server_t
     {
-        public bool active;             // false if only a net client
+        public bool active;             // false if only a net QClient
         public bool paused;
         public bool loadgame;           // handle connections specially
         public double time;
@@ -389,7 +389,7 @@ namespace SharpQuake
 
     internal class client_t
     {
-        public bool active;             // false = client is free
+        public bool active;             // false = QClient is free
         public bool spawned;            // false = don't send datagrams
         public bool dropasap;           // has been told to go to another level
         public bool privileged;         // can execute any host command
@@ -400,7 +400,7 @@ namespace SharpQuake
         // periodically
         public qsocket_t netconnection; // communications handle
 
-        public usercmd_t cmd;               // movement
+        public QUserCmd cmd;               // movement
         public Vector3 wishdir;			// intended motion calced from cmd
 
         public MsgWriter message;
@@ -418,7 +418,7 @@ namespace SharpQuake
         // spawn parms are carried from level to level
         public float[] spawn_parms;//[NUM_SPAWN_PARMS];
 
-        // client known data for deltas
+        // QClient known data for deltas
         public int old_frags;
 
         public void Clear()

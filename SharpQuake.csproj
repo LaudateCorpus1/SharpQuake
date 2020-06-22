@@ -63,10 +63,14 @@
     <ApplicationIcon>Resources\quake.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Audio\CDAudio.cs" />
+    <Compile Include="3rd Party\SDL2-CS\SDL2.cs" />
+    <Compile Include="3rd Party\SDL2-CS\SDL2_image.cs" />
+    <Compile Include="3rd Party\SDL2-CS\SDL2_mixer.cs" />
+    <Compile Include="3rd Party\SDL2-CS\SDL2_ttf.cs" />
+    <Compile Include="Audio\QCDAudio.cs" />
     <Compile Include="Audio\ISoundController.cs" />
-    <Compile Include="Audio\NullCDAudioController.cs" />
-    <Compile Include="Audio\PortableSamplePair.cs" />
+    <Compile Include="Audio\QNullCDAudioController.cs" />
+    <Compile Include="Audio\QPortableSamplePair.cs" />
     <Compile Include="Audio\QSound.cs" />
     <Compile Include="Audio\QSoundChannel.cs" />
     <Compile Include="Audio\QSoundData.cs" />
@@ -78,31 +82,36 @@
     <Compile Include="Audio\QSound.Mixer.cs" />
     <Compile Include="Audio\QSound.Null.cs" />
     <Compile Include="Audio\QSound.OpenAL.cs" />
-    <Compile Include="BSP\BSPAmbientFlag.cs" />
-    <Compile Include="BSP\BSPClipNode.cs" />
-    <Compile Include="BSP\BSPContentFlag.cs" />
-    <Compile Include="BSP\BSPEdge.cs" />
-    <Compile Include="BSP\BSPFace.cs" />
-    <Compile Include="BSP\BSPFile.cs" />
-    <Compile Include="BSP\BSPHeader.cs" />
-    <Compile Include="BSP\BSPLeaf.cs" />
-    <Compile Include="BSP\BSPLumpFlag.cs" />
-    <Compile Include="BSP\BSPMipTex.cs" />
-    <Compile Include="BSP\BSPMipTexLump.cs" />
-    <Compile Include="BSP\BSPModel.cs" />
-    <Compile Include="BSP\BSPLump.cs" />
-    <Compile Include="BSP\BSPNode.cs" />
-    <Compile Include="BSP\BSPPlane.cs" />
-    <Compile Include="BSP\BSPPlaneFlag.cs" />
-    <Compile Include="BSP\BSPTexInfo.cs" />
-    <Compile Include="BSP\BSPVertex.cs" />
-    <Compile Include="chase.cs" />
-    <Compile Include="client.cs" />
-    <Compile Include="client_demo.cs" />
-    <Compile Include="client_input.cs" />
-    <Compile Include="client_main.cs" />
-    <Compile Include="client_parse.cs" />
-    <Compile Include="client_temp_ent.cs" />
+    <Compile Include="BSP\QBSPAmbientFlag.cs" />
+    <Compile Include="BSP\QBSPClipNode.cs" />
+    <Compile Include="BSP\QBSPContentFlag.cs" />
+    <Compile Include="BSP\QBSPEdge.cs" />
+    <Compile Include="BSP\QBSPFace.cs" />
+    <Compile Include="BSP\QBSPFile.cs" />
+    <Compile Include="BSP\QBSPHeader.cs" />
+    <Compile Include="BSP\QBSPLeaf.cs" />
+    <Compile Include="BSP\QBSPLumpFlag.cs" />
+    <Compile Include="BSP\QBSPMipTex.cs" />
+    <Compile Include="BSP\QBSPMipTexLump.cs" />
+    <Compile Include="BSP\QBSPModel.cs" />
+    <Compile Include="BSP\QBSPLump.cs" />
+    <Compile Include="BSP\QBSPNode.cs" />
+    <Compile Include="BSP\QBSPPlane.cs" />
+    <Compile Include="BSP\QBSPPlaneFlag.cs" />
+    <Compile Include="BSP\QBSPTexInfo.cs" />
+    <Compile Include="BSP\QBSPVertex.cs" />
+    <Compile Include="Client\Input\QClientInput.cs" />
+    <Compile Include="Client\Multiplayer\QScoreboard.cs" />
+    <Compile Include="Client\QClient.cs" />
+    <Compile Include="Client\QClient.Demo.cs" />
+    <Compile Include="Client\QClient.Input.cs" />
+    <Compile Include="Client\QClient.Main.cs" />
+    <Compile Include="Client\QClient.Parse.cs" />
+    <Compile Include="Client\QClient.TempEntity.cs" />
+    <Compile Include="Client\Command\QUserCmd.cs" />
+    <Compile Include="Client\Input\QButton.cs" />
+    <Compile Include="Client\QClientState.cs" />
+    <Compile Include="Client\QStaticClient.cs" />
     <Compile Include="cmd.cs" />
     <Compile Include="common.cs" />
     <Compile Include="console.cs" />
@@ -110,8 +119,6 @@
     <Compile Include="cvar.cs" />
     <Compile Include="draw.cs" />
     <Compile Include="external.cs" />
-    <Compile Include="Geometry\AnormDots.cs" />
-    <Compile Include="Geometry\Anorms.cs" />
     <Compile Include="host.cs" />
     <Compile Include="host_cmd.cs" />
     <Compile Include="input.cs" />
@@ -135,6 +142,14 @@
     <Compile Include="protocol.cs" />
     <Compile Include="q_def.cs" />
     <Compile Include="render.cs" />
+    <Compile Include="Rendering\Camera\QChase.cs" />
+    <Compile Include="Rendering\Client\VFX\QColorShift.cs" />
+    <Compile Include="Rendering\Client\VFX\QViewFlashFlag.cs" />
+    <Compile Include="Rendering\Geometry\AnormDots.cs" />
+    <Compile Include="Rendering\Geometry\Anorms.cs" />
+    <Compile Include="Rendering\Light\QDynamicLight.cs" />
+    <Compile Include="Rendering\Light\QLightBeam.cs" />
+    <Compile Include="Rendering\Light\QLightStyle.cs" />
     <Compile Include="r_efrag.cs" />
     <Compile Include="r_light.cs" />
     <Compile Include="r_part.cs" />
@@ -143,11 +158,8 @@
     <Compile Include="sbar.cs" />
     <Compile Include="screen.cs" />
     <Compile Include="screen_draw.cs" />
-    <Compile Include="SDL2-CS\SDL2.cs" />
-    <Compile Include="SDL2-CS\SDL2_image.cs" />
-    <Compile Include="SDL2-CS\SDL2_mixer.cs" />
-    <Compile Include="SDL2-CS\SDL2_ttf.cs" />
     <Compile Include="server.cs" />
+    <Compile Include="Server\ServerType.cs" />
     <Compile Include="sv_main.cs" />
     <Compile Include="sv_move.cs" />
     <Compile Include="sv_physics.cs" />
@@ -196,6 +208,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
+    <Content Include="README.md" />
     <Content Include="Resources\quake.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -236,6 +249,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="3rd Party" />
+    <Folder Include="Server\Command" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
