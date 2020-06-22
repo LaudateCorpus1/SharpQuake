@@ -197,7 +197,7 @@ namespace SharpQuake
 
                     case protocol.svc_stopsound:
                         i = net.Reader.ReadShort();
-                        snd.StopSound( i >> 3, i & 7 );
+                        QSound.StopSound( i >> 3, i & 7 );
                         break;
 
                     case protocol.svc_updatename:
@@ -249,11 +249,11 @@ namespace SharpQuake
 
                         if( cl.paused )
                         {
-                            cd_audio.Pause();
+                            CDAudio.Pause();
                         }
                         else
                         {
-                            cd_audio.Resume();
+                            CDAudio.Resume();
                         }
                     }
                     break;
@@ -289,9 +289,9 @@ namespace SharpQuake
                         cl.cdtrack = net.Reader.ReadByte();
                         cl.looptrack = net.Reader.ReadByte();
                         if( ( cls.demoplayback || cls.demorecording ) && ( cls.forcetrack != -1 ) )
-                            cd_audio.Play( (byte)cls.forcetrack, true );
+                            CDAudio.Play( (byte)cls.forcetrack, true );
                         else
-                            cd_audio.Play( (byte)cl.cdtrack, true );
+                            CDAudio.Play( (byte)cl.cdtrack, true );
                         break;
 
                     case protocol.svc_intermission:
@@ -670,7 +670,7 @@ namespace SharpQuake
                     return;
                 }
                 sound_precache[numsounds] = str;
-                snd.TouchSound( str );
+                QSound.TouchSound( str );
             }
 
             //
@@ -687,13 +687,13 @@ namespace SharpQuake
                 KeepaliveMessage();
             }
 
-            snd.BeginPrecaching();
+            QSound.BeginPrecaching();
             for( i = 1; i < numsounds; i++ )
             {
-                cl.sound_precache[i] = snd.PrecacheSound( sound_precache[i] );
+                cl.sound_precache[i] = QSound.PrecacheSound( sound_precache[i] );
                 KeepaliveMessage();
             }
-            snd.EndPrecaching();
+            QSound.EndPrecaching();
 
             // local state
             _Entities[0].model = cl.worldmodel = cl.model_precache[1];
@@ -715,12 +715,12 @@ namespace SharpQuake
             if( ( field_mask & protocol.SND_VOLUME ) != 0 )
                 volume = net.Reader.ReadByte();
             else
-                volume = snd.DEFAULT_SOUND_PACKET_VOLUME;
+                volume = QSound.DEFAULT_SOUND_PACKET_VOLUME;
 
             if( ( field_mask & protocol.SND_ATTENUATION ) != 0 )
                 attenuation = net.Reader.ReadByte() / 64.0f;
             else
-                attenuation = snd.DEFAULT_SOUND_PACKET_ATTENUATION;
+                attenuation = QSound.DEFAULT_SOUND_PACKET_ATTENUATION;
 
             int channel = net.Reader.ReadShort();
             int sound_num = net.Reader.ReadByte();
@@ -732,7 +732,7 @@ namespace SharpQuake
                 host.Error( "CL_ParseStartSoundPacket: ent = {0}", ent );
 
             Vector3 pos = net.Reader.ReadCoords();
-            snd.StartSound( ent, channel, cl.sound_precache[sound_num], ref pos, volume / 255.0f, attenuation );
+            QSound.StartSound( ent, channel, cl.sound_precache[sound_num], ref pos, volume / 255.0f, attenuation );
         }
 
         // CL_NewTranslation
@@ -843,7 +843,7 @@ namespace SharpQuake
             int vol = net.Reader.ReadByte();
             int atten = net.Reader.ReadByte();
 
-            snd.StaticSound( cl.sound_precache[sound_num], ref org, vol, atten );
+            QSound.StaticSound( cl.sound_precache[sound_num], ref org, vol, atten );
         }
 
         /// <summary>

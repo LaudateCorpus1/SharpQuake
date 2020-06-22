@@ -337,11 +337,11 @@ namespace SharpQuake
 
             mode_t mode = _Modes[modenum];
 
-            // so Con_Printfs don't mess us up by forcing vid and snd updates
+            // so Con_Printfs don't mess us up by forcing vid and QSound updates
             bool temp = Scr.IsDisabledForLoading;
             Scr.IsDisabledForLoading = true;
 
-            cd_audio.Pause();
+            CDAudio.Pause();
 
             // Set either the fullscreen or windowed mode
             DisplayDevice dev = mainwindow.DisplayDevice;
@@ -398,7 +398,7 @@ namespace SharpQuake
 
             vid.numpages = 2;
 
-            cd_audio.Resume();
+            CDAudio.Resume();
             Scr.IsDisabledForLoading = temp;
 
             _ModeNum = modenum;

@@ -130,9 +130,9 @@ namespace SharpQuake
             channel = ( ent << 3 ) | channel;
 
             int field_mask = 0;
-            if( volume != snd.DEFAULT_SOUND_PACKET_VOLUME )
+            if( volume != QSound.DEFAULT_SOUND_PACKET_VOLUME )
                 field_mask |= protocol.SND_VOLUME;
-            if( attenuation != snd.DEFAULT_SOUND_PACKET_ATTENUATION )
+            if( attenuation != QSound.DEFAULT_SOUND_PACKET_ATTENUATION )
                 field_mask |= protocol.SND_ATTENUATION;
 
             // directed messages go only to the entity the are targeted on

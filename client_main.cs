@@ -282,7 +282,7 @@ namespace SharpQuake
         public static void Disconnect()
         {
             // stop sounds (especially looping!)
-            snd.StopAllSounds( true );
+            QSound.StopAllSounds( true );
 
             // bring the console down and fade the colors back to normal
             //	SCR_BringDownConsole ();

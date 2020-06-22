@@ -662,7 +662,7 @@ namespace SharpQuake
 
             DrawWorld();		// adds static entities to the list
 
-            snd.ExtraUpdate();	// don't let sound get messed up if going slow
+            QSound.ExtraUpdate();	// don't let sound get messed up if going slow
 
             DrawEntitiesOnList();
 

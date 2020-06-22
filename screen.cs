@@ -370,7 +370,7 @@ namespace SharpQuake
         /// </summary>
         public static void BeginLoadingPlaque()
         {
-            snd.StopAllSounds( true );
+            QSound.StopAllSounds( true );
 
             if( client.cls.state != cactive_t.ca_connected )
                 return;
@@ -410,7 +410,7 @@ namespace SharpQuake
             UpdateScreen();
             _DrawDialog = false;
 
-            snd.ClearBuffer();		// so dma doesn't loop current sound
+            QSound.ClearBuffer();		// so dma doesn't loop current sound
 
             do
             {

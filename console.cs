@@ -363,7 +363,7 @@ namespace SharpQuake
             if( txt.StartsWith( ( (char)1 ).ToString() ) )// [0] == 1)
             {
                 mask = 128;	// go to colored text
-                snd.LocalSound( "misc/talk.wav" ); // play talk wav
+                QSound.LocalSound( "misc/talk.wav" ); // play talk wav
                 offset++;
             }
             else if( txt.StartsWith( ( (char)2 ).ToString() ) ) //txt[0] == 2)

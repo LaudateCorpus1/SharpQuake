@@ -37,7 +37,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>Quake\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -69,8 +69,21 @@
     <OutputPath>Quake\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AnormDots.cs" />
-    <Compile Include="Anorms.cs" />
+    <Compile Include="Audio\CDAudio.cs" />
+    <Compile Include="Audio\ISoundController.cs" />
+    <Compile Include="Audio\NullCDAudioController.cs" />
+    <Compile Include="Audio\PortableSamplePair.cs" />
+    <Compile Include="Audio\QSound.cs" />
+    <Compile Include="Audio\QSoundChannel.cs" />
+    <Compile Include="Audio\QSoundData.cs" />
+    <Compile Include="Audio\QSoundFX.cs" />
+    <Compile Include="Audio\QSoundFXCache.cs" />
+    <Compile Include="Audio\QSoundWAVHelper.cs" />
+    <Compile Include="Audio\QSoundWAVInfo.cs" />
+    <Compile Include="Audio\QSound.Memory.cs" />
+    <Compile Include="Audio\QSound.Mixer.cs" />
+    <Compile Include="Audio\QSound.Null.cs" />
+    <Compile Include="Audio\QSound.OpenAL.cs" />
     <Compile Include="BSP\BSPAmbientFlag.cs" />
     <Compile Include="BSP\BSPClipNode.cs" />
     <Compile Include="BSP\BSPContentFlag.cs" />
@@ -89,8 +102,6 @@
     <Compile Include="BSP\BSPPlaneFlag.cs" />
     <Compile Include="BSP\BSPTexInfo.cs" />
     <Compile Include="BSP\BSPVertex.cs" />
-    <Compile Include="cd_audio.cs" />
-    <Compile Include="cd_audio_win.cs" />
     <Compile Include="chase.cs" />
     <Compile Include="client.cs" />
     <Compile Include="client_demo.cs" />
@@ -105,6 +116,8 @@
     <Compile Include="cvar.cs" />
     <Compile Include="draw.cs" />
     <Compile Include="external.cs" />
+    <Compile Include="Geometry\AnormDots.cs" />
+    <Compile Include="Geometry\Anorms.cs" />
     <Compile Include="host.cs" />
     <Compile Include="host_cmd.cs" />
     <Compile Include="input.cs" />
@@ -146,11 +159,6 @@
     <Compile Include="sv_physics.cs" />
     <Compile Include="sv_user.cs" />
     <Compile Include="sv_world.cs" />
-    <Compile Include="snd.cs" />
-    <Compile Include="snd_mem.cs" />
-    <Compile Include="snd_mixer.cs" />
-    <Compile Include="snd_null.cs" />
-    <Compile Include="snd_openal.cs" />
     <Compile Include="sys.cs" />
     <Compile Include="vid.cs" />
     <Compile Include="view.cs" />
@@ -168,6 +176,8 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="App.config" />
+    <None Include="OpenTK.dll.config" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -195,17 +205,42 @@
     <Content Include="Resources\quake.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="NVorbis, Version=0.8.6.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>lib\NVorbis.dll</HintPath>
+    <Reference Include="mscorlib" />
+    <Reference Include="NVorbis, Version=0.10.0.3, Culture=neutral, PublicKeyToken=null">
+      <HintPath>packages\NVorbis.0.10.1\lib\net45\NVorbis.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="NVorbis.OpenTKSupport, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>lib\NVorbis.OpenTKSupport.dll</HintPath>
+    <Reference Include="NVorbis.OpenTKSupport, Version=1.4.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>packages\NVorbis.OpenTKSupport.1.4.0\lib\net45\NVorbis.OpenTKSupport.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="OpenTK, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4">
-      <HintPath>lib\OpenTK.dll</HintPath>
+    <Reference Include="OpenTK, Version=3.2.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4">
+      <HintPath>packages\OpenTK.3.2\lib\net20\OpenTK.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -77,9 +77,9 @@ namespace SharpQuake
             base.OnFocusedChanged(e);
 
             if (this.Focused)
-                snd.UnblockSound();
+                QSound.UnblockSound();
             else
-                snd.BlockSound();
+                QSound.BlockSound();
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)

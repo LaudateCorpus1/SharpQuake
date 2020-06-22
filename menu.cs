@@ -89,7 +89,7 @@ namespace SharpQuake
                 if( Scr.ConCurrent > 0 )
                 {
                     Drawer.DrawConsoleBackground( Scr.vid.height );
-                    snd.ExtraUpdate();
+                    QSound.ExtraUpdate();
                 }
                 else
                     Drawer.FadeScreen();
@@ -106,11 +106,11 @@ namespace SharpQuake
 
             if( EnterSound )
             {
-                snd.LocalSound( "misc/menu2.wav" );
+                QSound.LocalSound( "misc/menu2.wav" );
                 EnterSound = false;
             }
 
-            snd.ExtraUpdate();
+            QSound.ExtraUpdate();
         }
 
         /// <summary>
@@ -468,13 +468,13 @@ namespace SharpQuake
                     break;
 
                 case Key.K_DOWNARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     if( ++_Cursor >= MAIN_ITEMS )
                         _Cursor = 0;
                     break;
 
                 case Key.K_UPARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     if( --_Cursor < 0 )
                         _Cursor = MAIN_ITEMS - 1;
                     break;
@@ -537,13 +537,13 @@ namespace SharpQuake
                     break;
 
                 case Key.K_DOWNARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     if( ++_Cursor >= SINGLEPLAYER_ITEMS )
                         _Cursor = 0;
                     break;
 
                 case Key.K_UPARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     if( --_Cursor < 0 )
                         _Cursor = SINGLEPLAYER_ITEMS - 1;
                     break;
@@ -613,7 +613,7 @@ namespace SharpQuake
                     break;
 
                 case Key.K_ENTER:
-                    snd.LocalSound( "misc/menu2.wav" );
+                    QSound.LocalSound( "misc/menu2.wav" );
                     if( !_Loadable[_Cursor] )
                         return;
                     MenuBase.Hide();
@@ -628,7 +628,7 @@ namespace SharpQuake
 
                 case Key.K_UPARROW:
                 case Key.K_LEFTARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor--;
                     if( _Cursor < 0 )
                         _Cursor = MAX_SAVEGAMES - 1;
@@ -636,7 +636,7 @@ namespace SharpQuake
 
                 case Key.K_DOWNARROW:
                 case Key.K_RIGHTARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor++;
                     if( _Cursor >= MAX_SAVEGAMES )
                         _Cursor = 0;
@@ -724,7 +724,7 @@ namespace SharpQuake
 
                 case Key.K_UPARROW:
                 case Key.K_LEFTARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor--;
                     if( _Cursor < 0 )
                         _Cursor = MAX_SAVEGAMES - 1;
@@ -732,7 +732,7 @@ namespace SharpQuake
 
                 case Key.K_DOWNARROW:
                 case Key.K_RIGHTARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor++;
                     if( _Cursor >= MAX_SAVEGAMES )
                         _Cursor = 0;
@@ -919,14 +919,14 @@ namespace SharpQuake
                     return;
 
                 case Key.K_UPARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor--;
                     if( _Cursor < 0 )
                         _Cursor = OPTIONS_ITEMS - 1;
                     break;
 
                 case Key.K_DOWNARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor++;
                     if( _Cursor >= OPTIONS_ITEMS )
                         _Cursor = 0;
@@ -991,11 +991,11 @@ namespace SharpQuake
             menu.DrawSlider( 220, 72, r );
 
             menu.Print( 16, 80, "       CD Music Volume" );
-            r = snd.BgmVolume;
+            r = QSound.BgmVolume;
             menu.DrawSlider( 220, 80, r );
 
             menu.Print( 16, 88, "          Sound Volume" );
-            r = snd.Volume;
+            r = QSound.Volume;
             menu.DrawSlider( 220, 88, r );
 
             menu.Print( 16, 96, "            Always Run" );
@@ -1030,7 +1030,7 @@ namespace SharpQuake
         /// </summary>
         private void AdjustSliders( int dir )
         {
-            snd.LocalSound( "misc/menu3.wav" );
+            QSound.LocalSound( "misc/menu3.wav" );
             float value;
 
             switch( _Cursor )
@@ -1063,7 +1063,7 @@ namespace SharpQuake
                     break;
 
                 case 6:	// music volume
-                    value = snd.BgmVolume + dir * 0.1f; ///_BgmVolumeCoeff;
+                    value = QSound.BgmVolume + dir * 0.1f; ///_BgmVolumeCoeff;
                     if( value < 0 )
                         value = 0;
                     if( value > 1 )
@@ -1072,7 +1072,7 @@ namespace SharpQuake
                     break;
 
                 case 7:	// sfx volume
-                    value = snd.Volume + dir * 0.1f;
+                    value = QSound.Volume + dir * 0.1f;
                     if( value < 0 )
                         value = 0;
                     if( value > 1 )
@@ -1152,7 +1152,7 @@ namespace SharpQuake
             if( _BindGrab )
             {
                 // defining a key
-                snd.LocalSound( "misc/menu1.wav" );
+                QSound.LocalSound( "misc/menu1.wav" );
                 if( key == Key.K_ESCAPE )
                 {
                     _BindGrab = false;
@@ -1175,7 +1175,7 @@ namespace SharpQuake
 
                 case Key.K_LEFTARROW:
                 case Key.K_UPARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor--;
                     if( _Cursor < 0 )
                         _Cursor = _BindNames.Length - 1;
@@ -1183,7 +1183,7 @@ namespace SharpQuake
 
                 case Key.K_DOWNARROW:
                 case Key.K_RIGHTARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor++;
                     if( _Cursor >= _BindNames.Length )
                         _Cursor = 0;
@@ -1192,7 +1192,7 @@ namespace SharpQuake
                 case Key.K_ENTER:		// go into bind mode
                     int[] keys = new int[2];
                     FindKeysForCommand( _BindNames[_Cursor][0], keys );
-                    snd.LocalSound( "misc/menu2.wav" );
+                    QSound.LocalSound( "misc/menu2.wav" );
                     if( keys[1] != -1 )
                         UnbindCommand( _BindNames[_Cursor][0] );
                     _BindGrab = true;
@@ -1200,7 +1200,7 @@ namespace SharpQuake
 
                 case Key.K_BACKSPACE:		// delete bindings
                 case Key.K_DEL:				// delete bindings
-                    snd.LocalSound( "misc/menu2.wav" );
+                    QSound.LocalSound( "misc/menu2.wav" );
                     UnbindCommand( _BindNames[_Cursor][0] );
                     break;
             }
@@ -1307,13 +1307,13 @@ namespace SharpQuake
                     break;
 
                 case Key.K_DOWNARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     if( ++_Cursor >= MULTIPLAYER_ITEMS )
                         _Cursor = 0;
                     break;
 
                 case Key.K_UPARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     if( --_Cursor < 0 )
                         _Cursor = MULTIPLAYER_ITEMS - 1;
                     break;
@@ -1415,14 +1415,14 @@ namespace SharpQuake
                     break;
 
                 case Key.K_UPARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor--;
                     if( _Cursor < 0 )
                         _Cursor = NUM_LANCONFIG_CMDS - 1;
                     break;
 
                 case Key.K_DOWNARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor++;
                     if( _Cursor >= NUM_LANCONFIG_CMDS )
                         _Cursor = 0;
@@ -1602,14 +1602,14 @@ namespace SharpQuake
                     break;
 
                 case Key.K_UPARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor--;
                     if( _Cursor < 0 )
                         _Cursor = NUM_SETUP_CMDS - 1;
                     break;
 
                 case Key.K_DOWNARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor++;
                     if( _Cursor >= NUM_SETUP_CMDS )
                         _Cursor = 0;
@@ -1618,7 +1618,7 @@ namespace SharpQuake
                 case Key.K_LEFTARROW:
                     if( _Cursor < 2 )
                         return;
-                    snd.LocalSound( "misc/menu3.wav" );
+                    QSound.LocalSound( "misc/menu3.wav" );
                     if( _Cursor == 2 )
                         _Top = _Top - 1;
                     if( _Cursor == 3 )
@@ -1629,7 +1629,7 @@ namespace SharpQuake
                     if( _Cursor < 2 )
                         return;
 forward:
-                    snd.LocalSound( "misc/menu3.wav" );
+                    QSound.LocalSound( "misc/menu3.wav" );
                     if( _Cursor == 2 )
                         _Top = _Top + 1;
                     if( _Cursor == 3 )
@@ -1908,14 +1908,14 @@ forward:
                     break;
 
                 case Key.K_UPARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor--;
                     if( _Cursor < 0 )
                         _Cursor = NUM_GAMEOPTIONS - 1;
                     break;
 
                 case Key.K_DOWNARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor++;
                     if( _Cursor >= NUM_GAMEOPTIONS )
                         _Cursor = 0;
@@ -1924,19 +1924,19 @@ forward:
                 case Key.K_LEFTARROW:
                     if( _Cursor == 0 )
                         break;
-                    snd.LocalSound( "misc/menu3.wav" );
+                    QSound.LocalSound( "misc/menu3.wav" );
                     Change( -1 );
                     break;
 
                 case Key.K_RIGHTARROW:
                     if( _Cursor == 0 )
                         break;
-                    snd.LocalSound( "misc/menu3.wav" );
+                    QSound.LocalSound( "misc/menu3.wav" );
                     Change( 1 );
                     break;
 
                 case Key.K_ENTER:
-                    snd.LocalSound( "misc/menu2.wav" );
+                    QSound.LocalSound( "misc/menu2.wav" );
                     if( _Cursor == 0 )
                     {
                         if( server.IsActive )
@@ -2326,7 +2326,7 @@ forward:
 
                 case Key.K_UPARROW:
                 case Key.K_LEFTARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor--;
                     if( _Cursor < 0 )
                         _Cursor = net.HostCacheCount - 1;
@@ -2334,14 +2334,14 @@ forward:
 
                 case Key.K_DOWNARROW:
                 case Key.K_RIGHTARROW:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor++;
                     if( _Cursor >= net.HostCacheCount )
                         _Cursor = 0;
                     break;
 
                 case Key.K_ENTER:
-                    snd.LocalSound( "misc/menu2.wav" );
+                    QSound.LocalSound( "misc/menu2.wav" );
                     menu.ReturnMenu = this;
                     menu.ReturnOnError = true;
                     _Sorted = false;
@@ -2410,7 +2410,7 @@ forward:
             switch( key )
             {
                 case Key.K_ESCAPE:
-                    snd.LocalSound( "misc/menu1.wav" );
+                    QSound.LocalSound( "misc/menu1.wav" );
                     MenuBase.OptionsMenu.Show();
                     break;
 

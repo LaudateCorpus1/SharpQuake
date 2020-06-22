@@ -33,24 +33,24 @@ namespace SharpQuake
         private static entity_t[] _TempEntities = new entity_t[MAX_TEMP_ENTITIES]; // cl_temp_entities[MAX_TEMP_ENTITIES]
         private static beam_t[] _Beams = new beam_t[MAX_BEAMS]; // cl_beams[MAX_BEAMS]
 
-        private static sfx_t _SfxWizHit; // cl_sfx_wizhit
-        private static sfx_t _SfxKnigtHit; // cl_sfx_knighthit
-        private static sfx_t _SfxTink1; // cl_sfx_tink1
-        private static sfx_t _SfxRic1; // cl_sfx_ric1
-        private static sfx_t _SfxRic2; // cl_sfx_ric2
-        private static sfx_t _SfxRic3; // cl_sfx_ric3
-        private static sfx_t _SfxRExp3; // cl_sfx_r_exp3
+        private static QSoundFX _SfxWizHit; // cl_sfx_wizhit
+        private static QSoundFX _SfxKnigtHit; // cl_sfx_knighthit
+        private static QSoundFX _SfxTink1; // cl_sfx_tink1
+        private static QSoundFX _SfxRic1; // cl_sfx_ric1
+        private static QSoundFX _SfxRic2; // cl_sfx_ric2
+        private static QSoundFX _SfxRic3; // cl_sfx_ric3
+        private static QSoundFX _SfxRExp3; // cl_sfx_r_exp3
 
         // CL_InitTEnts
         private static void InitTempEntities()
         {
-            _SfxWizHit = snd.PrecacheSound( "wizard/hit.wav" );
-            _SfxKnigtHit = snd.PrecacheSound( "hknight/hit.wav" );
-            _SfxTink1 = snd.PrecacheSound( "weapons/tink1.wav" );
-            _SfxRic1 = snd.PrecacheSound( "weapons/ric1.wav" );
-            _SfxRic2 = snd.PrecacheSound( "weapons/ric2.wav" );
-            _SfxRic3 = snd.PrecacheSound( "weapons/ric3.wav" );
-            _SfxRExp3 = snd.PrecacheSound( "weapons/r_exp3.wav" );
+            _SfxWizHit = QSound.PrecacheSound( "wizard/hit.wav" );
+            _SfxKnigtHit = QSound.PrecacheSound( "hknight/hit.wav" );
+            _SfxTink1 = QSound.PrecacheSound( "weapons/tink1.wav" );
+            _SfxRic1 = QSound.PrecacheSound( "weapons/ric1.wav" );
+            _SfxRic2 = QSound.PrecacheSound( "weapons/ric2.wav" );
+            _SfxRic3 = QSound.PrecacheSound( "weapons/ric3.wav" );
+            _SfxRExp3 = QSound.PrecacheSound( "weapons/r_exp3.wav" );
 
             for( int i = 0; i < _TempEntities.Length; i++ )
                 _TempEntities[i] = new entity_t();
@@ -158,13 +158,13 @@ namespace SharpQuake
                 case protocol.TE_WIZSPIKE:			// spike hitting wall
                     pos = net.Reader.ReadCoords();
                     render.RunParticleEffect( ref pos, ref common.ZeroVector, 20, 30 );
-                    snd.StartSound( -1, 0, _SfxWizHit, ref pos, 1, 1 );
+                    QSound.StartSound( -1, 0, _SfxWizHit, ref pos, 1, 1 );
                     break;
 
                 case protocol.TE_KNIGHTSPIKE:			// spike hitting wall
                     pos = net.Reader.ReadCoords();
                     render.RunParticleEffect( ref pos, ref common.ZeroVector, 226, 20 );
-                    snd.StartSound( -1, 0, _SfxKnigtHit, ref pos, 1, 1 );
+                    QSound.StartSound( -1, 0, _SfxKnigtHit, ref pos, 1, 1 );
                     break;
 
                 case protocol.TE_SPIKE:			// spike hitting wall
@@ -175,16 +175,16 @@ namespace SharpQuake
                     render.RunParticleEffect( ref pos, ref common.ZeroVector, 0, 10 );
 #endif
                     if( ( sys.Random() % 5 ) != 0 )
-                        snd.StartSound( -1, 0, _SfxTink1, ref pos, 1, 1 );
+                        QSound.StartSound( -1, 0, _SfxTink1, ref pos, 1, 1 );
                     else
                     {
                         int rnd = sys.Random() & 3;
                         if( rnd == 1 )
-                            snd.StartSound( -1, 0, _SfxRic1, ref pos, 1, 1 );
+                            QSound.StartSound( -1, 0, _SfxRic1, ref pos, 1, 1 );
                         else if( rnd == 2 )
-                            snd.StartSound( -1, 0, _SfxRic2, ref pos, 1, 1 );
+                            QSound.StartSound( -1, 0, _SfxRic2, ref pos, 1, 1 );
                         else
-                            snd.StartSound( -1, 0, _SfxRic3, ref pos, 1, 1 );
+                            QSound.StartSound( -1, 0, _SfxRic3, ref pos, 1, 1 );
                     }
                     break;
 
@@ -193,16 +193,16 @@ namespace SharpQuake
                     render.RunParticleEffect( ref pos, ref common.ZeroVector, 0, 20 );
 
                     if( ( sys.Random() % 5 ) != 0 )
-                        snd.StartSound( -1, 0, _SfxTink1, ref pos, 1, 1 );
+                        QSound.StartSound( -1, 0, _SfxTink1, ref pos, 1, 1 );
                     else
                     {
                         int rnd = sys.Random() & 3;
                         if( rnd == 1 )
-                            snd.StartSound( -1, 0, _SfxRic1, ref pos, 1, 1 );
+                            QSound.StartSound( -1, 0, _SfxRic1, ref pos, 1, 1 );
                         else if( rnd == 2 )
-                            snd.StartSound( -1, 0, _SfxRic2, ref pos, 1, 1 );
+                            QSound.StartSound( -1, 0, _SfxRic2, ref pos, 1, 1 );
                         else
-                            snd.StartSound( -1, 0, _SfxRic3, ref pos, 1, 1 );
+                            QSound.StartSound( -1, 0, _SfxRic3, ref pos, 1, 1 );
                     }
                     break;
 
@@ -219,13 +219,13 @@ namespace SharpQuake
                     dl.radius = 350;
                     dl.die = (float)client.cl.time + 0.5f;
                     dl.decay = 300;
-                    snd.StartSound( -1, 0, _SfxRExp3, ref pos, 1, 1 );
+                    QSound.StartSound( -1, 0, _SfxRExp3, ref pos, 1, 1 );
                     break;
 
                 case protocol.TE_TAREXPLOSION:			// tarbaby explosion
                     pos = net.Reader.ReadCoords();
                     render.BlobExplosion( ref pos );
-                    snd.StartSound( -1, 0, _SfxRExp3, ref pos, 1, 1 );
+                    QSound.StartSound( -1, 0, _SfxRExp3, ref pos, 1, 1 );
                     break;
 
                 case protocol.TE_LIGHTNING1:				// lightning bolts
@@ -266,7 +266,7 @@ namespace SharpQuake
                     dl.radius = 350;
                     dl.die = (float)cl.time + 0.5f;
                     dl.decay = 300;
-                    snd.StartSound( -1, 0, _SfxRExp3, ref pos, 1, 1 );
+                    QSound.StartSound( -1, 0, _SfxRExp3, ref pos, 1, 1 );
                     break;
 
                 default:

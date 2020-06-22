@@ -207,8 +207,8 @@ namespace SharpQuake
                 Drawer.Init();
                 Scr.Init();
                 render.Init();
-                snd.Init();
-                cd_audio.Init();
+                QSound.Init();
+                CDAudio.Init();
                 sbar.Init();
                 client.Init();
             }
@@ -236,9 +236,9 @@ namespace SharpQuake
 
                 WriteConfiguration();
 
-                cd_audio.Shutdown();
+                CDAudio.Shutdown();
                 net.Shutdown();
-                snd.Shutdown();
+                QSound.Shutdown();
                 input.Shutdown();
 
                 if( _VcrWriter != null )
@@ -654,13 +654,13 @@ namespace SharpQuake
             // update audio
             if( client.cls.signon == client.SIGNONS )
             {
-                snd.Update( ref render.Origin, ref render.ViewPn, ref render.ViewRight, ref render.ViewUp );
+                QSound.Update( ref render.Origin, ref render.ViewPn, ref render.ViewRight, ref render.ViewUp );
                 client.DecayLights();
             }
             else
-                snd.Update( ref common.ZeroVector, ref common.ZeroVector, ref common.ZeroVector, ref common.ZeroVector );
+                QSound.Update( ref common.ZeroVector, ref common.ZeroVector, ref common.ZeroVector, ref common.ZeroVector );
 
-            cd_audio.Update();
+            CDAudio.Update();
 
             if( Math.Abs( _Speeds.Value ) > 0.001f )
             {
@@ -668,7 +668,7 @@ namespace SharpQuake
                 _Time3 = sys.GetFloatTime();
                 int pass2 = (int)( ( _Time2 - _Time1 ) * 1000 );
                 int pass3 = (int)( ( _Time3 - _Time2 ) * 1000 );
-                Con.Print( "{0,3} tot {1,3} server {2,3} gfx {3,3} snd\n", pass1 + pass2 + pass3, pass1, pass2, pass3 );
+                Con.Print( "{0,3} tot {1,3} server {2,3} gfx {3,3} QSound\n", pass1 + pass2 + pass3, pass1, pass2, pass3 );
             }
 
             _FrameCount++;

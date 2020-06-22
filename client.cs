@@ -373,7 +373,7 @@ namespace SharpQuake
         //
         public model_t[] model_precache; // [MAX_MODELS];
 
-        public sfx_t[] sound_precache; // [MAX_SOUNDS];
+        public QSoundFX[] sound_precache; // [MAX_SOUNDS];
 
         public string levelname; // char[40];	// for display on solo scoreboard
         public int viewentity;		// cl_entitites[cl.viewentity] = player
@@ -479,7 +479,7 @@ namespace SharpQuake
             this.mvelocity = new Vector3[2];
             this.mtime = new double[2];
             this.model_precache = new model_t[QDef.MAX_MODELS];
-            this.sound_precache = new sfx_t[QDef.MAX_SOUNDS];
+            this.sound_precache = new QSoundFX[QDef.MAX_SOUNDS];
             this.viewent = new entity_t();
         }
     } //client_state_t;
