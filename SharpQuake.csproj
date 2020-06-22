@@ -143,10 +143,10 @@
     <Compile Include="sbar.cs" />
     <Compile Include="screen.cs" />
     <Compile Include="screen_draw.cs" />
-    <Compile Include="SDL2-CS\src\SDL2.cs" />
-    <Compile Include="SDL2-CS\src\SDL2_image.cs" />
-    <Compile Include="SDL2-CS\src\SDL2_mixer.cs" />
-    <Compile Include="SDL2-CS\src\SDL2_ttf.cs" />
+    <Compile Include="SDL2-CS\SDL2.cs" />
+    <Compile Include="SDL2-CS\SDL2_image.cs" />
+    <Compile Include="SDL2-CS\SDL2_mixer.cs" />
+    <Compile Include="SDL2-CS\SDL2_ttf.cs" />
     <Compile Include="server.cs" />
     <Compile Include="sv_main.cs" />
     <Compile Include="sv_move.cs" />
@@ -195,6 +195,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".gitignore" />
     <Content Include="Resources\quake.ico" />
   </ItemGroup>
   <ItemGroup>
