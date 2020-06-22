@@ -150,7 +150,7 @@ namespace SharpQuake
         private static float _SpeedScale; // speedscale		// for top sky and bottom sky
         private static float _ShadeLight; // shadelight
         private static float _AmbientLight; // ambientlight
-        private static float[] _ShadeDots = anorm_dots.Values[0]; // shadedots
+        private static float[] _ShadeDots = AnormDots.Values[0]; // shadedots
         private static Vector3 _ShadeVector; // shadevector
         private static int _LastPoseNum; // lastposenum
         private static Vector3 _LightSpot; // lightspot
@@ -867,7 +867,7 @@ namespace SharpQuake
             if( clmodel.name == "progs/flame2.mdl" || clmodel.name == "progs/flame.mdl" )
                 _AmbientLight = _ShadeLight = 256;
 
-            _ShadeDots = anorm_dots.Values[( (int)( e.angles.Y * ( anorm_dots.SHADEDOT_QUANT / 360.0 ) ) ) & ( anorm_dots.SHADEDOT_QUANT - 1 )];
+            _ShadeDots = AnormDots.Values[( (int)( e.angles.Y * ( AnormDots.SHADEDOT_QUANT / 360.0 ) ) ) & ( AnormDots.SHADEDOT_QUANT - 1 )];
             _ShadeLight = _ShadeLight / 200.0f;
 
             double an = e.angles.Y / 180.0 * Math.PI;
@@ -1197,7 +1197,7 @@ namespace SharpQuake
 
             for( int i = 0; i < 4; i++ )
             {
-                _Frustum[i].type = Planes.PLANE_ANYZ;
+                _Frustum[i].type = BSPPlaneFlag.PLANE_ANYZ;
                 _Frustum[i].dist = Vector3.Dot( render.Origin, _Frustum[i].normal );
                 _Frustum[i].signbits = (byte)SignbitsForPlane( _Frustum[i] );
             }

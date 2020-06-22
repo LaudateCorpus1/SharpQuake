@@ -403,7 +403,7 @@ namespace SharpQuake
                 p.color = 0x6f;
                 p.type = ptype_t.pt_explode;
 
-                p.org = ent.origin + anorms.Values[i] * dist + forward * _BeamLength;
+                p.org = ent.origin + Anorms.Values[i] * dist + forward * _BeamLength;
             }
         }
 

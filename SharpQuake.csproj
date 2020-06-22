@@ -69,9 +69,26 @@
     <OutputPath>Quake\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="anorm_dots.cs" />
-    <Compile Include="anorms.cs" />
-    <Compile Include="bsp_file.cs" />
+    <Compile Include="AnormDots.cs" />
+    <Compile Include="Anorms.cs" />
+    <Compile Include="BSP\BSPAmbientFlag.cs" />
+    <Compile Include="BSP\BSPClipNode.cs" />
+    <Compile Include="BSP\BSPContentFlag.cs" />
+    <Compile Include="BSP\BSPEdge.cs" />
+    <Compile Include="BSP\BSPFace.cs" />
+    <Compile Include="BSP\BSPFile.cs" />
+    <Compile Include="BSP\BSPHeader.cs" />
+    <Compile Include="BSP\BSPLeaf.cs" />
+    <Compile Include="BSP\BSPLumpFlag.cs" />
+    <Compile Include="BSP\BSPMipTex.cs" />
+    <Compile Include="BSP\BSPMipTexLump.cs" />
+    <Compile Include="BSP\BSPModel.cs" />
+    <Compile Include="BSP\BSPLump.cs" />
+    <Compile Include="BSP\BSPNode.cs" />
+    <Compile Include="BSP\BSPPlane.cs" />
+    <Compile Include="BSP\BSPPlaneFlag.cs" />
+    <Compile Include="BSP\BSPTexInfo.cs" />
+    <Compile Include="BSP\BSPVertex.cs" />
     <Compile Include="cd_audio.cs" />
     <Compile Include="cd_audio_win.cs" />
     <Compile Include="chase.cs" />

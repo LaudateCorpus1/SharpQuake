@@ -53,7 +53,7 @@ namespace SharpQuake
         private static hull_t _BoxHull = new hull_t();
 
         // box_hull
-        private static dclipnode_t[] _BoxClipNodes = new dclipnode_t[6];
+        private static BSPClipNode[] _BoxClipNodes = new BSPClipNode[6];
 
         private static mplane_t[] _BoxPlanes = new mplane_t[6];
 
@@ -172,8 +172,8 @@ namespace SharpQuake
         public static int PointContents( ref Vector3 p )
         {
             int cont = HullPointContents( sv.worldmodel.hulls[0], 0, ref p );
-            if( cont <= Contents.CONTENTS_CURRENT_0 && cont >= Contents.CONTENTS_CURRENT_DOWN )
-                cont = Contents.CONTENTS_WATER;
+            if( cont <= BSPContentFlag.CONTENTS_CURRENT_0 && cont >= BSPContentFlag.CONTENTS_CURRENT_DOWN )
+                cont = BSPContentFlag.CONTENTS_WATER;
             return cont;
         }
 
@@ -228,10 +228,10 @@ namespace SharpQuake
             // check for empty
             if( num < 0 )
             {
-                if( num != Contents.CONTENTS_SOLID )
+                if( num != BSPContentFlag.CONTENTS_SOLID )
                 {
                     trace.allsolid = false;
-                    if( num == Contents.CONTENTS_EMPTY )
+                    if( num == BSPContentFlag.CONTENTS_EMPTY )
                         trace.inopen = true;
                     else
                         trace.inwater = true;
@@ -287,7 +287,7 @@ namespace SharpQuake
             if( !RecursiveHullCheck( hull, node_children[side], p1f, midf, ref p1, ref mid, trace ) )
                 return false;
 
-            if( HullPointContents( hull, node_children[side ^ 1], ref mid ) != Contents.CONTENTS_SOLID )
+            if( HullPointContents( hull, node_children[side ^ 1], ref mid ) != BSPContentFlag.CONTENTS_SOLID )
                 // go past the node
                 return RecursiveHullCheck( hull, node_children[side ^ 1], midf, p2f, ref mid, ref p2, trace );
 
@@ -308,7 +308,7 @@ namespace SharpQuake
                 trace.plane.dist = -plane.dist;
             }
 
-            while( HullPointContents( hull, hull.firstclipnode, ref mid ) == Contents.CONTENTS_SOLID )
+            while( HullPointContents( hull, hull.firstclipnode, ref mid ) == BSPContentFlag.CONTENTS_SOLID )
             {
                 // shouldn't really happen, but does occasionally
                 frac -= 0.1f;
@@ -404,11 +404,11 @@ namespace SharpQuake
 
                 int side = i & 1;
 
-                _BoxClipNodes[i].children[side] = Contents.CONTENTS_EMPTY;
+                _BoxClipNodes[i].children[side] = BSPContentFlag.CONTENTS_EMPTY;
                 if( i != 5 )
                     _BoxClipNodes[i].children[side ^ 1] = (short)( i + 1 );
                 else
-                    _BoxClipNodes[i].children[side ^ 1] = Contents.CONTENTS_SOLID;
+                    _BoxClipNodes[i].children[side ^ 1] = BSPContentFlag.CONTENTS_SOLID;
 
                 _BoxPlanes[i].type = (byte)( i >> 1 );
                 switch( i >> 1 )
@@ -496,7 +496,7 @@ namespace SharpQuake
         /// </summary>
         private static void FindTouchedLeafs( edict_t ent, mnodebase_t node )
         {
-            if( node.contents == Contents.CONTENTS_SOLID )
+            if( node.contents == BSPContentFlag.CONTENTS_SOLID )
                 return;
 
             // add an efrag if the node is a leaf

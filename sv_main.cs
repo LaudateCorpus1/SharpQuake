@@ -28,7 +28,7 @@ namespace SharpQuake
     partial class server
     {
         private static int _FatBytes; // fatbytes
-        private static byte[] _FatPvs = new byte[bsp_file.MAX_MAP_LEAFS / 8]; // fatpvs
+        private static byte[] _FatPvs = new byte[BSPFile.MAX_MAP_LEAFS / 8]; // fatpvs
 
         // SV_Init
         public static void Init()
@@ -878,7 +878,7 @@ namespace SharpQuake
                 // if this is a leaf, accumulate the pvs bits
                 if( node.contents < 0 )
                 {
-                    if( node.contents != Contents.CONTENTS_SOLID )
+                    if( node.contents != BSPContentFlag.CONTENTS_SOLID )
                     {
                         byte[] pvs = Mod.LeafPVS( (mleaf_t)node, sv.worldmodel );
                         for( int i = 0; i < _FatBytes; i++ )

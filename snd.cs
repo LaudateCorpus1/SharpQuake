@@ -105,7 +105,7 @@ namespace SharpQuake
 
         private static sfx_t[] _KnownSfx = new sfx_t[MAX_SFX]; // hunk allocated [MAX_SFX]
         private static int _NumSfx; // num_sfx
-        private static sfx_t[] _AmbientSfx = new sfx_t[Ambients.NUM_AMBIENTS]; // *ambient_sfx[NUM_AMBIENTS]
+        private static sfx_t[] _AmbientSfx = new sfx_t[BSPAmbientFlag.NUM_AMBIENTS]; // *ambient_sfx[NUM_AMBIENTS]
         private static bool _Ambient = true; // snd_ambient
         private static dma_t _shm = new dma_t(); // shm
 
@@ -159,8 +159,8 @@ namespace SharpQuake
             Con.Print( "Sound sampling rate: {0}\n", _shm.speed );
 
             // provides a tick sound until washed clean
-            _AmbientSfx[Ambients.AMBIENT_WATER] = PrecacheSound( "ambience/water1.wav" );
-            _AmbientSfx[Ambients.AMBIENT_SKY] = PrecacheSound( "ambience/wind2.wav" );
+            _AmbientSfx[BSPAmbientFlag.AMBIENT_WATER] = PrecacheSound( "ambience/water1.wav" );
+            _AmbientSfx[BSPAmbientFlag.AMBIENT_SKY] = PrecacheSound( "ambience/wind2.wav" );
 
             StopAllSounds( true );
         }
@@ -285,7 +285,7 @@ namespace SharpQuake
 
             // if an identical sound has also been started this frame, offset the pos
             // a bit to keep it from just making the first one louder
-            for( int i = Ambients.NUM_AMBIENTS; i < Ambients.NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS; i++ )
+            for( int i = BSPAmbientFlag.NUM_AMBIENTS; i < BSPAmbientFlag.NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS; i++ )
             {
                 channel_t check = _Channels[i];
                 if( check == target_chan )
@@ -359,7 +359,7 @@ namespace SharpQuake
 
             // update spatialization for static and dynamic sounds
             //channel_t ch = channels + NUM_AMBIENTS;
-            for( int i = Ambients.NUM_AMBIENTS; i < _TotalChannels; i++ )
+            for( int i = BSPAmbientFlag.NUM_AMBIENTS; i < _TotalChannels; i++ )
             {
                 channel_t ch = _Channels[i];// channels + NUM_AMBIENTS;
                 if( ch.sfx == null )
@@ -371,7 +371,7 @@ namespace SharpQuake
 
                 // try to combine static sounds with a previous channel of the same
                 // sound effect so we don't mix five torches every frame
-                if( i >= MAX_DYNAMIC_CHANNELS + Ambients.NUM_AMBIENTS )
+                if( i >= MAX_DYNAMIC_CHANNELS + BSPAmbientFlag.NUM_AMBIENTS )
                 {
                     // see if it can just use the last one
                     if( combine != null && combine.sfx == ch.sfx )
@@ -382,9 +382,9 @@ namespace SharpQuake
                         continue;
                     }
                     // search for one
-                    combine = _Channels[MAX_DYNAMIC_CHANNELS + Ambients.NUM_AMBIENTS];// channels + MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS;
+                    combine = _Channels[MAX_DYNAMIC_CHANNELS + BSPAmbientFlag.NUM_AMBIENTS];// channels + MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS;
                     int j;
-                    for( j = MAX_DYNAMIC_CHANNELS + Ambients.NUM_AMBIENTS; j < i; j++ )
+                    for( j = MAX_DYNAMIC_CHANNELS + BSPAmbientFlag.NUM_AMBIENTS; j < i; j++ )
                     {
                         combine = _Channels[j];
                         if( combine.sfx == ch.sfx )
@@ -435,7 +435,7 @@ namespace SharpQuake
             if( !_Controller.IsInitialized )
                 return;
 
-            _TotalChannels = MAX_DYNAMIC_CHANNELS + Ambients.NUM_AMBIENTS;	// no statics
+            _TotalChannels = MAX_DYNAMIC_CHANNELS + BSPAmbientFlag.NUM_AMBIENTS;	// no statics
 
             for( int i = 0; i < MAX_CHANNELS; i++ )
                 if( _Channels[i].sfx != null )
@@ -720,7 +720,7 @@ namespace SharpQuake
             // Check for replacement sound, or find the best one to replace
             int first_to_die = -1;
             int life_left = 0x7fffffff;
-            for( int ch_idx = Ambients.NUM_AMBIENTS; ch_idx < Ambients.NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS; ch_idx++ )
+            for( int ch_idx = BSPAmbientFlag.NUM_AMBIENTS; ch_idx < BSPAmbientFlag.NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS; ch_idx++ )
             {
                 if( entchannel != 0		// channel 0 never overrides
                     && _Channels[ch_idx].entnum == entnum
@@ -764,12 +764,12 @@ namespace SharpQuake
             mleaf_t l = Mod.PointInLeaf( ref _ListenerOrigin, client.cl.worldmodel );
             if( l == null || _AmbientLevel.Value == 0 )
             {
-                for( int i = 0; i < Ambients.NUM_AMBIENTS; i++ )
+                for( int i = 0; i < BSPAmbientFlag.NUM_AMBIENTS; i++ )
                     _Channels[i].sfx = null;
                 return;
             }
 
-            for( int i = 0; i < Ambients.NUM_AMBIENTS; i++ )
+            for( int i = 0; i < BSPAmbientFlag.NUM_AMBIENTS; i++ )
             {
                 channel_t chan = _Channels[i];
                 chan.sfx = _AmbientSfx[i];

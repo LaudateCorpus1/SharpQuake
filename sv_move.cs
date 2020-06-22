@@ -68,7 +68,7 @@ namespace SharpQuake
                     if( trace.fraction == 1 )
                     {
                         if( ( (int)ent.v.flags & EdictFlags.FL_SWIM ) != 0 &&
-                            PointContents( ref trace.endpos ) == Contents.CONTENTS_EMPTY )
+                            PointContents( ref trace.endpos ) == BSPContentFlag.CONTENTS_EMPTY )
                             return false;	// swim monster left water
 
                         mathlib.Copy( ref trace.endpos, out ent.v.origin );
@@ -164,7 +164,7 @@ namespace SharpQuake
                 {
                     start.X = ( x != 0 ? maxs.x : mins.x );
                     start.Y = ( y != 0 ? maxs.y : mins.y );
-                    if( PointContents( ref start ) != Contents.CONTENTS_SOLID )
+                    if( PointContents( ref start ) != BSPContentFlag.CONTENTS_SOLID )
                         goto RealCheck;
                 }
 

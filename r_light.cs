@@ -236,7 +236,7 @@ namespace SharpQuake
                 {
                     lmOffset += dt * ( ( extents[0] >> 4 ) + 1 ) + ds;
 
-                    for( int maps = 0; maps < bsp_file.MAXLIGHTMAPS && surf[offset].styles[maps] != 255; maps++ )
+                    for( int maps = 0; maps < BSPFile.MAXLIGHTMAPS && surf[offset].styles[maps] != 255; maps++ )
                     {
                         int scale = _LightStyleValue[surf[offset].styles[maps]];
                         r += lightmap[lmOffset] * scale;

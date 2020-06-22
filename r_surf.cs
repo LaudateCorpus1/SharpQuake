@@ -360,7 +360,7 @@ namespace SharpQuake
 
                 // add all the lightmaps
                 if( lightmap != null )
-                    for( int maps = 0; maps < bsp_file.MAXLIGHTMAPS && surf.styles[maps] != 255; maps++ )
+                    for( int maps = 0; maps < BSPFile.MAXLIGHTMAPS && surf.styles[maps] != 255; maps++ )
                     {
                         int scale = _LightStyleValue[surf.styles[maps]];
                         surf.cached_light[maps] = scale;	// 8.8 fraction
@@ -743,7 +743,7 @@ namespace SharpQuake
 
             // check for lightmap modification
             bool modified = false;
-            for( int maps = 0; maps < bsp_file.MAXLIGHTMAPS && fa.styles[maps] != 255; maps++ )
+            for( int maps = 0; maps < BSPFile.MAXLIGHTMAPS && fa.styles[maps] != 255; maps++ )
                 if( _LightStyleValue[fa.styles[maps]] != fa.cached_light[maps] )
                 {
                     modified = true;
@@ -815,7 +815,7 @@ namespace SharpQuake
         /// </summary>
         private static void RecursiveWorldNode( mnodebase_t node )
         {
-            if( node.contents == Contents.CONTENTS_SOLID )
+            if( node.contents == BSPContentFlag.CONTENTS_SOLID )
                 return;		// solid
 
             if( node.visframe != _VisFrameCount )
@@ -859,15 +859,15 @@ namespace SharpQuake
 
             switch( plane.type )
             {
-                case Planes.PLANE_X:
+                case BSPPlaneFlag.PLANE_X:
                     dot = _ModelOrg.X - plane.dist;
                     break;
 
-                case Planes.PLANE_Y:
+                case BSPPlaneFlag.PLANE_Y:
                     dot = _ModelOrg.Y - plane.dist;
                     break;
 
-                case Planes.PLANE_Z:
+                case BSPPlaneFlag.PLANE_Z:
                     dot = _ModelOrg.Z - plane.dist;
                     break;
 
@@ -1196,7 +1196,7 @@ namespace SharpQuake
 
             // check for lightmap modification
             bool flag = false;
-            for( int maps = 0; maps < bsp_file.MAXLIGHTMAPS && fa.styles[maps] != 255; maps++ )
+            for( int maps = 0; maps < BSPFile.MAXLIGHTMAPS && fa.styles[maps] != 255; maps++ )
                 if( _LightStyleValue[fa.styles[maps]] != fa.cached_light[maps] )
                 {
                     flag = true;
