@@ -87,7 +87,7 @@ namespace SharpQuake
                 width = 38;
                 _LineWidth = width; // con_linewidth = width;
                 _TotalLines = CON_TEXTSIZE / _LineWidth;
-                common.FillArray( _Text, ' ' ); // Q_memset (con_text, ' ', CON_TEXTSIZE);
+                QCommon.FillArray( _Text, ' ' ); // Q_memset (con_text, ' ', CON_TEXTSIZE);
             }
             else
             {
@@ -107,7 +107,7 @@ namespace SharpQuake
 
                 char[] tmp = _Text;
                 _Text = new char[CON_TEXTSIZE];
-                common.FillArray( _Text, ' ' );
+                QCommon.FillArray( _Text, ' ' );
 
                 for( int i = 0; i < numlines; i++ )
                 {
@@ -128,10 +128,10 @@ namespace SharpQuake
         // Con_Init (void)
         public static void Init()
         {
-            _DebugLog = ( common.CheckParm( "-condebug" ) > 0 );
+            _DebugLog = ( QCommon.CheckParm( "-condebug" ) > 0 );
             if( _DebugLog )
             {
-                string path = Path.Combine( common.GameDir, LOG_FILE_NAME );
+                string path = Path.Combine( QCommon.GameDir, LOG_FILE_NAME );
                 if( File.Exists( path ) )
                     File.Delete( path );
 
@@ -151,10 +151,10 @@ namespace SharpQuake
                 _NotifyTime = new cvar( "con_notifytime", "3" );
             }
 
-            cmd.Add( "toggleconsole", ToggleConsole_f );
-            cmd.Add( "messagemode", MessageMode_f );
-            cmd.Add( "messagemode2", MessageMode2_f );
-            cmd.Add( "clear", Clear_f );
+            QCommand.Add( "toggleconsole", ToggleConsole_f );
+            QCommand.Add( "messagemode", MessageMode_f );
+            QCommand.Add( "messagemode2", MessageMode2_f );
+            QCommand.Add( "clear", Clear_f );
 
             _IsInitialized = true;
         }
@@ -433,7 +433,7 @@ namespace SharpQuake
         /// </summary>
         private static void Clear_f()
         {
-            common.FillArray( _Text, ' ' );
+            QCommon.FillArray( _Text, ' ' );
         }
 
         // Con_MessageMode_f

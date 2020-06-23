@@ -171,12 +171,12 @@ namespace SharpQuake
             _Params = parms;
 
             Cache.Init( 1024 * 1024 * 512 ); // debug
-            Cbuf.Init();
-            cmd.Init();
+            QCommandBuffer.Init();
+            QCommand.Init();
             view.Init();
             QChase.Init();
             InitVCR( parms );
-            common.Init( parms.basedir, parms.argv );
+            QCommon.Init( parms.basedir, parms.argv );
             InitLocal();
             wad.LoadWadFile( "gfx.wad" );
             Key.Init();
@@ -194,10 +194,10 @@ namespace SharpQuake
 
             if( QClient.cls.state != ServerType.DEDICATED )
             {
-                _BasePal = common.LoadFile( "gfx/palette.lmp" );
+                _BasePal = QCommon.LoadFile( "gfx/palette.lmp" );
                 if( _BasePal == null )
                     sys.Error( "Couldn't load gfx/palette.lmp" );
-                _ColorMap = common.LoadFile( "gfx/colormap.lmp" );
+                _ColorMap = QCommon.LoadFile( "gfx/colormap.lmp" );
                 if( _ColorMap == null )
                     sys.Error( "Couldn't load gfx/colormap.lmp" );
 
@@ -213,7 +213,7 @@ namespace SharpQuake
                 QClient.Init();
             }
 
-            Cbuf.InsertText( "exec quake.rc\n" );
+            QCommandBuffer.InsertText( "exec quake.rc\n" );
 
             _IsInitialized = true;
 
@@ -295,7 +295,7 @@ namespace SharpQuake
                 QClient.Disconnect();
                 QClient.cls.demonum = -1;
 
-                throw new EndGameException(); // longjmp (host_abortserver, 1);
+                throw new QEndGameException(); // longjmp (host_abortserver, 1);
             }
             finally
             {
@@ -322,7 +322,7 @@ namespace SharpQuake
             else
                 QClient.Disconnect();
 
-            throw new EndGameException();  //longjmp (host_abortserver, 1);
+            throw new QEndGameException();  //longjmp (host_abortserver, 1);
         }
 
         // Host_Frame
@@ -412,7 +412,7 @@ namespace SharpQuake
             while( count > 0 );
 
             // make sure all the clients know we're disconnecting
-            MsgWriter writer = new MsgWriter( 4 );
+            QMessageWriter writer = new QMessageWriter( 4 );
             writer.WriteByte( protocol.svc_disconnect );
             count = net.SendToAll( writer, 5 );
             if( count != 0 )
@@ -443,7 +443,7 @@ namespace SharpQuake
             // config.cfg cvars
             if( _IsInitialized & !host.IsDedicated )
             {
-                string path = Path.Combine( common.GameDir, "config.cfg" );
+                string path = Path.Combine( QCommon.GameDir, "config.cfg" );
                 using( FileStream fs = sys.FileOpenWrite( path, true ) )
                 {
                     if( fs != null )
@@ -494,13 +494,13 @@ namespace SharpQuake
 
             svs.maxclients = 1;
 
-            int i = common.CheckParm( "-dedicated" );
+            int i = QCommon.CheckParm( "-dedicated" );
             if( i > 0 )
             {
                 cls.state = ServerType.DEDICATED;
-                if( i != ( common.Argc - 1 ) )
+                if( i != ( QCommon.Argc - 1 ) )
                 {
-                    svs.maxclients = common.atoi( common.Argv( i + 1 ) );
+                    svs.maxclients = QCommon.atoi( QCommon.Argv( i + 1 ) );
                 }
                 else
                     svs.maxclients = 8;
@@ -508,13 +508,13 @@ namespace SharpQuake
             else
                 cls.state = ServerType.DISCONNECTED;
 
-            i = common.CheckParm( "-listen" );
+            i = QCommon.CheckParm( "-listen" );
             if( i > 0 )
             {
                 if( cls.state == ServerType.DEDICATED )
                     sys.Error( "Only one of -dedicated or -listen can be specified" );
-                if( i != ( common.Argc - 1 ) )
-                    svs.maxclients = common.atoi( common.Argv( i + 1 ) );
+                if( i != ( QCommon.Argc - 1 ) )
+                    svs.maxclients = QCommon.atoi( QCommon.Argv( i + 1 ) );
                 else
                     svs.maxclients = 8;
             }
@@ -538,9 +538,9 @@ namespace SharpQuake
 
         private static void InitVCR( quakeparms_t parms )
         {
-            if( common.HasParam( "-playback" ) )
+            if( QCommon.HasParam( "-playback" ) )
             {
-                if( common.Argc != 2 )
+                if( QCommon.Argc != 2 )
                     sys.Error( "No other parameters allowed with -playback\n" );
 
                 Stream file = sys.FileOpenRead( "quake.vcr" );
@@ -560,26 +560,26 @@ namespace SharpQuake
                 {
                     argv[i] = sys.ReadString( _VcrReader );
                 }
-                common.Args = argv;
+                QCommon.Args = argv;
                 parms.argv = argv;
             }
 
-            int n = common.CheckParm( "-record" );
+            int n = QCommon.CheckParm( "-record" );
             if( n != 0 )
             {
                 Stream file = sys.FileOpenWrite( "quake.vcr" ); // vcrFile = Sys_FileOpenWrite("quake.vcr");
                 _VcrWriter = new BinaryWriter( file, Encoding.ASCII );
 
                 _VcrWriter.Write( VCR_SIGNATURE ); //  Sys_FileWrite(vcrFile, &i, sizeof(int));
-                _VcrWriter.Write( common.Argc - 1 );
-                for( int i = 1; i < common.Argc; i++ )
+                _VcrWriter.Write( QCommon.Argc - 1 );
+                for( int i = 1; i < QCommon.Argc; i++ )
                 {
                     if( i == n )
                     {
                         sys.WriteString( _VcrWriter, "-playback" );
                         continue;
                     }
-                    sys.WriteString( _VcrWriter, common.Argv( i ) );
+                    sys.WriteString( _VcrWriter, QCommon.Argv( i ) );
                 }
             }
         }
@@ -603,7 +603,7 @@ namespace SharpQuake
             input.Commands();
 
             // process console commands
-            Cbuf.Execute();
+            QCommandBuffer.Execute();
 
             net.Poll();
 
@@ -658,7 +658,7 @@ namespace SharpQuake
                 QClient.DecayLights();
             }
             else
-                QSound.Update( ref common.ZeroVector, ref common.ZeroVector, ref common.ZeroVector, ref common.ZeroVector );
+                QSound.Update( ref QCommon.ZeroVector, ref QCommon.ZeroVector, ref QCommon.ZeroVector, ref QCommon.ZeroVector );
 
             QCDAudio.Update();
 
@@ -712,7 +712,7 @@ namespace SharpQuake
                 if( string.IsNullOrEmpty( cmd ) )
                     break;
 
-                Cbuf.AddText( cmd );
+                QCommandBuffer.AddText( cmd );
             }
         }
     }

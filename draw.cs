@@ -174,8 +174,8 @@ namespace SharpQuake
             if( renderer.Contains( "3dfx" ) || renderer.Contains( "Glide" ) )
                 cvar.Set( "gl_max_size", "256" );
 
-            cmd.Add( "gl_texturemode", TextureMode_f );
-            cmd.Add( "imagelist", Imagelist_f );
+            QCommand.Add( "gl_texturemode", TextureMode_f );
+            QCommand.Add( "imagelist", Imagelist_f );
 
             // load the console background and the charset
             // by hand, because we need to write the version
@@ -190,9 +190,9 @@ namespace SharpQuake
             }
 
             // now turn them into textures
-            _CharTexture = LoadTexture( "charset", 128, 128, new ByteArraySegment( draw_chars, offset ), false, true );
+            _CharTexture = LoadTexture( "charset", 128, 128, new QByteArraySegment( draw_chars, offset ), false, true );
 
-            byte[] buf = common.LoadFile( "gfx/conback.lmp" );
+            byte[] buf = QCommon.LoadFile( "gfx/conback.lmp" );
             if( buf == null )
                 sys.Error( "Couldn't load gfx/conback.lmp" );
 
@@ -204,7 +204,7 @@ namespace SharpQuake
             int offset2 = Marshal.SizeOf( typeof( dqpicheader_t ) ) + 320 * 186 + 320 - 11 - 8 * ver.Length;
             int y = ver.Length;
             for( int x = 0; x < y; x++ )
-                CharToConback( ver[x], new ByteArraySegment( buf, offset2 + ( x << 3 ) ), new ByteArraySegment( draw_chars, offset ) );
+                CharToConback( ver[x], new QByteArraySegment( buf, offset2 + ( x << 3 ) ), new QByteArraySegment( draw_chars, offset ) );
 
             _ConBack = new glpic_t();
             _ConBack.width = cbHeader.width;
@@ -213,7 +213,7 @@ namespace SharpQuake
 
             SetTextureFilters( TextureMinFilter.Nearest, TextureMagFilter.Nearest );
 
-            _ConBack.texnum = LoadTexture( "conback", _ConBack.width, _ConBack.height, new ByteArraySegment( buf, ncdataIndex ), false, false );
+            _ConBack.texnum = LoadTexture( "conback", _ConBack.width, _ConBack.height, new QByteArraySegment( buf, ncdataIndex ), false, false );
             _ConBack.width = Scr.vid.width;
             _ConBack.height = Scr.vid.height;
 
@@ -354,7 +354,7 @@ namespace SharpQuake
             }
             else
             {
-                gl.texnum = LoadTexture( gl, new ByteArraySegment( wad.Data, offset ) );
+                gl.texnum = LoadTexture( gl, new QByteArraySegment( wad.Data, offset ) );
             }
             return gl;
         }
@@ -394,7 +394,7 @@ namespace SharpQuake
         /// <summary>
         /// GL_LoadTexture
         /// </summary>
-        public static int LoadTexture( string identifier, int width, int height, ByteArraySegment data, bool mipmap, bool alpha, string owner = "" )
+        public static int LoadTexture( string identifier, int width, int height, QByteArraySegment data, bool mipmap, bool alpha, string owner = "" )
         {
             // see if the texture is allready present
             if( !String.IsNullOrEmpty( identifier ) )
@@ -496,7 +496,7 @@ namespace SharpQuake
             //
             // load the pic from disk
             //
-            byte[] data = common.LoadFile( path );
+            byte[] data = QCommon.LoadFile( path );
             if( data == null )
                 sys.Error( "Draw_CachePic: failed to load {0}", path );
             dqpicheader_t header = sys.BytesToStructure<dqpicheader_t>( data, 0 );
@@ -518,7 +518,7 @@ namespace SharpQuake
             gl.height = header.height;
 
             //gl = (glpic_t *)pic->pic.data;
-            gl.texnum = LoadTexture( gl, new ByteArraySegment( data, headerSize ) );
+            gl.texnum = LoadTexture( gl, new QByteArraySegment( data, headerSize ) );
             gl.sl = 0;
             gl.sh = 1;
             gl.tl = 0;
@@ -684,7 +684,7 @@ namespace SharpQuake
         private static void TextureMode_f()
         {
             int i;
-            if( cmd.Argc == 1 )
+            if( QCommand.Argc == 1 )
             {
                 for( i = 0; i < 6; i++ )
                     if( _MinFilter == _Modes[i].minimize )
@@ -698,7 +698,7 @@ namespace SharpQuake
 
             for( i = 0; i < _Modes.Length; i++ )
             {
-                if( common.SameText( _Modes[i].name, cmd.Argv( 1 ) ) )
+                if( QCommon.SameText( _Modes[i].name, QCommand.Argv( 1 ) ) )
                     break;
             }
             if( i == _Modes.Length )
@@ -742,12 +742,12 @@ namespace SharpQuake
         /// <summary>
         /// GL_LoadPicTexture
         /// </summary>
-        private static int LoadTexture( glpic_t pic, ByteArraySegment data )
+        private static int LoadTexture( glpic_t pic, QByteArraySegment data )
         {
             return LoadTexture( String.Empty, pic.width, pic.height, data, false, true );
         }
 
-        private static void CharToConback( int num, ByteArraySegment dest, ByteArraySegment drawChars )
+        private static void CharToConback( int num, QByteArraySegment dest, QByteArraySegment drawChars )
         {
             int row = num >> 4;
             int col = num & 15;
@@ -769,7 +769,7 @@ namespace SharpQuake
         /// <summary>
         /// GL_Upload8
         /// </summary>
-        private static void Upload8( ByteArraySegment data, int width, int height, bool mipmap, bool alpha )
+        private static void Upload8( QByteArraySegment data, int width, int height, bool mipmap, bool alpha )
         {
             int s = width * height;
             uint[] trans = new uint[s];
@@ -920,7 +920,7 @@ Done:
         // Operates in place, quartering the size of the texture
         private static void MipMap( uint[] src, int width, int height )
         {
-            Union4b p1 = Union4b.Empty, p2 = Union4b.Empty, p3 = Union4b.Empty, p4 = Union4b.Empty;
+            QByteUnion4 p1 = QByteUnion4.Empty, p2 = QByteUnion4.Empty, p3 = QByteUnion4.Empty, p4 = QByteUnion4.Empty;
 
             width >>= 1;
             height >>= 1;
@@ -1001,7 +1001,7 @@ Done:
             for( int i = 0; i < MAX_SCRAPS; i++ )
             {
                 Bind( _ScrapTexNum + i );
-                Upload8( new ByteArraySegment( _ScrapTexels[i] ), BLOCK_WIDTH, BLOCK_HEIGHT, false, true );
+                Upload8( new QByteArraySegment( _ScrapTexels[i] ), BLOCK_WIDTH, BLOCK_HEIGHT, false, true );
             }
             _ScrapDirty = false;
         }

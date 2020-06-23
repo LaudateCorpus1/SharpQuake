@@ -109,11 +109,11 @@ namespace SharpQuake
         // PR_Init
         public static void Init()
         {
-            cmd.Add( "edict", PrintEdict_f );
-            cmd.Add( "edicts", PrintEdicts );
-            cmd.Add( "edictcount", EdictCount );
-            cmd.Add( "profile", Profile_f );
-            cmd.Add( "test5", Test5_f );
+            QCommand.Add( "edict", PrintEdict_f );
+            QCommand.Add( "edicts", PrintEdicts );
+            QCommand.Add( "edictcount", EdictCount );
+            QCommand.Add( "profile", Profile_f );
+            QCommand.Add( "test5", Test5_f );
 
             if( _NoMonsters == null )
             {
@@ -147,7 +147,7 @@ namespace SharpQuake
 
             crc.Init( out _Crc );
 
-            byte[] buf = common.LoadFile( "progs.dat" );
+            byte[] buf = QCommon.LoadFile( "progs.dat" );
 
             _Progs = sys.BytesToStructure<dprograms_t>( buf, 0 );
             if( _Progs == null )
@@ -221,7 +221,7 @@ namespace SharpQuake
                 offset = _Progs.ofs_globals;
                 for( int i = 0; i < _Progs.numglobals; i++, offset += 4 )
                 {
-                    SwapHelper.Swap4b( buf, offset );
+                    QSwapHelper.Swap4b( buf, offset );
                 }
             }
             GlobalStruct = sys.BytesToStructure<globalvars_t>( buf, _Progs.ofs_globals );
@@ -288,12 +288,12 @@ namespace SharpQuake
             while( true )
             {
                 // parse the opening brace
-                data = common.Parse( data );
+                data = QCommon.Parse( data );
                 if( data == null )
                     break;
 
-                if( common.Token != "{" )
-                    sys.Error( "ED_LoadFromFile: found {0} when expecting {", common.Token );
+                if( QCommon.Token != "{" )
+                    sys.Error( "ED_LoadFromFile: found {0} when expecting {", QCommon.Token );
 
                 if( ent == null )
                     ent = server.EdictNum( 0 );
@@ -367,14 +367,14 @@ namespace SharpQuake
             while( true )
             {
                 // parse key
-                data = common.Parse( data );
-                if( common.Token.StartsWith( "}" ) )
+                data = QCommon.Parse( data );
+                if( QCommon.Token.StartsWith( "}" ) )
                     break;
 
                 if( data == null )
                     sys.Error( "ED_ParseEntity: EOF without closing brace" );
 
-                string token = common.Token;
+                string token = QCommon.Token;
 
                 // anglehack is to allow QuakeEd to write single scalar angles
                 // and allow them to be turned into vectors. (FIXME...)
@@ -393,11 +393,11 @@ namespace SharpQuake
                 string keyname = token.TrimEnd();
 
                 // parse value
-                data = common.Parse( data );
+                data = QCommon.Parse( data );
                 if( data == null )
                     sys.Error( "ED_ParseEntity: EOF without closing brace" );
 
-                if( common.Token.StartsWith( "}" ) )
+                if( QCommon.Token.StartsWith( "}" ) )
                     sys.Error( "ED_ParseEntity: closing brace without data" );
 
                 init = true;
@@ -414,7 +414,7 @@ namespace SharpQuake
                     continue;
                 }
 
-                token = common.Token;
+                token = QCommon.Token;
                 if( anglehack )
                 {
                     token = "0 " + token + " 0";
@@ -671,21 +671,21 @@ namespace SharpQuake
             while( true )
             {
                 // parse key
-                data = common.Parse( data );
-                if( common.Token.StartsWith( "}" ) )
+                data = QCommon.Parse( data );
+                if( QCommon.Token.StartsWith( "}" ) )
                     break;
 
                 if( String.IsNullOrEmpty( data ) )
                     sys.Error( "ED_ParseEntity: EOF without closing brace" );
 
-                string keyname = common.Token;
+                string keyname = QCommon.Token;
 
                 // parse value
-                data = common.Parse( data );
+                data = QCommon.Parse( data );
                 if( String.IsNullOrEmpty( data ) )
                     sys.Error( "ED_ParseEntity: EOF without closing brace" );
 
-                if( common.Token.StartsWith( "}" ) )
+                if( QCommon.Token.StartsWith( "}" ) )
                     sys.Error( "ED_ParseEntity: closing brace without data" );
 
                 ddef_t key = FindGlobal( keyname );
@@ -695,7 +695,7 @@ namespace SharpQuake
                     continue;
                 }
 
-                if( !ParseGlobalPair( key, common.Token ) )
+                if( !ParseGlobalPair( key, QCommon.Token ) )
                     host.Error( "ED_ParseGlobals: parse error" );
             }
         }
@@ -755,7 +755,7 @@ namespace SharpQuake
         /// </summary>
         private static void PrintEdict_f()
         {
-            int i = common.atoi( cmd.Argv( 1 ) );
+            int i = QCommon.atoi( QCommand.Argv( 1 ) );
             if( i >= server.sv.num_edicts )
             {
                 Con.Print( "Bad edict number\n" );
@@ -853,18 +853,18 @@ namespace SharpQuake
                     break;
 
                 case etype_t.ev_float:
-                    *(float*)d = common.atof( s );
+                    *(float*)d = QCommon.atof( s );
                     break;
 
                 case etype_t.ev_vector:
                     string[] vs = s.Split( ' ' );
-                    ( (float*)d )[0] = common.atof( vs[0] );
-                    ( (float*)d )[1] = ( vs.Length > 1 ? common.atof( vs[1] ) : 0 );
-                    ( (float*)d )[2] = ( vs.Length > 2 ? common.atof( vs[2] ) : 0 );
+                    ( (float*)d )[0] = QCommon.atof( vs[0] );
+                    ( (float*)d )[1] = ( vs.Length > 1 ? QCommon.atof( vs[1] ) : 0 );
+                    ( (float*)d )[2] = ( vs.Length > 2 ? QCommon.atof( vs[2] ) : 0 );
                     break;
 
                 case etype_t.ev_entity:
-                    *(int*)d = server.EdictToProg( server.EdictNum( common.atoi( s ) ) );
+                    *(int*)d = server.EdictToProg( server.EdictNum( QCommon.atoi( s ) ) );
                     break;
 
                 case etype_t.ev_field:

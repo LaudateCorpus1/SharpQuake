@@ -127,7 +127,7 @@ namespace SharpQuake
         }
 
         // ResampleSfx
-        private static void ResampleSfx( QSoundFX sfx, int inrate, int inwidth, ByteArraySegment data )
+        private static void ResampleSfx( QSoundFX sfx, int inrate, int inwidth, QByteArraySegment data )
         {
             QSoundFXCache sc = (QSoundFXCache) Cache.Check( sfx.cache );
             if( sc == null )
@@ -174,7 +174,7 @@ namespace SharpQuake
                     if( inwidth == 2 )
                     {
                         Buffer.BlockCopy( src, data.StartIndex + srcsample * 2, sa, 0, 2 );
-                        sample = common.LittleShort( sa[0] ); //  ((short *)data)[srcsample] );
+                        sample = QCommon.LittleShort( sa[0] ); //  ((short *)data)[srcsample] );
                     }
                     else
                     {

@@ -361,13 +361,13 @@ namespace SharpQuake
                 string kb = _Bindings[key];
                 if( !string.IsNullOrEmpty( kb ) && kb.StartsWith( "+" ) )
                 {
-                    Cbuf.AddText( $"-{kb.Substring( 1 )} {key}\n" );
+                    QCommandBuffer.AddText( $"-{kb.Substring( 1 )} {key}\n" );
                 }
                 if( _KeyShift[key] != key )
                 {
                     kb = _Bindings[_KeyShift[key]];
                     if( !string.IsNullOrEmpty( kb ) && kb.StartsWith( "+" ) )
-                        Cbuf.AddText( $"-{kb.Substring( 1 )} {key}\n" );
+                        QCommandBuffer.AddText( $"-{kb.Substring( 1 )} {key}\n" );
                 }
                 return;
             }
@@ -394,12 +394,12 @@ namespace SharpQuake
                     if( kb.StartsWith( "+" ) )
                     {
                         // button commands add keynum as a parm
-                        Cbuf.AddText( $"{kb} {key}\n" );
+                        QCommandBuffer.AddText( $"{kb} {key}\n" );
                     }
                     else
                     {
-                        Cbuf.AddText( kb );
-                        Cbuf.AddText( "\n" );
+                        QCommandBuffer.AddText( kb );
+                        QCommandBuffer.AddText( "\n" );
                     }
                 }
                 return;
@@ -497,9 +497,9 @@ namespace SharpQuake
             //
             // register our functions
             //
-            cmd.Add( "bind", Bind_f );
-            cmd.Add( "unbind", Unbind_f );
-            cmd.Add( "unbindall", UnbindAll_f );
+            QCommand.Add( "bind", Bind_f );
+            QCommand.Add( "unbind", Unbind_f );
+            QCommand.Add( "unbindall", UnbindAll_f );
         }
 
         /// <summary>
@@ -582,7 +582,7 @@ namespace SharpQuake
 
             foreach( keyname_t keyname in _KeyNames )
             {
-                if( common.SameText( keyname.name, str ) )
+                if( QCommon.SameText( keyname.name, str ) )
                     return keyname.keynum;
             }
             return -1;
@@ -591,16 +591,16 @@ namespace SharpQuake
         //Key_Unbind_f
         private static void Unbind_f()
         {
-            if( cmd.Argc != 2 )
+            if( QCommand.Argc != 2 )
             {
                 Con.Print( "unbind <key> : remove commands from a key\n" );
                 return;
             }
 
-            int b = StringToKeynum( cmd.Argv( 1 ) );
+            int b = StringToKeynum( QCommand.Argv( 1 ) );
             if( b == -1 )
             {
-                Con.Print( "\"{0}\" isn't a valid key\n", cmd.Argv( 1 ) );
+                Con.Print( "\"{0}\" isn't a valid key\n", QCommand.Argv( 1 ) );
                 return;
             }
 
@@ -618,26 +618,26 @@ namespace SharpQuake
         //Key_Bind_f
         private static void Bind_f()
         {
-            int c = cmd.Argc;
+            int c = QCommand.Argc;
             if( c != 2 && c != 3 )
             {
                 Con.Print( "bind <key> [command] : attach a command to a key\n" );
                 return;
             }
 
-            int b = StringToKeynum( cmd.Argv( 1 ) );
+            int b = StringToKeynum( QCommand.Argv( 1 ) );
             if( b == -1 )
             {
-                Con.Print( "\"{0}\" isn't a valid key\n", cmd.Argv( 1 ) );
+                Con.Print( "\"{0}\" isn't a valid key\n", QCommand.Argv( 1 ) );
                 return;
             }
 
             if( c == 2 )
             {
                 if( !string.IsNullOrEmpty( _Bindings[b] ) )// keybindings[b])
-                    Con.Print( "\"{0}\" = \"{1}\"\n", cmd.Argv( 1 ), _Bindings[b] );
+                    Con.Print( "\"{0}\" = \"{1}\"\n", QCommand.Argv( 1 ), _Bindings[b] );
                 else
-                    Con.Print( "\"{0}\" is not bound\n", cmd.Argv( 1 ) );
+                    Con.Print( "\"{0}\" is not bound\n", QCommand.Argv( 1 ) );
                 return;
             }
 
@@ -648,7 +648,7 @@ namespace SharpQuake
             {
                 if( i > 2 )
                     sb.Append( " " );
-                sb.Append( cmd.Argv( i ) );
+                sb.Append( QCommand.Argv( i ) );
             }
 
             SetBinding( b, sb.ToString() );
@@ -660,11 +660,11 @@ namespace SharpQuake
             if( key == K_ENTER )
             {
                 if( _TeamMessage )
-                    Cbuf.AddText( "say_team \"" );
+                    QCommandBuffer.AddText( "say_team \"" );
                 else
-                    Cbuf.AddText( "say \"" );
-                Cbuf.AddText( _ChatBuffer.ToString() );
-                Cbuf.AddText( "\"\n" );
+                    QCommandBuffer.AddText( "say \"" );
+                QCommandBuffer.AddText( _ChatBuffer.ToString() );
+                QCommandBuffer.AddText( "\"\n" );
 
                 Key.Destination = keydest_t.key_game;
                 _ChatBuffer.Length = 0;
@@ -706,8 +706,8 @@ namespace SharpQuake
             {
                 string line = new string( _Lines[_EditLine] ).TrimEnd( '\0', ' ' );
                 string cmd = line.Substring( 1 );
-                Cbuf.AddText( cmd );	// skip the >
-                Cbuf.AddText( "\n" );
+                QCommandBuffer.AddText( cmd );	// skip the >
+                QCommandBuffer.AddText( "\n" );
                 Con.Print( "{0}\n", line );
                 _EditLine = ( _EditLine + 1 ) & 31;
                 _HistoryLine = _EditLine;
@@ -723,7 +723,7 @@ namespace SharpQuake
             {
                 // command completion
                 string txt = new string( _Lines[_EditLine], 1, MAXCMDLINE - 1 ).TrimEnd( '\0', ' ' );
-                string[] cmds = cmd.Complete( txt );
+                string[] cmds = QCommand.Complete( txt );
                 string[] vars = cvar.CompleteName( txt );
                 string match = null;
                 if( cmds != null )

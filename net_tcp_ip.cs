@@ -85,7 +85,7 @@ namespace SharpQuake
         {
             _IsInitialized = false;
 
-            if( common.HasParam( "-noudp" ) )
+            if( QCommon.HasParam( "-noudp" ) )
                 return false;
 
             // determine my name
@@ -115,12 +115,12 @@ namespace SharpQuake
                 cvar.Set( "hostname", hostName );
             }
 
-            int i2 = common.CheckParm( "-ip" );
+            int i2 = QCommon.CheckParm( "-ip" );
             if( i2 > 0 )
             {
-                if( i2 < common.Argc - 1 )
+                if( i2 < QCommon.Argc - 1 )
                 {
-                    string ipaddr = common.Argv( i2 + 1 );
+                    string ipaddr = QCommon.Argv( i2 + 1 );
                     if( !IPAddress.TryParse( ipaddr, out _MyAddress ) )
                         sys.Error( "{0} is not a valid IP address!", ipaddr );
                     net.MyTcpIpAddress = ipaddr;

@@ -51,18 +51,18 @@ namespace SharpQuake
         // M_Init (void)
         public static void Init()
         {
-            cmd.Add( "togglemenu", ToggleMenu_f );
-            cmd.Add( "menu_main", Menu_Main_f );
-            cmd.Add( "menu_singleplayer", Menu_SinglePlayer_f );
-            cmd.Add( "menu_load", Menu_Load_f );
-            cmd.Add( "menu_save", Menu_Save_f );
-            cmd.Add( "menu_multiplayer", Menu_MultiPlayer_f );
-            cmd.Add( "menu_setup", Menu_Setup_f );
-            cmd.Add( "menu_options", Menu_Options_f );
-            cmd.Add( "menu_keys", Menu_Keys_f );
-            cmd.Add( "menu_video", Menu_Video_f );
-            cmd.Add( "help", Menu_Help_f );
-            cmd.Add( "menu_quit", Menu_Quit_f );
+            QCommand.Add( "togglemenu", ToggleMenu_f );
+            QCommand.Add( "menu_main", Menu_Main_f );
+            QCommand.Add( "menu_singleplayer", Menu_SinglePlayer_f );
+            QCommand.Add( "menu_load", Menu_Load_f );
+            QCommand.Add( "menu_save", Menu_Save_f );
+            QCommand.Add( "menu_multiplayer", Menu_MultiPlayer_f );
+            QCommand.Add( "menu_setup", Menu_Setup_f );
+            QCommand.Add( "menu_options", Menu_Options_f );
+            QCommand.Add( "menu_keys", Menu_Keys_f );
+            QCommand.Add( "menu_video", Menu_Video_f );
+            QCommand.Add( "help", Menu_Help_f );
+            QCommand.Add( "menu_quit", Menu_Quit_f );
         }
 
         /// <summary>
@@ -559,9 +559,9 @@ namespace SharpQuake
                                     break;
                             Key.Destination = keydest_t.key_game;
                             if( server.sv.active )
-                                Cbuf.AddText( "disconnect\n" );
-                            Cbuf.AddText( "maxplayers 1\n" );
-                            Cbuf.AddText( "map start\n" );
+                                QCommandBuffer.AddText( "disconnect\n" );
+                            QCommandBuffer.AddText( "maxplayers 1\n" );
+                            QCommandBuffer.AddText( "map start\n" );
                             break;
 
                         case 1:
@@ -623,7 +623,7 @@ namespace SharpQuake
                     Scr.BeginLoadingPlaque();
 
                     // issue the load command
-                    Cbuf.AddText( String.Format( "load s{0}\n", _Cursor ) );
+                    QCommandBuffer.AddText( String.Format( "load s{0}\n", _Cursor ) );
                     return;
 
                 case Key.K_UPARROW:
@@ -665,7 +665,7 @@ namespace SharpQuake
             {
                 _FileNames[i] = "--- UNUSED SLOT ---";
                 _Loadable[i] = false;
-                string name = String.Format( "{0}/s{1}.sav", common.GameDir, i );
+                string name = String.Format( "{0}/s{1}.sav", QCommon.GameDir, i );
                 FileStream fs = sys.FileOpenRead( name );
                 if( fs == null )
                     continue;
@@ -719,7 +719,7 @@ namespace SharpQuake
 
                 case Key.K_ENTER:
                     MenuBase.Hide();
-                    Cbuf.AddText( String.Format( "save s{0}\n", _Cursor ) );
+                    QCommandBuffer.AddText( String.Format( "save s{0}\n", _Cursor ) );
                     return;
 
                 case Key.K_UPARROW:
@@ -905,7 +905,7 @@ namespace SharpQuake
                             break;
 
                         case 2:
-                            Cbuf.AddText( "exec default.cfg\n" );
+                            QCommandBuffer.AddText( "exec default.cfg\n" );
                             break;
 
                         case 12:
@@ -1160,7 +1160,7 @@ namespace SharpQuake
                 else if( key != '`' )
                 {
                     string cmd = String.Format( "bind \"{0}\" \"{1}\"\n", Key.KeynumToString( key ), _BindNames[_Cursor][0] );
-                    Cbuf.InsertText( cmd );
+                    QCommandBuffer.InsertText( cmd );
                 }
 
                 _BindGrab = false;
@@ -1453,7 +1453,7 @@ namespace SharpQuake
                         menu.ReturnMenu = this;
                         menu.ReturnOnError = true;
                         MenuBase.Hide();
-                        Cbuf.AddText( String.Format( "connect \"{0}\"\n", _JoinName ) );
+                        QCommandBuffer.AddText( String.Format( "connect \"{0}\"\n", _JoinName ) );
                         break;
                     }
                     break;
@@ -1499,7 +1499,7 @@ namespace SharpQuake
                 else
                     _Cursor = 0;
 
-            int k = common.atoi( _PortName );
+            int k = QCommon.atoi( _PortName );
             if( k > 65535 )
                 k = _Port;
             else
@@ -1645,11 +1645,11 @@ forward:
 
                     // _Cursor == 4 (OK)
                     if( _MyName != QClient.Name )
-                        Cbuf.AddText( String.Format( "name \"{0}\"\n", _MyName ) );
+                        QCommandBuffer.AddText( String.Format( "name \"{0}\"\n", _MyName ) );
                     if( net.HostName != _HostName )
                         cvar.Set( "hostname", _HostName );
                     if( _Top != _OldTop || _Bottom != _OldBottom )
-                        Cbuf.AddText( String.Format( "color {0} {1}\n", _Top, _Bottom ) );
+                        QCommandBuffer.AddText( String.Format( "color {0} {1}\n", _Top, _Bottom ) );
                     menu.EnterSound = true;
                     MenuBase.MultiPlayerMenu.Show();
                     break;
@@ -1940,19 +1940,19 @@ forward:
                     if( _Cursor == 0 )
                     {
                         if( server.IsActive )
-                            Cbuf.AddText( "disconnect\n" );
-                        Cbuf.AddText( "listen 0\n" );	// so host_netport will be re-examined
-                        Cbuf.AddText( String.Format( "maxplayers {0}\n", _MaxPlayers ) );
+                            QCommandBuffer.AddText( "disconnect\n" );
+                        QCommandBuffer.AddText( "listen 0\n" );	// so host_netport will be re-examined
+                        QCommandBuffer.AddText( String.Format( "maxplayers {0}\n", _MaxPlayers ) );
                         Scr.BeginLoadingPlaque();
 
-                        if( common.GameKind == GameKind.Hipnotic )
-                            Cbuf.AddText( String.Format( "map {0}\n",
+                        if( QCommon.GameType == QGameType.Hipnotic )
+                            QCommandBuffer.AddText( String.Format( "map {0}\n",
                                 HipnoticLevels[HipnoticEpisodes[_StartEpisode].firstLevel + _StartLevel].name ) );
-                        else if( common.GameKind == GameKind.Rogue )
-                            Cbuf.AddText( String.Format( "map {0}\n",
+                        else if( QCommon.GameType == QGameType.Rogue )
+                            QCommandBuffer.AddText( String.Format( "map {0}\n",
                                 RogueLevels[RogueEpisodes[_StartEpisode].firstLevel + _StartLevel].name ) );
                         else
-                            Cbuf.AddText( String.Format( "map {0}\n", Levels[Episodes[_StartEpisode].firstLevel + _StartLevel].name ) );
+                            QCommandBuffer.AddText( String.Format( "map {0}\n", Levels[Episodes[_StartEpisode].firstLevel + _StartLevel].name ) );
 
                         return;
                     }
@@ -1981,7 +1981,7 @@ forward:
                 menu.Print( 160, 64, "Deathmatch" );
 
             menu.Print( 0, 72, "        Teamplay" );
-            if( common.GameKind == GameKind.Rogue )
+            if( QCommon.GameType == QGameType.Rogue )
             {
                 string msg;
                 switch( (int)host.TeamPlay )
@@ -2060,23 +2060,23 @@ forward:
 
             menu.Print( 0, 112, "         Episode" );
             //MED 01/06/97 added hipnotic episodes
-            if( common.GameKind == GameKind.Hipnotic )
+            if( QCommon.GameType == QGameType.Hipnotic )
                 menu.Print( 160, 112, HipnoticEpisodes[_StartEpisode].description );
             //PGM 01/07/97 added rogue episodes
-            else if( common.GameKind == GameKind.Rogue )
+            else if( QCommon.GameType == QGameType.Rogue )
                 menu.Print( 160, 112, RogueEpisodes[_StartEpisode].description );
             else
                 menu.Print( 160, 112, Episodes[_StartEpisode].description );
 
             menu.Print( 0, 120, "           Level" );
             //MED 01/06/97 added hipnotic episodes
-            if( common.GameKind == GameKind.Hipnotic )
+            if( QCommon.GameType == QGameType.Hipnotic )
             {
                 menu.Print( 160, 120, HipnoticLevels[HipnoticEpisodes[_StartEpisode].firstLevel + _StartLevel].description );
                 menu.Print( 160, 128, HipnoticLevels[HipnoticEpisodes[_StartEpisode].firstLevel + _StartLevel].name );
             }
             //PGM 01/07/97 added rogue episodes
-            else if( common.GameKind == GameKind.Rogue )
+            else if( QCommon.GameType == QGameType.Rogue )
             {
                 menu.Print( 160, 120, RogueLevels[RogueEpisodes[_StartEpisode].firstLevel + _StartLevel].description );
                 menu.Print( 160, 128, RogueLevels[RogueEpisodes[_StartEpisode].firstLevel + _StartLevel].name );
@@ -2161,7 +2161,7 @@ forward:
                     break;
 
                 case 3:
-                    if( common.GameKind == GameKind.Rogue )
+                    if( QCommon.GameType == QGameType.Rogue )
                         count = 6;
                     else
                         count = 2;
@@ -2205,13 +2205,13 @@ forward:
                 case 7:
                     _StartEpisode += dir;
                     //MED 01/06/97 added hipnotic count
-                    if( common.GameKind == GameKind.Hipnotic )
+                    if( QCommon.GameType == QGameType.Hipnotic )
                         count = 6;
                     //PGM 01/07/97 added rogue count
                     //PGM 03/02/97 added 1 for dmatch episode
-                    else if( common.GameKind == GameKind.Rogue )
+                    else if( QCommon.GameType == QGameType.Rogue )
                         count = 4;
-                    else if( common.IsRegistered )
+                    else if( QCommon.IsRegistered )
                         count = 7;
                     else
                         count = 2;
@@ -2228,10 +2228,10 @@ forward:
                 case 8:
                     _StartLevel += dir;
                     //MED 01/06/97 added hipnotic episodes
-                    if( common.GameKind == GameKind.Hipnotic )
+                    if( QCommon.GameType == QGameType.Hipnotic )
                         count = HipnoticEpisodes[_StartEpisode].levels;
                     //PGM 01/06/97 added hipnotic episodes
-                    else if( common.GameKind == GameKind.Rogue )
+                    else if( QCommon.GameType == QGameType.Rogue )
                         count = RogueEpisodes[_StartEpisode].levels;
                     else
                         count = Episodes[_StartEpisode].levels;
@@ -2346,7 +2346,7 @@ forward:
                     menu.ReturnOnError = true;
                     _Sorted = false;
                     MenuBase.Hide();
-                    Cbuf.AddText( String.Format( "connect \"{0}\"\n", net.HostCache[_Cursor].cname ) );
+                    QCommandBuffer.AddText( String.Format( "connect \"{0}\"\n", net.HostCache[_Cursor].cname ) );
                     break;
 
                 default:

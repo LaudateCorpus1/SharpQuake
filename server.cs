@@ -289,8 +289,8 @@ namespace SharpQuake
         public int axis;		// -1 = leaf node
         public float dist;
         public areanode_t[] children; // [2];
-        public link_t trigger_edicts;
-        public link_t solid_edicts;
+        public QTriggerLink trigger_edicts;
+        public QTriggerLink solid_edicts;
 
         public void Clear()
         {
@@ -305,8 +305,8 @@ namespace SharpQuake
         public areanode_t()
         {
             this.children = new areanode_t[2];
-            this.trigger_edicts = new link_t( this );
-            this.solid_edicts = new link_t( this );
+            this.trigger_edicts = new QTriggerLink( this );
+            this.solid_edicts = new QTriggerLink( this );
         }
     } //areanode_t;
 
@@ -346,9 +346,9 @@ namespace SharpQuake
         // be used to reference the world ent
         public server_state_t state;			// some actions are only valid during load
 
-        public MsgWriter datagram;
-        public MsgWriter reliable_datagram; // copied to all clients at end of frame
-        public MsgWriter signon;
+        public QMessageWriter datagram;
+        public QMessageWriter reliable_datagram; // copied to all clients at end of frame
+        public QMessageWriter signon;
 
         public void Clear()
         {
@@ -381,9 +381,9 @@ namespace SharpQuake
             this.models = new model_t[QDef.MAX_MODELS];
             this.sound_precache = new string[QDef.MAX_SOUNDS];
             this.lightstyles = new string[QDef.MAX_LIGHTSTYLES];
-            this.datagram = new MsgWriter( QDef.MAX_DATAGRAM );
-            this.reliable_datagram = new MsgWriter( QDef.MAX_DATAGRAM );
-            this.signon = new MsgWriter( 8192 );
+            this.datagram = new QMessageWriter( QDef.MAX_DATAGRAM );
+            this.reliable_datagram = new QMessageWriter( QDef.MAX_DATAGRAM );
+            this.signon = new QMessageWriter( 8192 );
         }
     }// server_t;
 
@@ -401,9 +401,9 @@ namespace SharpQuake
         public qsocket_t netconnection; // communications handle
 
         public QUserCmd cmd;               // movement
-        public Vector3 wishdir;			// intended motion calced from cmd
+        public Vector3 wishdir;			// intended motion calced from QCommand
 
-        public MsgWriter message;
+        public QMessageWriter message;
         //public sizebuf_t		message;			// can be added to at any time,
         // copied and clear once per frame
         //public byte[] msgbuf;//[MAX_MSGLEN];
@@ -446,7 +446,7 @@ namespace SharpQuake
         {
             this.ping_times = new float[server.NUM_PING_TIMES];
             this.spawn_parms = new float[server.NUM_SPAWN_PARMS];
-            this.message = new MsgWriter( QDef.MAX_MSGLEN );
+            this.message = new QMessageWriter( QDef.MAX_MSGLEN );
         }
     }// client_t;
 }

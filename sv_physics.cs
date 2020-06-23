@@ -214,7 +214,7 @@ namespace SharpQuake
         /// </summary>
         private static void CheckWaterTransition( edict_t ent )
         {
-            Vector3 org = common.ToVector( ref ent.v.origin );
+            Vector3 org = QCommon.ToVector( ref ent.v.origin );
             int cont = PointContents( ref org );
 
             if( ent.v.watertype == 0 )
@@ -463,7 +463,7 @@ namespace SharpQuake
             //
             ent.v.origin = oldorg;	// back to start pos
 
-            v3f upmove = common.ZeroVector3f;
+            v3f upmove = QCommon.ZeroVector3f;
             v3f downmove = upmove;
             upmove.z = STEPSIZE;
             downmove.z = (float)( -STEPSIZE + oldvel.z * host.FrameTime );
@@ -525,7 +525,7 @@ namespace SharpQuake
         private static int TryUnstick( edict_t ent, ref v3f oldvel )
         {
             v3f oldorg = ent.v.origin;
-            v3f dir = common.ZeroVector3f;
+            v3f dir = QCommon.ZeroVector3f;
 
             trace_t steptrace = new trace_t();
             for( int i = 0; i < 8; i++ )
@@ -591,7 +591,7 @@ namespace SharpQuake
                 ent.v.origin = oldorg;
             }
 
-            ent.v.velocity = common.ZeroVector3f;
+            ent.v.velocity = QCommon.ZeroVector3f;
             return 7;		// still not moving
         }
 
@@ -600,7 +600,7 @@ namespace SharpQuake
         /// </summary>
         private static void WallFriction( edict_t ent, trace_t trace )
         {
-            Vector3 forward, right, up, vangle = common.ToVector( ref ent.v.v_angle );
+            Vector3 forward, right, up, vangle = QCommon.ToVector( ref ent.v.v_angle );
             mathlib.AngleVectors( ref vangle, out forward, out right, out up );
             float d = Vector3.Dot( trace.plane.normal, forward );
 
@@ -609,7 +609,7 @@ namespace SharpQuake
                 return;
 
             // cut the tangential velocity
-            Vector3 vel = common.ToVector( ref ent.v.velocity );
+            Vector3 vel = QCommon.ToVector( ref ent.v.velocity );
             float i = Vector3.Dot( trace.plane.normal, vel );
             Vector3 into = trace.plane.normal * i;
             Vector3 side = vel - into;

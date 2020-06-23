@@ -37,14 +37,14 @@ namespace SharpQuake
             if( QClient.cls.state == ServerType.DEDICATED )
                 return false;
 
-            if( common.HasParam( "-nocdaudio" ) )
+            if( QCommon.HasParam( "-nocdaudio" ) )
                 return false;
 
             _Controller.Init();
 
             if( _Controller.IsInitialized )
             {
-                cmd.Add( "cd", CD_f );
+                QCommand.Add( "cd", CD_f );
                 Con.Print( "CD Audio (Fallback) Initialized\n" );
             }
 
@@ -92,18 +92,18 @@ namespace SharpQuake
 
         private static void CD_f()
         {
-            if( cmd.Argc < 2 )
+            if( QCommand.Argc < 2 )
                 return;
 
-            string command = cmd.Argv( 1 );
+            string command = QCommand.Argv( 1 );
 
-            if( common.SameText( command, "on" ) )
+            if( QCommon.SameText( command, "on" ) )
             {
                 _Controller.IsEnabled = true;
                 return;
             }
 
-            if( common.SameText( command, "off" ) )
+            if( QCommon.SameText( command, "off" ) )
             {
                 if( _Controller.IsPlaying )
                     _Controller.Stop();
@@ -111,7 +111,7 @@ namespace SharpQuake
                 return;
             }
 
-            if( common.SameText( command, "reset" ) )
+            if( QCommon.SameText( command, "reset" ) )
             {
                 _Controller.IsEnabled = true;
                 if( _Controller.IsPlaying )
@@ -121,9 +121,9 @@ namespace SharpQuake
                 return;
             }
 
-            if( common.SameText( command, "remap" ) )
+            if( QCommon.SameText( command, "remap" ) )
             {
-                int    ret   = cmd.Argc - 2;
+                int    ret   = QCommand.Argc - 2;
                 byte[] remap = _Controller.Remap;
                 if( ret <= 0 )
                 {
@@ -134,11 +134,11 @@ namespace SharpQuake
                 }
 
                 for( int n = 1; n <= ret; n++ )
-                    remap[n] = (byte) common.atoi( cmd.Argv( n + 1 ) );
+                    remap[n] = (byte) QCommon.atoi( QCommand.Argv( n + 1 ) );
                 return;
             }
 
-            if( common.SameText( command, "close" ) )
+            if( QCommon.SameText( command, "close" ) )
             {
                 _Controller.CloseDoor();
                 return;
@@ -154,37 +154,37 @@ namespace SharpQuake
                 }
             }
 
-            if( common.SameText( command, "play" ) )
+            if( QCommon.SameText( command, "play" ) )
             {
-                _Controller.Play( (byte) common.atoi( cmd.Argv( 2 ) ), false );
+                _Controller.Play( (byte) QCommon.atoi( QCommand.Argv( 2 ) ), false );
                 return;
             }
 
-            if( common.SameText( command, "loop" ) )
+            if( QCommon.SameText( command, "loop" ) )
             {
-                _Controller.Play( (byte) common.atoi( cmd.Argv( 2 ) ), true );
+                _Controller.Play( (byte) QCommon.atoi( QCommand.Argv( 2 ) ), true );
                 return;
             }
 
-            if( common.SameText( command, "stop" ) )
+            if( QCommon.SameText( command, "stop" ) )
             {
                 _Controller.Stop();
                 return;
             }
 
-            if( common.SameText( command, "pause" ) )
+            if( QCommon.SameText( command, "pause" ) )
             {
                 _Controller.Pause();
                 return;
             }
 
-            if( common.SameText( command, "resume" ) )
+            if( QCommon.SameText( command, "resume" ) )
             {
                 _Controller.Resume();
                 return;
             }
 
-            if( common.SameText( command, "eject" ) )
+            if( QCommon.SameText( command, "eject" ) )
             {
                 if( _Controller.IsPlaying )
                     _Controller.Stop();
@@ -192,7 +192,7 @@ namespace SharpQuake
                 return;
             }
 
-            if( common.SameText( command, "info" ) )
+            if( QCommon.SameText( command, "info" ) )
             {
                 Con.Print( "%u tracks\n", _Controller.MaxTrack );
                 if( _Controller.IsPlaying )

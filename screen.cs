@@ -162,15 +162,15 @@ namespace SharpQuake
             //
             // register our commands
             //
-            cmd.Add( "screenshot", ScreenShot_f );
-            cmd.Add( "sizeup", SizeUp_f );
-            cmd.Add( "sizedown", SizeDown_f );
+            QCommand.Add( "screenshot", ScreenShot_f );
+            QCommand.Add( "sizeup", SizeUp_f );
+            QCommand.Add( "sizedown", SizeDown_f );
 
             _Ram = Drawer.PicFromWad( "ram" );
             _Net = Drawer.PicFromWad( "net" );
             _Turtle = Drawer.PicFromWad( "turtle" );
 
-            if( common.HasParam( "-fullsbar" ) )
+            if( QCommon.HasParam( "-fullsbar" ) )
                 FullSbarDraw = true;
 
             _IsInitialized = true;
@@ -452,7 +452,7 @@ namespace SharpQuake
             int i;
             for( i = 0; i <= 999; i++ )
             {
-                path = Path.Combine( common.GameDir, String.Format( "quake{0:D3}.tga", i ) );
+                path = Path.Combine( QCommon.GameDir, String.Format( "quake{0:D3}.tga", i ) );
                 if( sys.GetFileTime( path ) == DateTime.MinValue )
                     break;	// file doesn't exist
             }

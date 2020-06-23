@@ -54,17 +54,17 @@ namespace SharpQuake
         /// </summary>
         private static void Record_f()
         {
-            if( cmd.Source != cmd_source_t.src_command )
+            if( QCommand.Source != QCommandSource.src_command )
                 return;
 
-            int c = cmd.Argc;
+            int c = QCommand.Argc;
             if( c != 2 && c != 3 && c != 4 )
             {
                 Con.Print( "record <demoname> [<map> [cd track]]\n" );
                 return;
             }
 
-            if( cmd.Argv( 1 ).Contains( ".." ) )
+            if( QCommand.Argv( 1 ).Contains( ".." ) )
             {
                 Con.Print( "Relative pathnames are not allowed.\n" );
                 return;
@@ -80,19 +80,19 @@ namespace SharpQuake
             int track;
             if( c == 4 )
             {
-                track = common.atoi( cmd.Argv( 3 ) );
+                track = QCommon.atoi( QCommand.Argv( 3 ) );
                 Con.Print( "Forcing CD track to {0}\n", track );
             }
             else
                 track = -1;
 
-            string name = Path.Combine( common.GameDir, cmd.Argv( 1 ) );
+            string name = Path.Combine( QCommon.GameDir, QCommand.Argv( 1 ) );
 
             //
             // start the map up
             //
             if( c > 2 )
-                cmd.ExecuteString( $"map {cmd.Argv( 2 )}", cmd_source_t.src_command );
+                QCommand.ExecuteString( $"map {QCommand.Argv( 2 )}", QCommandSource.src_command );
 
             //
             // open the demo file
@@ -107,7 +107,7 @@ namespace SharpQuake
                 return;
             }
             BinaryWriter writer = new BinaryWriter( fs, Encoding.ASCII );
-            cls.demofile = new DisposableWrapper<BinaryWriter>( writer, true );
+            cls.demofile = new QDisposableWrapper<BinaryWriter>( writer, true );
             cls.forcetrack = track;
             byte[] tmp = Encoding.ASCII.GetBytes( cls.forcetrack.ToString() );
             writer.Write( tmp );
@@ -121,7 +121,7 @@ namespace SharpQuake
         /// </summary>
         private static void Stop_f()
         {
-            if( cmd.Source != cmd_source_t.src_command )
+            if( QCommand.Source != QCommandSource.src_command )
                 return;
 
             if( !cls.demorecording )
@@ -150,10 +150,10 @@ namespace SharpQuake
         // play [demoname]
         private static void PlayDemo_f()
         {
-            if( cmd.Source != cmd_source_t.src_command )
+            if( QCommand.Source != QCommandSource.src_command )
                 return;
 
-            if( cmd.Argc != 2 )
+            if( QCommand.Argc != 2 )
             {
                 Con.Print( "play <demoname> : plays a demo\n" );
                 return;
@@ -167,11 +167,11 @@ namespace SharpQuake
             //
             // open the demo file
             //
-            string name = Path.ChangeExtension( cmd.Argv( 1 ), ".dem" );
+            string name = Path.ChangeExtension( QCommand.Argv( 1 ), ".dem" );
 
             Con.Print( "Playing demo from {0}.\n", name );
             cls.demofile?.Dispose();
-            common.FOpenFile( name, out DisposableWrapper<BinaryReader> reader );
+            QCommon.FOpenFile( name, out QDisposableWrapper<BinaryReader> reader );
             cls.demofile = reader;
             if( cls.demofile == null )
             {
@@ -210,10 +210,10 @@ namespace SharpQuake
         /// </summary>
         private static void TimeDemo_f()
         {
-            if( cmd.Source != cmd_source_t.src_command )
+            if( QCommand.Source != QCommandSource.src_command )
                 return;
 
-            if( cmd.Argc != 2 )
+            if( QCommand.Argc != 2 )
             {
                 Con.Print( "timedemo <demoname> : gets demo speeds\n" );
                 return;
@@ -257,15 +257,15 @@ namespace SharpQuake
                 }
 
                 // get the next message
-                BinaryReader reader = ( (DisposableWrapper<BinaryReader>)cls.demofile ).Object;
-                int size = common.LittleLong( reader.ReadInt32() );
+                BinaryReader reader = ( (QDisposableWrapper<BinaryReader>)cls.demofile ).Object;
+                int size = QCommon.LittleLong( reader.ReadInt32() );
                 if( size > QDef.MAX_MSGLEN )
                     sys.Error( "Demo message > MAX_MSGLEN" );
 
                 cl.mviewangles[1] = cl.mviewangles[0];
-                cl.mviewangles[0].X = common.LittleFloat( reader.ReadSingle() );
-                cl.mviewangles[0].Y = common.LittleFloat( reader.ReadSingle() );
-                cl.mviewangles[0].Z = common.LittleFloat( reader.ReadSingle() );
+                cl.mviewangles[0].X = QCommon.LittleFloat( reader.ReadSingle() );
+                cl.mviewangles[0].Y = QCommon.LittleFloat( reader.ReadSingle() );
+                cl.mviewangles[0].Z = QCommon.LittleFloat( reader.ReadSingle() );
 
                 net.Message.FillFrom( reader.BaseStream, size );
                 if( net.Message.Length < size )
@@ -318,12 +318,12 @@ namespace SharpQuake
         /// </summary>
         private static void WriteDemoMessage()
         {
-            int len = common.LittleLong( net.Message.Length );
-            BinaryWriter writer = ( (DisposableWrapper<BinaryWriter>)cls.demofile ).Object;
+            int len = QCommon.LittleLong( net.Message.Length );
+            BinaryWriter writer = ( (QDisposableWrapper<BinaryWriter>)cls.demofile ).Object;
             writer.Write( len );
-            writer.Write( common.LittleFloat( cl.viewangles.X ) );
-            writer.Write( common.LittleFloat( cl.viewangles.Y ) );
-            writer.Write( common.LittleFloat( cl.viewangles.Z ) );
+            writer.Write( QCommon.LittleFloat( cl.viewangles.X ) );
+            writer.Write( QCommon.LittleFloat( cl.viewangles.Y ) );
+            writer.Write( QCommon.LittleFloat( cl.viewangles.Z ) );
             writer.Write( net.Message.Data, 0, net.Message.Length );
             writer.Flush();
         }

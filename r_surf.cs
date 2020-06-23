@@ -75,10 +75,10 @@ namespace SharpQuake
             if( Scr.IsPermedia )
                 Drawer.LightMapFormat = PixelFormat.Rgba;
 
-            if( common.HasParam( "-lm_1" ) )
+            if( QCommon.HasParam( "-lm_1" ) )
                 Drawer.LightMapFormat = PixelFormat.Luminance;
 
-            if( common.HasParam( "-lm_a" ) )
+            if( QCommon.HasParam( "-lm_a" ) )
                 Drawer.LightMapFormat = PixelFormat.Alpha;
 
             //if (Common.HasParam("-lm_i"))
@@ -87,7 +87,7 @@ namespace SharpQuake
             //if (Common.HasParam("-lm_2"))
             //    Drawer.LightMapFormat = PixelFormat.Rgba4;
 
-            if( common.HasParam( "-lm_4" ) )
+            if( QCommon.HasParam( "-lm_4" ) )
                 Drawer.LightMapFormat = PixelFormat.Rgba;
 
             switch( Drawer.LightMapFormat )
@@ -184,7 +184,7 @@ namespace SharpQuake
             surf.lightmaptexturenum = AllocBlock( smax, tmax, ref surf.light_s, ref surf.light_t );
             int offset = surf.lightmaptexturenum * _LightMapBytes * BLOCK_WIDTH * BLOCK_HEIGHT;
             offset += ( surf.light_t * BLOCK_WIDTH + surf.light_s ) * _LightMapBytes;
-            BuildLightMap( surf, new ByteArraySegment( _LightMaps, offset ), BLOCK_WIDTH * _LightMapBytes );
+            BuildLightMap( surf, new QByteArraySegment( _LightMaps, offset ), BLOCK_WIDTH * _LightMapBytes );
         }
 
         /// <summary>
@@ -335,7 +335,7 @@ namespace SharpQuake
         /// R_BuildLightMap
         /// Combine and scale multiple lightmaps into the 8.8 format in blocklights
         /// </summary>
-        private static void BuildLightMap( msurface_t surf, ByteArraySegment dest, int stride )
+        private static void BuildLightMap( msurface_t surf, QByteArraySegment dest, int stride )
         {
             surf.cached_dlight = ( surf.dlightframe == _FrameCount );
 
@@ -554,7 +554,7 @@ namespace SharpQuake
             if( _NoVis.Value != 0 )
             {
                 vis = new byte[4096];
-                common.FillArray<Byte>( vis, 0xff ); // todo: add count parameter?
+                QCommon.FillArray<Byte>( vis, 0xff ); // todo: add count parameter?
                 //memset(solid, 0xff, (cl.worldmodel->numleafs + 7) >> 3);
             }
             else
@@ -760,7 +760,7 @@ namespace SharpQuake
                     UpdateRect( fa, ref _LightMapRectChange[fa.lightmaptexturenum] );
                     int offset = fa.lightmaptexturenum * _LightMapBytes * BLOCK_WIDTH * BLOCK_HEIGHT;
                     offset += fa.light_t * BLOCK_WIDTH * _LightMapBytes + fa.light_s * _LightMapBytes;
-                    BuildLightMap( fa, new ByteArraySegment( _LightMaps, offset ), BLOCK_WIDTH * _LightMapBytes );
+                    BuildLightMap( fa, new QByteArraySegment( _LightMaps, offset ), BLOCK_WIDTH * _LightMapBytes );
                 }
             }
         }
@@ -1213,7 +1213,7 @@ namespace SharpQuake
                     UpdateRect( fa, ref _LightMapRectChange[fa.lightmaptexturenum] );
                     int offset = fa.lightmaptexturenum * _LightMapBytes * BLOCK_WIDTH * BLOCK_HEIGHT +
                         fa.light_t * BLOCK_WIDTH * _LightMapBytes + fa.light_s * _LightMapBytes;
-                    BuildLightMap( fa, new ByteArraySegment( _LightMaps, offset ), BLOCK_WIDTH * _LightMapBytes );
+                    BuildLightMap( fa, new QByteArraySegment( _LightMaps, offset ), BLOCK_WIDTH * _LightMapBytes );
                 }
             }
         }

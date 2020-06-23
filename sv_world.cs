@@ -476,16 +476,16 @@ namespace SharpQuake
 
                 // calculate an offset value to center the origin
                 offset = hull.clip_mins - mins;
-                offset += common.ToVector( ref ent.v.origin );
+                offset += QCommon.ToVector( ref ent.v.origin );
             }
             else
             {
                 // create a temp hull from bounding box sizes
-                Vector3 hullmins = common.ToVector( ref ent.v.mins ) - maxs;
-                Vector3 hullmaxs = common.ToVector( ref ent.v.maxs ) - mins;
+                Vector3 hullmins = QCommon.ToVector( ref ent.v.mins ) - maxs;
+                Vector3 hullmaxs = QCommon.ToVector( ref ent.v.maxs ) - mins;
                 hull = HullForBox( ref hullmins, ref hullmaxs );
 
-                offset = common.ToVector( ref ent.v.origin );
+                offset = QCommon.ToVector( ref ent.v.origin );
             }
 
             return hull;
@@ -533,8 +533,8 @@ namespace SharpQuake
         private static void TouchLinks( edict_t ent, areanode_t node )
         {
             // touch linked edicts
-            link_t next;
-            for( link_t l = node.trigger_edicts.Next; l != node.trigger_edicts; l = next )
+            QTriggerLink next;
+            for( QTriggerLink l = node.trigger_edicts.Next; l != node.trigger_edicts; l = next )
             {
                 next = l.Next;
                 edict_t touch = (edict_t)l.Owner;// EDICT_FROM_AREA(l);
@@ -618,11 +618,11 @@ namespace SharpQuake
         /// </summary>
         private static void ClipToLinks( areanode_t node, moveclip_t clip )
         {
-            link_t next;
+            QTriggerLink next;
             trace_t trace;
 
             // touch linked edicts
-            for( link_t l = node.solid_edicts.Next; l != node.solid_edicts; l = next )
+            for( QTriggerLink l = node.solid_edicts.Next; l != node.solid_edicts; l = next )
             {
                 next = l.Next;
                 edict_t touch = (edict_t)l.Owner;// EDICT_FROM_AREA(l);

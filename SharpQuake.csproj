@@ -100,20 +100,42 @@
     <Compile Include="BSP\QBSPPlaneFlag.cs" />
     <Compile Include="BSP\QBSPTexInfo.cs" />
     <Compile Include="BSP\QBSPVertex.cs" />
-    <Compile Include="Client\Input\QClientInput.cs" />
-    <Compile Include="Client\Multiplayer\QScoreboard.cs" />
+    <Compile Include="Client\QButton.cs" />
     <Compile Include="Client\QClient.cs" />
     <Compile Include="Client\QClient.Demo.cs" />
     <Compile Include="Client\QClient.Input.cs" />
     <Compile Include="Client\QClient.Main.cs" />
     <Compile Include="Client\QClient.Parse.cs" />
     <Compile Include="Client\QClient.TempEntity.cs" />
-    <Compile Include="Client\Command\QUserCmd.cs" />
-    <Compile Include="Client\Input\QButton.cs" />
+    <Compile Include="Client\QClientInput.cs" />
     <Compile Include="Client\QClientState.cs" />
+    <Compile Include="Client\QScoreboard.cs" />
     <Compile Include="Client\QStaticClient.cs" />
-    <Compile Include="cmd.cs" />
-    <Compile Include="common.cs" />
+    <Compile Include="Client\QUserCmd.cs" />
+    <Compile Include="Command\QCommand.cs" />
+    <Compile Include="Command\QCommandBuffer.cs" />
+    <Compile Include="Command\QCommandSource.cs" />
+    <Compile Include="Common\Exceptions\QEndGameException.cs" />
+    <Compile Include="Common\Exceptions\QException.cs" />
+    <Compile Include="Common\Exceptions\QSystemError.cs" />
+    <Compile Include="Common\IO\Pak\QPak.cs" />
+    <Compile Include="Common\IO\Pak\QPakFile.cs" />
+    <Compile Include="Common\IO\Pak\QPakFileEntry.cs" />
+    <Compile Include="Common\IO\Pak\QPakHeader.cs" />
+    <Compile Include="Common\IO\Pak\QPakSearchPath.cs" />
+    <Compile Include="Common\IO\QDisposableWrapper.cs" />
+    <Compile Include="Common\Logic\QTriggerLink.cs" />
+    <Compile Include="Common\Math\IByteOrderConverter.cs" />
+    <Compile Include="Common\Math\QBigEndianConverter.cs" />
+    <Compile Include="Common\Math\QByteArraySegment.cs" />
+    <Compile Include="Common\Math\QByteUnion4.cs" />
+    <Compile Include="Common\Math\QLittleEndianConverter.cs" />
+    <Compile Include="Common\Math\QSwapHelper.cs" />
+    <Compile Include="Common\QCommon.cs" />
+    <Compile Include="Common\QDelegates.cs" />
+    <Compile Include="Common\QGameType.cs" />
+    <Compile Include="Common\QMessageReader.cs" />
+    <Compile Include="Common\QMessageWriter.cs" />
     <Compile Include="console.cs" />
     <Compile Include="crc.cs" />
     <Compile Include="cvar.cs" />
@@ -252,7 +274,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="3rd Party" />
-    <Folder Include="Server\Command" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

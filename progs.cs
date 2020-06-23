@@ -61,7 +61,7 @@ namespace SharpQuake
     internal struct dedict_t
     {
         public bool free;
-        public int dummy1, dummy2;	 // former link_t area
+        public int dummy1, dummy2;	 // former QTriggerLink area
 
         public int num_leafs;
 
@@ -171,10 +171,10 @@ namespace SharpQuake
 
         public void SwapBytes()
         {
-            this.op = (ushort)common.LittleShort( (short)this.op );
-            this.a = common.LittleShort( this.a );
-            this.b = common.LittleShort( this.b );
-            this.c = common.LittleShort( this.c );
+            this.op = (ushort)QCommon.LittleShort( (short)this.op );
+            this.a = QCommon.LittleShort( this.a );
+            this.b = QCommon.LittleShort( this.b );
+            this.c = QCommon.LittleShort( this.c );
         }
     }
 
@@ -318,7 +318,7 @@ namespace SharpQuake
     internal class edict_t
     {
         public bool free;
-        public link_t area; // linked to a division node or leaf
+        public QTriggerLink area; // linked to a division node or leaf
 
         public int num_leafs;
         public short[] leafnums; // [MAX_ENT_LEAFS];
@@ -508,7 +508,7 @@ namespace SharpQuake
 
         public edict_t()
         {
-            this.area = new link_t( this );
+            this.area = new QTriggerLink( this );
             this.leafnums = new short[progs.MAX_ENT_LEAFS];
             this.fields = new float[( progs.EdictSize - entvars_t.SizeInBytes ) >> 2];
         }
@@ -536,9 +536,9 @@ namespace SharpQuake
 
         public void SwapBytes()
         {
-            this.type = (ushort)common.LittleShort( (short)this.type );
-            this.ofs = (ushort)common.LittleShort( (short)this.ofs );
-            this.s_name = common.LittleLong( this.s_name );
+            this.type = (ushort)QCommon.LittleShort( (short)this.type );
+            this.ofs = (ushort)QCommon.LittleShort( (short)this.ofs );
+            this.s_name = QCommon.LittleLong( this.s_name );
         }
     } // ddef_t;
 
@@ -579,12 +579,12 @@ namespace SharpQuake
 
         public void SwapBytes()
         {
-            this.first_statement = common.LittleLong( this.first_statement );
-            this.parm_start = common.LittleLong( this.parm_start );
-            this.locals = common.LittleLong( this.locals );
-            this.s_name = common.LittleLong( this.s_name );
-            this.s_file = common.LittleLong( this.s_file );
-            this.numparms = common.LittleLong( this.numparms );
+            this.first_statement = QCommon.LittleLong( this.first_statement );
+            this.parm_start = QCommon.LittleLong( this.parm_start );
+            this.locals = QCommon.LittleLong( this.locals );
+            this.s_name = QCommon.LittleLong( this.s_name );
+            this.s_file = QCommon.LittleLong( this.s_file );
+            this.numparms = QCommon.LittleLong( this.numparms );
         }
 
         public override string ToString()
@@ -623,21 +623,21 @@ namespace SharpQuake
 
         public void SwapBytes()
         {
-            this.version = common.LittleLong( this.version );
-            this.crc = common.LittleLong( this.crc );
-            this.ofs_statements = common.LittleLong( this.ofs_statements );
-            this.numstatements = common.LittleLong( this.numstatements );
-            this.ofs_globaldefs = common.LittleLong( this.ofs_globaldefs );
-            this.numglobaldefs = common.LittleLong( this.numglobaldefs );
-            this.ofs_fielddefs = common.LittleLong( this.ofs_fielddefs );
-            this.numfielddefs = common.LittleLong( this.numfielddefs );
-            this.ofs_functions = common.LittleLong( this.ofs_functions );
-            this.numfunctions = common.LittleLong( this.numfunctions );
-            this.ofs_strings = common.LittleLong( this.ofs_strings );
-            this.numstrings = common.LittleLong( this.numstrings );
-            this.ofs_globals = common.LittleLong( this.ofs_globals );
-            this.numglobals = common.LittleLong( this.numglobals );
-            this.entityfields = common.LittleLong( this.entityfields );
+            this.version = QCommon.LittleLong( this.version );
+            this.crc = QCommon.LittleLong( this.crc );
+            this.ofs_statements = QCommon.LittleLong( this.ofs_statements );
+            this.numstatements = QCommon.LittleLong( this.numstatements );
+            this.ofs_globaldefs = QCommon.LittleLong( this.ofs_globaldefs );
+            this.numglobaldefs = QCommon.LittleLong( this.numglobaldefs );
+            this.ofs_fielddefs = QCommon.LittleLong( this.ofs_fielddefs );
+            this.numfielddefs = QCommon.LittleLong( this.numfielddefs );
+            this.ofs_functions = QCommon.LittleLong( this.ofs_functions );
+            this.numfunctions = QCommon.LittleLong( this.numfunctions );
+            this.ofs_strings = QCommon.LittleLong( this.ofs_strings );
+            this.numstrings = QCommon.LittleLong( this.numstrings );
+            this.ofs_globals = QCommon.LittleLong( this.ofs_globals );
+            this.numglobals = QCommon.LittleLong( this.numglobals );
+            this.entityfields = QCommon.LittleLong( this.entityfields );
         }
     } // dprograms_t;
 

@@ -43,7 +43,7 @@ namespace SharpQuake
         public bool        demoplayback;
         public bool        timedemo;
         public int         forcetrack;    // -1 = use normal cd track
-        public IDisposable demofile;      // DisposableWrapper<BinaryReader|BinaryWriter> // FILE*
+        public IDisposable demofile;      // QDisposableWrapper<BinaryReader|BinaryWriter> // FILE*
         public int         td_lastframe;  // to meter out one message a frame
         public int         td_startframe; // host_framecount at start
         public float       td_starttime;  // realtime at second frame of timedemo
@@ -52,12 +52,12 @@ namespace SharpQuake
         public int signon; // 0 to SIGNONS
 
         public qsocket_t netcon;  // qsocket_t	*netcon;
-        public MsgWriter message; // sizebuf_t	message;		// writing buffer to send to server
+        public QMessageWriter message; // sizebuf_t	message;		// writing buffer to send to server
 
         public QStaticClient()
         {
             this.demos   = new string[QClient.MAX_DEMOS];
-            this.message = new MsgWriter( 1024 ); // like in Client_Init()
+            this.message = new QMessageWriter( 1024 ); // like in Client_Init()
         }
     }
 }

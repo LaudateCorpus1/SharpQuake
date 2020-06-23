@@ -69,12 +69,12 @@ namespace SharpQuake
             //
             // register our commands
             //
-            cmd.Add( "entities",   PrintEntities_f );
-            cmd.Add( "disconnect", Disconnect_f );
-            cmd.Add( "record",     Record_f );
-            cmd.Add( "stop",       Stop_f );
-            cmd.Add( "playdemo",   PlayDemo_f );
-            cmd.Add( "timedemo",   TimeDemo_f );
+            QCommand.Add( "entities",   PrintEntities_f );
+            QCommand.Add( "disconnect", Disconnect_f );
+            QCommand.Add( "record",     Record_f );
+            QCommand.Add( "stop",       Stop_f );
+            QCommand.Add( "playdemo",   PlayDemo_f );
+            QCommand.Add( "timedemo",   TimeDemo_f );
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace SharpQuake
                 }
             }
 
-            Cbuf.InsertText( $"playdemo {cls.demos[cls.demonum]}\n" );
+            QCommandBuffer.InsertText( $"playdemo {cls.demos[cls.demonum]}\n" );
             cls.demonum++;
         }
 

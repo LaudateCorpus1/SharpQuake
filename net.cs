@@ -197,10 +197,10 @@ namespace SharpQuake
 
         public static int ActiveConnections;
 
-        public static MsgWriter Message;
+        public static QMessageWriter Message;
 
         // sizebuf_t net_message
-        public static MsgReader Reader;
+        public static QMessageReader Reader;
 
         public static int HostCacheCount;
 
@@ -290,7 +290,7 @@ namespace SharpQuake
 
             if( _Drivers == null )
             {
-                if( common.HasParam( "-playback" ) )
+                if( QCommon.HasParam( "-playback" ) )
                 {
                     _Drivers = new INetDriver[]
                     {
@@ -315,25 +315,25 @@ namespace SharpQuake
                 };
             }
 
-            if( common.HasParam( "-record" ) )
+            if( QCommon.HasParam( "-record" ) )
                 _IsRecording = true;
 
-            int i = common.CheckParm( "-port" );
+            int i = QCommon.CheckParm( "-port" );
             if( i == 0 )
-                i = common.CheckParm( "-udpport" );
+                i = QCommon.CheckParm( "-udpport" );
             if( i == 0 )
-                i = common.CheckParm( "-ipxport" );
+                i = QCommon.CheckParm( "-ipxport" );
 
             if( i > 0 )
             {
-                if( i < common.Argc - 1 )
-                    _DefHostPort = common.atoi( common.Argv( i + 1 ) );
+                if( i < QCommon.Argc - 1 )
+                    _DefHostPort = QCommon.atoi( QCommon.Argv( i + 1 ) );
                 else
                     sys.Error( "Net.Init: you must specify a number after -port!" );
             }
             HostPort = _DefHostPort;
 
-            if( common.HasParam( "-listen" ) || QClient.cls.state == ServerType.DEDICATED )
+            if( QCommon.HasParam( "-listen" ) || QClient.cls.state == ServerType.DEDICATED )
                 _IsListening = true;
             int numsockets = server.svs.maxclientslimit;
             if( QClient.cls.state != ServerType.DEDICATED )
@@ -348,8 +348,8 @@ namespace SharpQuake
             SetNetTime();
 
             // allocate space for network message buffer
-            Message = new MsgWriter( NET_MAXMESSAGE ); // SZ_Alloc (&net_message, NET_MAXMESSAGE);
-            Reader = new MsgReader( net.Message );
+            Message = new QMessageWriter( NET_MAXMESSAGE ); // SZ_Alloc (&net_message, NET_MAXMESSAGE);
+            Reader = new QMessageReader( net.Message );
 
             if( _MessageTimeout == null )
             {
@@ -357,10 +357,10 @@ namespace SharpQuake
                 _HostName = new cvar( "hostname", "UNNAMED" );
             }
 
-            cmd.Add( "slist", Slist_f );
-            cmd.Add( "listen", Listen_f );
-            cmd.Add( "maxplayers", MaxPlayers_f );
-            cmd.Add( "port", Port_f );
+            QCommand.Add( "slist", Slist_f );
+            QCommand.Add( "listen", Listen_f );
+            QCommand.Add( "maxplayers", MaxPlayers_f );
+            QCommand.Add( "port", Port_f );
 
             // initialize all the drivers
             _DriverLevel = 0;
@@ -476,7 +476,7 @@ namespace SharpQuake
 
             if( host != null )
             {
-                if( common.SameText( host, "local" ) )
+                if( QCommon.SameText( host, "local" ) )
                 {
                     numdrivers = 1;
                     goto JustDoIt;
@@ -486,7 +486,7 @@ namespace SharpQuake
                 {
                     foreach( hostcache_t hc in _HostCache )
                     {
-                        if( common.SameText( hc.name, host ) )
+                        if( QCommon.SameText( hc.name, host ) )
                         {
                             host = hc.cname;
                             goto JustDoIt;
@@ -512,7 +512,7 @@ namespace SharpQuake
             _DriverLevel = 0;
             foreach( hostcache_t hc in _HostCache )
             {
-                if( common.SameText( host, hc.name ) )
+                if( QCommon.SameText( host, hc.name ) )
                 {
                     host = hc.cname;
                     break;
@@ -655,7 +655,7 @@ JustDoIt:
         /// returns 1 if the message was sent properly
         /// returns -1 if the connection died
         /// </summary>
-        public static int SendMessage( qsocket_t sock, MsgWriter data )
+        public static int SendMessage( qsocket_t sock, QMessageWriter data )
         {
             if( sock == null )
                 return -1;
@@ -692,7 +692,7 @@ JustDoIt:
         /// returns 1 if the message was sent properly
         /// returns -1 if the connection died
         /// </summary>
-        public static int SendUnreliableMessage( qsocket_t sock, MsgWriter data )
+        public static int SendUnreliableMessage( qsocket_t sock, QMessageWriter data )
         {
             if( sock == null )
                 return -1;
@@ -726,7 +726,7 @@ JustDoIt:
         /// NET_SendToAll
         /// This is a reliable *blocking* send to all attached clients.
         /// </summary>
-        public static int SendToAll( MsgWriter data, int blocktime )
+        public static int SendToAll( QMessageWriter data, int blocktime )
         {
             bool[] state1 = new bool[QDef.MAX_SCOREBOARD];
             bool[] state2 = new bool[QDef.MAX_SCOREBOARD];
@@ -937,9 +937,9 @@ JustDoIt:
             {
                 hostcache_t hc = _HostCache[i];
                 if( hc.maxusers != 0 )
-                    Con.Print( "{0,-15} {1,-15}\n {2,2}/{3,2}\n", common.Copy( hc.name, 15 ), common.Copy( hc.map, 15 ), hc.users, hc.maxusers );
+                    Con.Print( "{0,-15} {1,-15}\n {2,2}/{3,2}\n", QCommon.Copy( hc.name, 15 ), QCommon.Copy( hc.map, 15 ), hc.users, hc.maxusers );
                 else
-                    Con.Print( "{0,-15} {1,-15}\n", common.Copy( hc.name, 15 ), common.Copy( hc.map, 15 ) );
+                    Con.Print( "{0,-15} {1,-15}\n", QCommon.Copy( hc.name, 15 ), QCommon.Copy( hc.map, 15 ) );
             }
             _SlistLastShown = i;
         }
@@ -980,13 +980,13 @@ JustDoIt:
         // NET_Listen_f
         private static void Listen_f()
         {
-            if( cmd.Argc != 2 )
+            if( QCommand.Argc != 2 )
             {
                 Con.Print( "\"listen\" is \"{0}\"\n", _IsListening ? 1 : 0 );
                 return;
             }
 
-            _IsListening = ( common.atoi( cmd.Argv( 1 ) ) != 0 );
+            _IsListening = ( QCommon.atoi( QCommand.Argv( 1 ) ) != 0 );
 
             foreach( INetDriver driver in _Drivers )
             {
@@ -1000,7 +1000,7 @@ JustDoIt:
         // MaxPlayers_f
         private static void MaxPlayers_f()
         {
-            if( cmd.Argc != 2 )
+            if( QCommand.Argc != 2 )
             {
                 Con.Print( "\"maxplayers\" is \"%u\"\n", server.svs.maxclients );
                 return;
@@ -1012,7 +1012,7 @@ JustDoIt:
                 return;
             }
 
-            int n = common.atoi( cmd.Argv( 1 ) );
+            int n = QCommon.atoi( QCommand.Argv( 1 ) );
             if( n < 1 )
                 n = 1;
             if( n > server.svs.maxclientslimit )
@@ -1022,10 +1022,10 @@ JustDoIt:
             }
 
             if( n == 1 && _IsListening )
-                Cbuf.AddText( "listen 0\n" );
+                QCommandBuffer.AddText( "listen 0\n" );
 
             if( n > 1 && !_IsListening )
-                Cbuf.AddText( "listen 1\n" );
+                QCommandBuffer.AddText( "listen 1\n" );
 
             server.svs.maxclients = n;
             if( n == 1 )
@@ -1037,13 +1037,13 @@ JustDoIt:
         // NET_Port_f
         private static void Port_f()
         {
-            if( cmd.Argc != 2 )
+            if( QCommand.Argc != 2 )
             {
                 Con.Print( "\"port\" is \"{0}\"\n", HostPort );
                 return;
             }
 
-            int n = common.atoi( cmd.Argv( 1 ) );
+            int n = QCommon.atoi( QCommand.Argv( 1 ) );
             if( n < 1 || n > 65534 )
             {
                 Con.Print( "Bad value, must be between 1 and 65534\n" );
@@ -1056,8 +1056,8 @@ JustDoIt:
             if( _IsListening )
             {
                 // force a change to the new port
-                Cbuf.AddText( "listen 0\n" );
-                Cbuf.AddText( "listen 1\n" );
+                QCommandBuffer.AddText( "listen 0\n" );
+                QCommandBuffer.AddText( "listen 1\n" );
             }
         }
 
@@ -1277,9 +1277,9 @@ JustDoIt:
 
         int GetMessage( qsocket_t sock );
 
-        int SendMessage( qsocket_t sock, MsgWriter data );
+        int SendMessage( qsocket_t sock, QMessageWriter data );
 
-        int SendUnreliableMessage( qsocket_t sock, MsgWriter data );
+        int SendUnreliableMessage( qsocket_t sock, QMessageWriter data );
 
         bool CanSendMessage( qsocket_t sock );
 

@@ -41,7 +41,7 @@ namespace SharpQuake
         /// <summary>
         /// WriteDest()
         /// </summary>
-        private static MsgWriter WriteDest
+        private static QMessageWriter WriteDest
         {
             get
             {
@@ -552,7 +552,7 @@ namespace SharpQuake
                     if( mod != null )
                         SetMinMaxSize( e, ref mod.mins, ref mod.maxs, true );
                     else
-                        SetMinMaxSize( e, ref common.ZeroVector, ref common.ZeroVector, true );
+                        SetMinMaxSize( e, ref QCommon.ZeroVector, ref QCommon.ZeroVector, true );
 
                     return;
                 }
@@ -776,16 +776,16 @@ namespace SharpQuake
                 if( samp == server.sv.sound_precache[i] )
                 {
                     // add an svc_spawnambient command to the level signon packet
-                    MsgWriter msg = server.sv.signon;
+                    QMessageWriter MessageWriter = server.sv.signon;
 
-                    msg.WriteByte( protocol.svc_spawnstaticsound );
+                    MessageWriter.WriteByte( protocol.svc_spawnstaticsound );
                     for( int i2 = 0; i2 < 3; i2++ )
-                        msg.WriteCoord( pos[i2] );
+                        MessageWriter.WriteCoord( pos[i2] );
 
-                    msg.WriteByte( i );
+                    MessageWriter.WriteByte( i );
 
-                    msg.WriteByte( (int)( vol * 255 ) );
-                    msg.WriteByte( (int)( attenuation * 64 ) );
+                    MessageWriter.WriteByte( (int)( vol * 255 ) );
+                    MessageWriter.WriteByte( (int)( attenuation * 64 ) );
 
                     return;
                 }
@@ -857,7 +857,7 @@ namespace SharpQuake
             Vector3 vec1, vec2;
             Copy( v1, out vec1 );
             Copy( v2, out vec2 );
-            trace_t trace = server.Move( ref vec1, ref common.ZeroVector, ref common.ZeroVector, ref vec2, nomonsters, ent );
+            trace_t trace = server.Move( ref vec1, ref QCommon.ZeroVector, ref QCommon.ZeroVector, ref vec2, nomonsters, ent );
 
             progs.GlobalStruct.trace_allsolid = trace.allsolid ? 1 : 0;
             progs.GlobalStruct.trace_startsolid = trace.startsolid ? 1 : 0;
@@ -924,7 +924,7 @@ namespace SharpQuake
             }
 
             // get the PVS for the entity
-            Vector3 org = common.ToVector( ref ent.v.origin ) + common.ToVector( ref ent.v.view_ofs );
+            Vector3 org = QCommon.ToVector( ref ent.v.origin ) + QCommon.ToVector( ref ent.v.view_ofs );
             mleaf_t leaf = Mod.PointInLeaf( ref org, server.sv.worldmodel );
             byte[] pvs = Mod.LeafPVS( leaf, server.sv.worldmodel );
             Buffer.BlockCopy( pvs, 0, _CheckPvs, 0, pvs.Length );
@@ -963,7 +963,7 @@ namespace SharpQuake
 
             // if current entity can't possibly see the check entity, return 0
             edict_t self = server.ProgToEdict( progs.GlobalStruct.self );
-            Vector3 view = common.ToVector( ref self.v.origin ) + common.ToVector( ref self.v.view_ofs );
+            Vector3 view = QCommon.ToVector( ref self.v.origin ) + QCommon.ToVector( ref self.v.view_ofs );
             mleaf_t leaf = Mod.PointInLeaf( ref view, server.sv.worldmodel );
             int l = Array.IndexOf( server.sv.worldmodel.leafs, leaf ) - 1;
             if( ( l < 0 ) || ( _CheckPvs[l >> 3] & ( 1 << ( l & 7 ) ) ) == 0 )
@@ -1006,7 +1006,7 @@ namespace SharpQuake
         private static void PF_localcmd()
         {
             string cmd = GetString( OFS.OFS_PARM0 );
-            Cbuf.AddText( cmd );
+            QCommandBuffer.AddText( cmd );
         }
 
         /*
@@ -1064,8 +1064,8 @@ namespace SharpQuake
                 if( ent.v.solid == Solids.SOLID_NOT )
                     continue;
 
-                Vector3 v = vorg - ( common.ToVector( ref ent.v.origin ) +
-                    ( common.ToVector( ref ent.v.mins ) + common.ToVector( ref ent.v.maxs ) ) * 0.5f );
+                Vector3 v = vorg - ( QCommon.ToVector( ref ent.v.origin ) +
+                    ( QCommon.ToVector( ref ent.v.mins ) + QCommon.ToVector( ref ent.v.maxs ) ) * 0.5f );
                 if( v.Length > rad )
                     continue;
 
@@ -1410,14 +1410,14 @@ namespace SharpQuake
             edict_t ent = GetEdict( OFS.OFS_PARM0 );
             float speed = GetFloat( OFS.OFS_PARM1 );
 
-            Vector3 start = common.ToVector( ref ent.v.origin );
+            Vector3 start = QCommon.ToVector( ref ent.v.origin );
             start.Z += 20;
 
             // try sending a trace straight
             Vector3 dir;
             mathlib.Copy( ref progs.GlobalStruct.v_forward, out dir );
             Vector3 end = start + dir * 2048;
-            trace_t tr = server.Move( ref start, ref common.ZeroVector, ref common.ZeroVector, ref end, 0, ent );
+            trace_t tr = server.Move( ref start, ref QCommon.ZeroVector, ref QCommon.ZeroVector, ref end, 0, ent );
             if( tr.ent != null && tr.ent.v.takedamage == Damages.DAMAGE_AIM &&
                 ( host.TeamPlay == 0 || ent.v.team <= 0 || ent.v.team != tr.ent.v.team ) )
             {
@@ -1447,10 +1447,10 @@ namespace SharpQuake
 
                 dir = end - start;
                 mathlib.Normalize( ref dir );
-                float dist = Vector3.Dot( dir, common.ToVector( ref progs.GlobalStruct.v_forward ) );
+                float dist = Vector3.Dot( dir, QCommon.ToVector( ref progs.GlobalStruct.v_forward ) );
                 if( dist < bestdist )
                     continue;	// to far to turn
-                tr = server.Move( ref start, ref common.ZeroVector, ref common.ZeroVector, ref end, 0, ent );
+                tr = server.Move( ref start, ref QCommon.ZeroVector, ref QCommon.ZeroVector, ref end, 0, ent );
                 if( tr.ent == check )
                 {	// can shoot at this one
                     bestdist = dist;
@@ -1525,17 +1525,17 @@ namespace SharpQuake
         private static void PF_makestatic()
         {
             edict_t ent = GetEdict( OFS.OFS_PARM0 );
-            MsgWriter msg = server.sv.signon;
+            QMessageWriter MessageWriter = server.sv.signon;
 
-            msg.WriteByte( protocol.svc_spawnstatic );
-            msg.WriteByte( server.ModelIndex( progs.GetString( ent.v.model ) ) );
-            msg.WriteByte( (int)ent.v.frame );
-            msg.WriteByte( (int)ent.v.colormap );
-            msg.WriteByte( (int)ent.v.skin );
+            MessageWriter.WriteByte( protocol.svc_spawnstatic );
+            MessageWriter.WriteByte( server.ModelIndex( progs.GetString( ent.v.model ) ) );
+            MessageWriter.WriteByte( (int)ent.v.frame );
+            MessageWriter.WriteByte( (int)ent.v.colormap );
+            MessageWriter.WriteByte( (int)ent.v.skin );
             for( int i = 0; i < 3; i++ )
             {
-                msg.WriteCoord( mathlib.Comp( ref ent.v.origin, i ) );
-                msg.WriteAngle( mathlib.Comp( ref ent.v.angles, i ) );
+                MessageWriter.WriteCoord( mathlib.Comp( ref ent.v.origin, i ) );
+                MessageWriter.WriteAngle( mathlib.Comp( ref ent.v.angles, i ) );
             }
 
             // throw the entity away now
@@ -1576,7 +1576,7 @@ namespace SharpQuake
             server.svs.changelevel_issued = true;
 
             string s = GetString( OFS.OFS_PARM0 );
-            Cbuf.AddText( String.Format( "changelevel {0}\n", s ) );
+            QCommandBuffer.AddText( String.Format( "changelevel {0}\n", s ) );
         }
 
         private static void PF_Fixme()

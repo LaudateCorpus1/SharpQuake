@@ -176,10 +176,10 @@ namespace SharpQuake
                 _WindowedMouse = new cvar( "_windowed_mouse", "1", true );
             }
 
-            cmd.Add( "vid_nummodes", NumModes_f );
-            cmd.Add( "vid_describecurrentmode", DescribeCurrentMode_f );
-            cmd.Add( "vid_describemode", DescribeMode_f );
-            cmd.Add( "vid_describemodes", DescribeModes_f );
+            QCommand.Add( "vid_nummodes", NumModes_f );
+            QCommand.Add( "vid_describecurrentmode", DescribeCurrentMode_f );
+            QCommand.Add( "vid_describemode", DescribeMode_f );
+            QCommand.Add( "vid_describemodes", DescribeModes_f );
 
             DisplayDevice dev = mainwindow.DisplayDevice;
 
@@ -214,10 +214,10 @@ namespace SharpQuake
             mode1.fullScreen = true;
 
             int width = dev.Width, height = dev.Height;
-            int i = common.CheckParm( "-width" );
-            if( i > 0 && i < common.Argc - 1 )
+            int i = QCommon.CheckParm( "-width" );
+            if( i > 0 && i < QCommon.Argc - 1 )
             {
-                width = common.atoi( common.Argv( i + 1 ) );
+                width = QCommon.atoi( QCommon.Argv( i + 1 ) );
 
                 foreach( DisplayResolution res in dev.AvailableResolutions )
                 {
@@ -229,14 +229,14 @@ namespace SharpQuake
                 }
             }
 
-            i = common.CheckParm( "-height" );
-            if( i > 0 && i < common.Argc - 1 )
-                height = common.atoi( common.Argv( i + 1 ) );
+            i = QCommon.CheckParm( "-height" );
+            if( i > 0 && i < QCommon.Argc - 1 )
+                height = QCommon.atoi( QCommon.Argv( i + 1 ) );
 
             mode1.width = width;
             mode1.height = height;
 
-            if( common.HasParam( "-window" ) )
+            if( QCommon.HasParam( "-window" ) )
             {
                 _Windowed = true;
             }
@@ -244,7 +244,7 @@ namespace SharpQuake
             {
                 _Windowed = false;
 
-                if( common.HasParam( "-current" ) )
+                if( QCommon.HasParam( "-current" ) )
                 {
                     mode1.width = dev.Width;
                     mode1.height = dev.Height;
@@ -252,10 +252,10 @@ namespace SharpQuake
                 else
                 {
                     int bpp = mode1.bpp;
-                    i = common.CheckParm( "-bpp" );
-                    if( i > 0 && i < common.Argc - 1 )
+                    i = QCommon.CheckParm( "-bpp" );
+                    if( i > 0 && i < QCommon.Argc - 1 )
                     {
-                        bpp = common.atoi( common.Argv( i + 1 ) );
+                        bpp = QCommon.atoi( QCommon.Argv( i + 1 ) );
                     }
                     mode1.bpp = bpp;
                 }
@@ -263,9 +263,9 @@ namespace SharpQuake
 
             //_IsInitialized = true;
 
-            int i2 = common.CheckParm( "-conwidth" );
+            int i2 = QCommon.CheckParm( "-conwidth" );
             if( i2 > 0 )
-                Scr.vid.conwidth = common.atoi( common.Argv( i2 + 1 ) );
+                Scr.vid.conwidth = QCommon.atoi( QCommon.Argv( i2 + 1 ) );
             else
                 Scr.vid.conwidth = 640;
 
@@ -277,9 +277,9 @@ namespace SharpQuake
             // pick a conheight that matches with correct aspect
             Scr.vid.conheight = Scr.vid.conwidth * 3 / 4;
 
-            i2 = common.CheckParm( "-conheight" );
+            i2 = QCommon.CheckParm( "-conheight" );
             if( i2 > 0 )
-                Scr.vid.conheight = common.atoi( common.Argv( i2 + 1 ) );
+                Scr.vid.conheight = QCommon.atoi( QCommon.Argv( i2 + 1 ) );
             if( Scr.vid.conheight < 200 )
                 Scr.vid.conheight = 200;
 
@@ -287,7 +287,7 @@ namespace SharpQuake
             Scr.vid.maxwarpheight = WARP_HEIGHT;
             Scr.vid.colormap = host.ColorMap;
             int v = BitConverter.ToInt32( host.ColorMap, 2048 );
-            Scr.vid.fullbright = 256 - common.LittleLong( v );
+            Scr.vid.fullbright = 256 - QCommon.LittleLong( v );
 
             CheckGamma( palette );
             SetPalette( palette );
@@ -313,7 +313,7 @@ namespace SharpQuake
 
             InitOpenGL();
 
-            Directory.CreateDirectory( Path.Combine( common.GameDir, "glquake" ) );
+            Directory.CreateDirectory( Path.Combine( QCommon.GameDir, "glquake" ) );
         }
 
         /// <summary>
@@ -452,7 +452,7 @@ namespace SharpQuake
 
             // JACK: 3D distance calcs - k is last closest, l is the distance.
             // FIXME: Precalculate this and cache to disk.
-            Union4b val = Union4b.Empty;
+            QByteUnion4 val = QByteUnion4.Empty;
             for( uint i = 0; i < ( 1 << 15 ); i++ )
             {
                 // Maps
@@ -542,7 +542,7 @@ namespace SharpQuake
         // VID_DescribeMode_f
         private static void DescribeMode_f()
         {
-            int modenum = common.atoi( cmd.Argv( 1 ) );
+            int modenum = QCommon.atoi( QCommand.Argv( 1 ) );
 
             Con.Print( "{0}\n", GetExtModeDescription( modenum ) );
         }
@@ -564,7 +564,7 @@ namespace SharpQuake
         // Check_Gamma
         private static void CheckGamma( byte[] pal )
         {
-            int i = common.CheckParm( "-gamma" );
+            int i = QCommon.CheckParm( "-gamma" );
             if( i == 0 )
             {
                 string renderer = GL.GetString( StringName.Renderer );
@@ -575,7 +575,7 @@ namespace SharpQuake
                     _Gamma = 0.7f; // default to 0.7 on non-3dfx hardware
             }
             else
-                _Gamma = float.Parse( common.Argv( i + 1 ) );
+                _Gamma = float.Parse( QCommon.Argv( i + 1 ) );
 
             for( i = 0; i < pal.Length; i++ )
             {
@@ -618,7 +618,7 @@ namespace SharpQuake
         /// </summary>
         private static void CheckMultiTextureExtensions()
         {
-            if( _glExtensions.Contains( "GL_SGIS_multitexture " ) && !common.HasParam( "-nomtex" ) )
+            if( _glExtensions.Contains( "GL_SGIS_multitexture " ) && !QCommon.HasParam( "-nomtex" ) )
             {
                 Con.Print( "Multitexture extensions found.\n" );
                 _glMTexable = true;

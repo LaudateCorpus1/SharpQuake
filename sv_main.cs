@@ -166,9 +166,9 @@ namespace SharpQuake
                 // send any final messages (don't check for errors)
                 if( net.CanSendMessage( client.netconnection ) )
                 {
-                    MsgWriter msg = client.message;
-                    msg.WriteByte( protocol.svc_disconnect );
-                    net.SendMessage( client.netconnection, msg );
+                    QMessageWriter MessageWriter = client.message;
+                    MessageWriter.WriteByte( protocol.svc_disconnect );
+                    net.SendMessage( client.netconnection, MessageWriter );
                 }
 
                 if( client.edict != null && client.spawned )
@@ -328,16 +328,16 @@ namespace SharpQuake
             for( int i = 0; i < svs.maxclients; i++ )
                 if( svs.clients[i].active && svs.clients[i].spawned )
                 {
-                    MsgWriter msg = svs.clients[i].message;
-                    msg.WriteByte( protocol.svc_print );
-                    msg.WriteString( tmp );
+                    QMessageWriter MessageWriter = svs.clients[i].message;
+                    MessageWriter.WriteByte( protocol.svc_print );
+                    MessageWriter.WriteString( tmp );
                 }
         }
 
         /// <summary>
         /// SV_WriteClientdataToMessage
         /// </summary>
-        public static void WriteClientDataToMessage( edict_t ent, MsgWriter msg )
+        public static void WriteClientDataToMessage( edict_t ent, QMessageWriter MessageWriter )
         {
             //
             // send a damage message
@@ -345,12 +345,12 @@ namespace SharpQuake
             if( ent.v.dmg_take != 0 || ent.v.dmg_save != 0 )
             {
                 edict_t other = ProgToEdict( ent.v.dmg_inflictor );
-                msg.WriteByte( protocol.svc_damage );
-                msg.WriteByte( (int)ent.v.dmg_save );
-                msg.WriteByte( (int)ent.v.dmg_take );
-                msg.WriteCoord( other.v.origin.x + 0.5f * ( other.v.mins.x + other.v.maxs.x ) );
-                msg.WriteCoord( other.v.origin.y + 0.5f * ( other.v.mins.y + other.v.maxs.y ) );
-                msg.WriteCoord( other.v.origin.z + 0.5f * ( other.v.mins.z + other.v.maxs.z ) );
+                MessageWriter.WriteByte( protocol.svc_damage );
+                MessageWriter.WriteByte( (int)ent.v.dmg_save );
+                MessageWriter.WriteByte( (int)ent.v.dmg_take );
+                MessageWriter.WriteCoord( other.v.origin.x + 0.5f * ( other.v.mins.x + other.v.maxs.x ) );
+                MessageWriter.WriteCoord( other.v.origin.y + 0.5f * ( other.v.mins.y + other.v.maxs.y ) );
+                MessageWriter.WriteCoord( other.v.origin.z + 0.5f * ( other.v.mins.z + other.v.maxs.z ) );
 
                 ent.v.dmg_take = 0;
                 ent.v.dmg_save = 0;
@@ -364,10 +364,10 @@ namespace SharpQuake
             // a fixangle might get lost in a dropped packet.  Oh well.
             if( ent.v.fixangle != 0 )
             {
-                msg.WriteByte( protocol.svc_setangle );
-                msg.WriteAngle( ent.v.angles.x );
-                msg.WriteAngle( ent.v.angles.y );
-                msg.WriteAngle( ent.v.angles.z );
+                MessageWriter.WriteByte( protocol.svc_setangle );
+                MessageWriter.WriteAngle( ent.v.angles.x );
+                MessageWriter.WriteAngle( ent.v.angles.y );
+                MessageWriter.WriteAngle( ent.v.angles.z );
                 ent.v.fixangle = 0;
             }
 
@@ -421,50 +421,50 @@ namespace SharpQuake
 
             // send the data
 
-            msg.WriteByte( protocol.svc_clientdata );
-            msg.WriteShort( bits );
+            MessageWriter.WriteByte( protocol.svc_clientdata );
+            MessageWriter.WriteShort( bits );
 
             if( ( bits & protocol.SU_VIEWHEIGHT ) != 0 )
-                msg.WriteChar( (int)ent.v.view_ofs.z );
+                MessageWriter.WriteChar( (int)ent.v.view_ofs.z );
 
             if( ( bits & protocol.SU_IDEALPITCH ) != 0 )
-                msg.WriteChar( (int)ent.v.idealpitch );
+                MessageWriter.WriteChar( (int)ent.v.idealpitch );
 
             if( ( bits & protocol.SU_PUNCH1 ) != 0 )
-                msg.WriteChar( (int)ent.v.punchangle.x );
+                MessageWriter.WriteChar( (int)ent.v.punchangle.x );
             if( ( bits & protocol.SU_VELOCITY1 ) != 0 )
-                msg.WriteChar( (int)( ent.v.velocity.x / 16 ) );
+                MessageWriter.WriteChar( (int)( ent.v.velocity.x / 16 ) );
 
             if( ( bits & protocol.SU_PUNCH2 ) != 0 )
-                msg.WriteChar( (int)ent.v.punchangle.y );
+                MessageWriter.WriteChar( (int)ent.v.punchangle.y );
             if( ( bits & protocol.SU_VELOCITY2 ) != 0 )
-                msg.WriteChar( (int)( ent.v.velocity.y / 16 ) );
+                MessageWriter.WriteChar( (int)( ent.v.velocity.y / 16 ) );
 
             if( ( bits & protocol.SU_PUNCH3 ) != 0 )
-                msg.WriteChar( (int)ent.v.punchangle.z );
+                MessageWriter.WriteChar( (int)ent.v.punchangle.z );
             if( ( bits & protocol.SU_VELOCITY3 ) != 0 )
-                msg.WriteChar( (int)( ent.v.velocity.z / 16 ) );
+                MessageWriter.WriteChar( (int)( ent.v.velocity.z / 16 ) );
 
             // always sent
-            msg.WriteLong( items );
+            MessageWriter.WriteLong( items );
 
             if( ( bits & protocol.SU_WEAPONFRAME ) != 0 )
-                msg.WriteByte( (int)ent.v.weaponframe );
+                MessageWriter.WriteByte( (int)ent.v.weaponframe );
             if( ( bits & protocol.SU_ARMOR ) != 0 )
-                msg.WriteByte( (int)ent.v.armorvalue );
+                MessageWriter.WriteByte( (int)ent.v.armorvalue );
             if( ( bits & protocol.SU_WEAPON ) != 0 )
-                msg.WriteByte( ModelIndex( progs.GetString( ent.v.weaponmodel ) ) );
+                MessageWriter.WriteByte( ModelIndex( progs.GetString( ent.v.weaponmodel ) ) );
 
-            msg.WriteShort( (int)ent.v.health );
-            msg.WriteByte( (int)ent.v.currentammo );
-            msg.WriteByte( (int)ent.v.ammo_shells );
-            msg.WriteByte( (int)ent.v.ammo_nails );
-            msg.WriteByte( (int)ent.v.ammo_rockets );
-            msg.WriteByte( (int)ent.v.ammo_cells );
+            MessageWriter.WriteShort( (int)ent.v.health );
+            MessageWriter.WriteByte( (int)ent.v.currentammo );
+            MessageWriter.WriteByte( (int)ent.v.ammo_shells );
+            MessageWriter.WriteByte( (int)ent.v.ammo_nails );
+            MessageWriter.WriteByte( (int)ent.v.ammo_rockets );
+            MessageWriter.WriteByte( (int)ent.v.ammo_cells );
 
-            if( common.GameKind == GameKind.StandardQuake )
+            if( QCommon.GameType == QGameType.StandardQuake )
             {
-                msg.WriteByte( (int)ent.v.weapon );
+                MessageWriter.WriteByte( (int)ent.v.weapon );
             }
             else
             {
@@ -472,7 +472,7 @@ namespace SharpQuake
                 {
                     if( ( ( (int)ent.v.weapon ) & ( 1 << i ) ) != 0 )
                     {
-                        msg.WriteByte( i );
+                        MessageWriter.WriteByte( i );
                         break;
                     }
                 }
@@ -697,10 +697,10 @@ namespace SharpQuake
         /// </summary>
         private static void SendNop( client_t client )
         {
-            MsgWriter msg = new MsgWriter( 4 );
-            msg.WriteChar( protocol.svc_nop );
+            QMessageWriter MessageWriter = new QMessageWriter( 4 );
+            MessageWriter.WriteChar( protocol.svc_nop );
 
-            if( net.SendUnreliableMessage( client.netconnection, msg ) == -1 )
+            if( net.SendUnreliableMessage( client.netconnection, MessageWriter ) == -1 )
                 DropClient( true );	// if the message couldn't send, kick off
             client.last_message = host.RealTime;
         }
@@ -710,22 +710,22 @@ namespace SharpQuake
         /// </summary>
         private static bool SendClientDatagram( client_t client )
         {
-            MsgWriter msg = new MsgWriter( QDef.MAX_DATAGRAM ); // Uze todo: make static?
+            QMessageWriter MessageWriter = new QMessageWriter( QDef.MAX_DATAGRAM ); // Uze todo: make static?
 
-            msg.WriteByte( protocol.svc_time );
-            msg.WriteFloat( (float)sv.time );
+            MessageWriter.WriteByte( protocol.svc_time );
+            MessageWriter.WriteFloat( (float)sv.time );
 
             // add the QClient specific data to the datagram
-            WriteClientDataToMessage( client.edict, msg );
+            WriteClientDataToMessage( client.edict, MessageWriter );
 
-            WriteEntitiesToClient( client.edict, msg );
+            WriteEntitiesToClient( client.edict, MessageWriter );
 
             // copy the server datagram if there is space
-            if( msg.Length + sv.datagram.Length < msg.Capacity )
-                msg.Write( sv.datagram.Data, 0, sv.datagram.Length );
+            if( MessageWriter.Length + sv.datagram.Length < MessageWriter.Capacity )
+                MessageWriter.Write( sv.datagram.Data, 0, sv.datagram.Length );
 
             // send the datagram
-            if( net.SendUnreliableMessage( client.netconnection, msg ) == -1 )
+            if( net.SendUnreliableMessage( client.netconnection, MessageWriter ) == -1 )
             {
                 DropClient( true );// if the message couldn't send, kick off
                 return false;
@@ -737,10 +737,10 @@ namespace SharpQuake
         /// <summary>
         /// SV_WriteEntitiesToClient
         /// </summary>
-        private static void WriteEntitiesToClient( edict_t clent, MsgWriter msg )
+        private static void WriteEntitiesToClient( edict_t clent, QMessageWriter MessageWriter )
         {
             // find the QClient's PVS
-            Vector3 org = common.ToVector( ref clent.v.origin ) + common.ToVector( ref clent.v.view_ofs );
+            Vector3 org = QCommon.ToVector( ref clent.v.origin ) + QCommon.ToVector( ref clent.v.view_ofs );
             byte[] pvs = FatPVS( ref org );
 
             // send over all entities (except the QClient) that touch the pvs
@@ -764,7 +764,7 @@ namespace SharpQuake
                         continue;		// not visible
                 }
 
-                if( msg.Capacity - msg.Length < 16 )
+                if( MessageWriter.Capacity - MessageWriter.Length < 16 )
                 {
                     Con.Print( "packet overflow\n" );
                     return;
@@ -817,37 +817,37 @@ namespace SharpQuake
                 //
                 // write the message
                 //
-                msg.WriteByte( bits | protocol.U_SIGNAL );
+                MessageWriter.WriteByte( bits | protocol.U_SIGNAL );
 
                 if( ( bits & protocol.U_MOREBITS ) != 0 )
-                    msg.WriteByte( bits >> 8 );
+                    MessageWriter.WriteByte( bits >> 8 );
                 if( ( bits & protocol.U_LONGENTITY ) != 0 )
-                    msg.WriteShort( e );
+                    MessageWriter.WriteShort( e );
                 else
-                    msg.WriteByte( e );
+                    MessageWriter.WriteByte( e );
 
                 if( ( bits & protocol.U_MODEL ) != 0 )
-                    msg.WriteByte( (int)ent.v.modelindex );
+                    MessageWriter.WriteByte( (int)ent.v.modelindex );
                 if( ( bits & protocol.U_FRAME ) != 0 )
-                    msg.WriteByte( (int)ent.v.frame );
+                    MessageWriter.WriteByte( (int)ent.v.frame );
                 if( ( bits & protocol.U_COLORMAP ) != 0 )
-                    msg.WriteByte( (int)ent.v.colormap );
+                    MessageWriter.WriteByte( (int)ent.v.colormap );
                 if( ( bits & protocol.U_SKIN ) != 0 )
-                    msg.WriteByte( (int)ent.v.skin );
+                    MessageWriter.WriteByte( (int)ent.v.skin );
                 if( ( bits & protocol.U_EFFECTS ) != 0 )
-                    msg.WriteByte( (int)ent.v.effects );
+                    MessageWriter.WriteByte( (int)ent.v.effects );
                 if( ( bits & protocol.U_ORIGIN1 ) != 0 )
-                    msg.WriteCoord( ent.v.origin.x );
+                    MessageWriter.WriteCoord( ent.v.origin.x );
                 if( ( bits & protocol.U_ANGLE1 ) != 0 )
-                    msg.WriteAngle( ent.v.angles.x );
+                    MessageWriter.WriteAngle( ent.v.angles.x );
                 if( ( bits & protocol.U_ORIGIN2 ) != 0 )
-                    msg.WriteCoord( ent.v.origin.y );
+                    MessageWriter.WriteCoord( ent.v.origin.y );
                 if( ( bits & protocol.U_ANGLE2 ) != 0 )
-                    msg.WriteAngle( ent.v.angles.y );
+                    MessageWriter.WriteAngle( ent.v.angles.y );
                 if( ( bits & protocol.U_ORIGIN3 ) != 0 )
-                    msg.WriteCoord( ent.v.origin.z );
+                    MessageWriter.WriteCoord( ent.v.origin.z );
                 if( ( bits & protocol.U_ANGLE3 ) != 0 )
-                    msg.WriteAngle( ent.v.angles.z );
+                    MessageWriter.WriteAngle( ent.v.angles.z );
             }
         }
 
@@ -1016,7 +1016,7 @@ namespace SharpQuake
         /// </summary>
         private static void SendServerInfo( client_t client )
         {
-            MsgWriter writer = client.message;
+            QMessageWriter writer = client.message;
 
             writer.WriteByte( protocol.svc_print );
             writer.WriteString( String.Format( "{0}\nVERSION {1,4:F2} SERVER ({2} CRC)", (char)2, QDef.VERSION, progs.Crc ) );
@@ -1074,14 +1074,14 @@ namespace SharpQuake
         /// </summary>
         private static void SendReconnect()
         {
-            MsgWriter msg = new MsgWriter( 128 );
+            QMessageWriter MessageWriter = new QMessageWriter( 128 );
 
-            msg.WriteChar( protocol.svc_stufftext );
-            msg.WriteString( "reconnect\n" );
-            net.SendToAll( msg, 5 );
+            MessageWriter.WriteChar( protocol.svc_stufftext );
+            MessageWriter.WriteString( "reconnect\n" );
+            net.SendToAll( MessageWriter, 5 );
 
             if( QClient.cls.state != ServerType.DEDICATED )
-                cmd.ExecuteString( "reconnect\n", cmd_source_t.src_command );
+                QCommand.ExecuteString( "reconnect\n", QCommandSource.src_command );
         }
 
         /// <summary>

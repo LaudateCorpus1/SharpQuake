@@ -91,17 +91,17 @@ namespace SharpQuake
         {
             Con.Print( "\nSound Initialization\n" );
 
-            if( common.HasParam( "-nosound" ) )
+            if( QCommon.HasParam( "-nosound" ) )
                 return;
 
             for( int i = 0; i < _Channels.Length; i++ )
                 _Channels[i] = new QSoundChannel();
 
-            cmd.Add( "play",      Play );
-            cmd.Add( "playvol",   PlayVol );
-            cmd.Add( "stopsound", StopAllSoundsCmd );
-            cmd.Add( "soundlist", SoundList );
-            cmd.Add( "soundinfo", SoundInfo_f );
+            QCommand.Add( "play",      Play );
+            QCommand.Add( "playvol",   PlayVol );
+            QCommand.Add( "stopsound", StopAllSoundsCmd );
+            QCommand.Add( "soundlist", SoundList );
+            QCommand.Add( "soundinfo", SoundInfo_f );
 
             _IsInitialized = true;
 
@@ -444,7 +444,7 @@ namespace SharpQuake
                 return;
             }
 
-            StartSound( QClient.cl.viewentity, -1, sfx, ref common.ZeroVector, 1, 1 );
+            StartSound( QClient.cl.viewentity, -1, sfx, ref QCommon.ZeroVector, 1, 1 );
         }
 
         // S_Startup
@@ -481,9 +481,9 @@ namespace SharpQuake
         // S_Play
         private static void Play()
         {
-            for( int i = 1; i < cmd.Argc; i++ )
+            for( int i = 1; i < QCommand.Argc; i++ )
             {
-                string name = cmd.Argv( i );
+                string name = QCommand.Argv( i );
                 int    k    = name.IndexOf( '.' );
                 if( k == -1 )
                     name += ".wav";
@@ -496,15 +496,15 @@ namespace SharpQuake
         // S_PlayVol
         private static void PlayVol()
         {
-            for( int i = 1; i < cmd.Argc; i += 2 )
+            for( int i = 1; i < QCommand.Argc; i += 2 )
             {
-                string name = cmd.Argv( i );
+                string name = QCommand.Argv( i );
                 int    k    = name.IndexOf( '.' );
                 if( k == -1 )
                     name += ".wav";
 
                 QSoundFX sfx = PrecacheSound( name );
-                float    vol = float.Parse( cmd.Argv( i + 1 ) );
+                float    vol = float.Parse( QCommand.Argv( i + 1 ) );
                 StartSound( _PlayVolHash++, 0, sfx, ref _ListenerOrigin, vol, 1.0f );
             }
         }
@@ -636,7 +636,7 @@ namespace SharpQuake
             // load it in
             string namebuffer = "sound/" + s.name;
 
-            byte[] data = common.LoadFile( namebuffer );
+            byte[] data = QCommon.LoadFile( namebuffer );
             if( data == null )
             {
                 Con.Print( "Couldn't load {0}\n", namebuffer );
@@ -667,7 +667,7 @@ namespace SharpQuake
             sc.stereo    = info.channels;
             s.cache.data = sc;
 
-            ResampleSfx( s, sc.speed, sc.width, new ByteArraySegment( data, info.dataofs ) );
+            ResampleSfx( s, sc.speed, sc.width, new QByteArraySegment( data, info.dataofs ) );
 
             return sc;
         }

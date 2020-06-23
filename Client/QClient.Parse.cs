@@ -147,7 +147,7 @@ namespace SharpQuake
                         break;
 
                     case protocol.svc_stufftext:
-                        Cbuf.AddText( net.Reader.ReadString() );
+                        QCommandBuffer.AddText( net.Reader.ReadString() );
                         break;
 
                     case protocol.svc_damage:
@@ -300,7 +300,7 @@ namespace SharpQuake
                         break;
 
                     case protocol.svc_sellscreen:
-                        SharpQuake.cmd.ExecuteString( "help", cmd_source_t.src_command );
+                        SharpQuake.QCommand.ExecuteString( "help", QCommandSource.src_command );
                         break;
                 }
             }
@@ -557,7 +557,7 @@ namespace SharpQuake
 
             i2 = net.Reader.ReadByte();
 
-            if( common.GameKind == GameKind.StandardQuake )
+            if( QCommon.GameType == QGameType.StandardQuake )
             {
                 if( cl.stats[QStats.STAT_ACTIVEWEAPON] != i2 )
                 {
@@ -612,7 +612,7 @@ namespace SharpQuake
 
             // parse signon message
             string str = net.Reader.ReadString();
-            cl.levelname = common.Copy( str, 40 );
+            cl.levelname = QCommon.Copy( str, 40 );
 
             // seperate the printfs so the server message can have a color
             Con.Print( ConsoleBar );
@@ -820,8 +820,8 @@ namespace SharpQuake
             ent.colormap = Scr.vid.colormap;
             ent.skinnum  = ent.baseline.skin;
             ent.effects  = ent.baseline.effects;
-            ent.origin   = common.ToVector( ref ent.baseline.origin );
-            ent.angles   = common.ToVector( ref ent.baseline.angles );
+            ent.origin   = QCommon.ToVector( ref ent.baseline.origin );
+            ent.angles   = QCommon.ToVector( ref ent.baseline.angles );
             render.AddEfrags( ent );
         }
 

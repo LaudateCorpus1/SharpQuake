@@ -182,7 +182,7 @@ RealCheck:
             start.Y = ( mins.y + maxs.y ) * 0.5f;
             Vector3 stop = start;
             stop.Z -= 2 * STEPSIZE;
-            trace_t trace = Move( ref start, ref common.ZeroVector, ref common.ZeroVector, ref stop, 1, ent );
+            trace_t trace = Move( ref start, ref QCommon.ZeroVector, ref QCommon.ZeroVector, ref stop, 1, ent );
 
             if( trace.fraction == 1.0 )
                 return false;
@@ -197,7 +197,7 @@ RealCheck:
                     start.X = stop.X = ( x != 0 ? maxs.x : mins.x );
                     start.Y = stop.Y = ( y != 0 ? maxs.y : mins.y );
 
-                    trace = Move( ref start, ref common.ZeroVector, ref common.ZeroVector, ref stop, 1, ent );
+                    trace = Move( ref start, ref QCommon.ZeroVector, ref QCommon.ZeroVector, ref stop, 1, ent );
 
                     if( trace.fraction != 1.0 && trace.endpos.Z > bottom )
                         bottom = trace.endpos.Z;

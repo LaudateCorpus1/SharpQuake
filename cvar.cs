@@ -89,7 +89,7 @@ namespace SharpQuake
             cvar var = Find( name );
             if( var != null )
             {
-                result = common.atof( var._String );
+                result = QCommon.atof( var._String );
             }
             return result;
         }
@@ -147,18 +147,18 @@ namespace SharpQuake
         public static bool Command()
         {
             // check variables
-            cvar var = Find( cmd.Argv( 0 ) );
+            cvar var = Find( QCommand.Argv( 0 ) );
             if( var == null )
                 return false;
 
             // perform a variable print or set
-            if( cmd.Argc == 1 )
+            if( QCommand.Argc == 1 )
             {
                 Con.Print( "\"{0}\" is \"{1}\"\n", var._Name, var._String );
             }
             else
             {
-                var.Set( cmd.Argv( 1 ) );
+                var.Set( QCommand.Argv( 1 ) );
             }
             return true;
         }
@@ -194,7 +194,7 @@ namespace SharpQuake
                 return;
 
             _String = value;
-            _Value = common.atof( _String );
+            _Value = QCommon.atof( _String );
 
             if( IsServer && server.sv.active )
             {
@@ -231,7 +231,7 @@ namespace SharpQuake
                 //Con_Printf("Can't register variable %s, allready defined\n", variable->name);
                 //return;
             }
-            if( cmd.Exists( name ) )
+            if( QCommand.Exists( name ) )
             {
                 throw new ArgumentException( $"Can't register variable: {name} is a command!\n" );
             }
@@ -242,7 +242,7 @@ namespace SharpQuake
             _String = value;
             _Flags[Flags.Archive] = archive;
             _Flags[Flags.Server] = server;
-            _Value = common.atof( _String );
+            _Value = QCommon.atof( _String );
         }
 
         //struct cvar_s *next;

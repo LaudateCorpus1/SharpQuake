@@ -156,7 +156,7 @@ namespace SharpQuake
             return ret;
         }
 
-        public int SendMessage( qsocket_t sock, MsgWriter data )
+        public int SendMessage( qsocket_t sock, QMessageWriter data )
         {
             if( sock.driverdata == null )
                 return -1;
@@ -185,7 +185,7 @@ namespace SharpQuake
             return 1;
         }
 
-        public int SendUnreliableMessage( qsocket_t sock, MsgWriter data )
+        public int SendUnreliableMessage( qsocket_t sock, QMessageWriter data )
         {
             if( sock.driverdata == null )
                 return -1;

@@ -124,7 +124,7 @@ namespace SharpQuake
             return 1;
         }
 
-        public int SendMessage( qsocket_t sock, MsgWriter data )
+        public int SendMessage( qsocket_t sock, QMessageWriter data )
         {
             if( host.Time != _Next.time || _Next.op != VcrOp.VCR_OP_SENDMESSAGE || _Next.session != SocketToSession( sock ) )
                 sys.Error( "VCR missmatch" );
@@ -136,7 +136,7 @@ namespace SharpQuake
             return ret;
         }
 
-        public int SendUnreliableMessage( qsocket_t sock, MsgWriter data )
+        public int SendUnreliableMessage( qsocket_t sock, QMessageWriter data )
         {
             throw new NotImplementedException();
         }

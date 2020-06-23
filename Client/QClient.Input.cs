@@ -28,24 +28,24 @@ namespace SharpQuake
         // CL_SendMove
         public static void SendMove( ref QUserCmd cmd )
         {
-            cl.cmd = cmd; // cl.cmd = *cmd - struct copying!!!
+            cl.cmd = cmd; // cl.QCommand = *QCommand - struct copying!!!
 
-            MsgWriter msg = new MsgWriter( 128 );
+            QMessageWriter MessageWriter = new QMessageWriter( 128 );
 
             //
             // send the movement message
             //
-            msg.WriteByte( protocol.clc_move );
+            MessageWriter.WriteByte( protocol.clc_move );
 
-            msg.WriteFloat( (float)cl.mtime[0] );	// so server can get ping times
+            MessageWriter.WriteFloat( (float)cl.mtime[0] );	// so server can get ping times
 
-            msg.WriteAngle( cl.viewangles.X );
-            msg.WriteAngle( cl.viewangles.Y );
-            msg.WriteAngle( cl.viewangles.Z );
+            MessageWriter.WriteAngle( cl.viewangles.X );
+            MessageWriter.WriteAngle( cl.viewangles.Y );
+            MessageWriter.WriteAngle( cl.viewangles.Z );
 
-            msg.WriteShort( (short)cmd.forwardmove );
-            msg.WriteShort( (short)cmd.sidemove );
-            msg.WriteShort( (short)cmd.upmove );
+            MessageWriter.WriteShort( (short)cmd.forwardmove );
+            MessageWriter.WriteShort( (short)cmd.sidemove );
+            MessageWriter.WriteShort( (short)cmd.upmove );
 
             //
             // send button bits
@@ -60,9 +60,9 @@ namespace SharpQuake
                 bits |= 2;
             QClientInput.JumpBtn.state &= ~2;
 
-            msg.WriteByte( bits );
+            MessageWriter.WriteByte( bits );
 
-            msg.WriteByte( QClientInput.Impulse );
+            MessageWriter.WriteByte( QClientInput.Impulse );
             QClientInput.Impulse = 0;
 
             //
@@ -78,7 +78,7 @@ namespace SharpQuake
             if( ++cl.movemessages <= 2 )
                 return;
 
-            if( net.SendUnreliableMessage( cls.netcon, msg ) == -1 )
+            if( net.SendUnreliableMessage( cls.netcon, MessageWriter ) == -1 )
             {
                 Con.Print( "CL_SendMove: lost server connection\n" );
                 Disconnect();

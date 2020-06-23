@@ -48,7 +48,7 @@ namespace SharpQuake
         /// </summary>
         public static void Error( string fmt, params object[] args )
         {
-            throw new QuakeSystemError( args.Length > 0 ? String.Format( fmt, args ) : fmt );
+            throw new QSystemError( args.Length > 0 ? String.Format( fmt, args ) : fmt );
         }
 
         // Sys_FileOpenRead

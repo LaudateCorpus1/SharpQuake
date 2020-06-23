@@ -163,7 +163,7 @@ namespace SharpQuake
             for( int i = 0; i < _Frustum.Length; i++ )
                 _Frustum[i] = new mplane_t();
 
-            cmd.Add( "timerefresh", TimeRefresh_f );
+            QCommand.Add( "timerefresh", TimeRefresh_f );
             //Cmd.Add("envmap", Envmap_f);
             //Cmd.Add("pointfile", ReadPointFile_f);
 
@@ -1053,7 +1053,7 @@ namespace SharpQuake
                 else
                     GL.Begin( PrimitiveType.TriangleStrip );
 
-                Union4b u1 = Union4b.Empty, u2 = Union4b.Empty;
+                QByteUnion4 u1 = QByteUnion4.Empty, u2 = QByteUnion4.Empty;
                 do
                 {
                     // texture coordinates come from the draw list

@@ -70,8 +70,8 @@ namespace SharpQuake
             //
             string path = Path.ChangeExtension( "glquake/" + Path.GetFileNameWithoutExtension( m.name ), ".ms2" );
 
-            DisposableWrapper<BinaryReader> file;
-            common.FOpenFile( path, out file );
+            QDisposableWrapper<BinaryReader> file;
+            QCommon.FOpenFile( path, out file );
             if( file != null )
             {
                 using( file )
@@ -97,7 +97,7 @@ namespace SharpQuake
                 //
                 // save out the cached version
                 //
-                string fullpath = Path.Combine( common.GameDir, path );
+                string fullpath = Path.Combine( QCommon.GameDir, path );
                 Stream fs = sys.FileOpenWrite( fullpath, true );
                 if( fs != null )
                     using( BinaryWriter writer = new BinaryWriter( fs, Encoding.ASCII ) )
@@ -187,7 +187,7 @@ namespace SharpQuake
                 else
                     _Commands[_NumCommands++] = -( bestlen + 2 );
 
-                Union4b uval = Union4b.Empty;
+                QByteUnion4 uval = QByteUnion4.Empty;
                 for( int j = 0; j < bestlen + 2; j++ )
                 {
                     // emit a vertex into the reorder buffer
@@ -211,7 +211,7 @@ namespace SharpQuake
 
             _Commands[_NumCommands++] = 0;		// end of list marker
 
-            Con.DPrint( "{0,3} tri {1,3} vert {2,3} cmd\n", _AliasHdr.numtris, _NumOrder, _NumCommands );
+            Con.DPrint( "{0,3} tri {1,3} vert {2,3} QCommand\n", _AliasHdr.numtris, _NumOrder, _NumCommands );
 
             _AllVerts += _NumOrder;
             _AllTris += _AliasHdr.numtris;

@@ -136,7 +136,7 @@ namespace SharpQuake
             for( int i = 0; i < _Known.Length; i++ )
                 _Known[i] = new model_t();
 
-            common.FillArray( _Novis, (byte)0xff );
+            QCommon.FillArray( _Novis, (byte)0xff );
         }
 
         /// <summary>
@@ -299,7 +299,7 @@ namespace SharpQuake
             //
             // load the file
             //
-            byte[] buf = common.LoadFile( mod.name );
+            byte[] buf = QCommon.LoadFile( mod.name );
             if( buf == null )
             {
                 if( crash )
@@ -344,7 +344,7 @@ namespace SharpQuake
         {
             mdl_t pinmodel = sys.BytesToStructure<mdl_t>( buffer, 0 );
 
-            int version = common.LittleLong( pinmodel.version );
+            int version = QCommon.LittleLong( pinmodel.version );
             if( version != ALIAS_VERSION )
                 sys.Error( "{0} has wrong version number ({1} should be {2})",
                     mod.name, version, ALIAS_VERSION );
@@ -355,20 +355,20 @@ namespace SharpQuake
             //
             _Header = new aliashdr_t();
 
-            mod.flags = common.LittleLong( pinmodel.flags );
+            mod.flags = QCommon.LittleLong( pinmodel.flags );
 
             //
             // endian-adjust and copy the data, starting with the alias model header
             //
-            _Header.boundingradius = common.LittleFloat( pinmodel.boundingradius );
-            _Header.numskins = common.LittleLong( pinmodel.numskins );
-            _Header.skinwidth = common.LittleLong( pinmodel.skinwidth );
-            _Header.skinheight = common.LittleLong( pinmodel.skinheight );
+            _Header.boundingradius = QCommon.LittleFloat( pinmodel.boundingradius );
+            _Header.numskins = QCommon.LittleLong( pinmodel.numskins );
+            _Header.skinwidth = QCommon.LittleLong( pinmodel.skinwidth );
+            _Header.skinheight = QCommon.LittleLong( pinmodel.skinheight );
 
             if( _Header.skinheight > MAX_LBM_HEIGHT )
                 sys.Error( "model {0} has a skin taller than {1}", mod.name, MAX_LBM_HEIGHT );
 
-            _Header.numverts = common.LittleLong( pinmodel.numverts );
+            _Header.numverts = QCommon.LittleLong( pinmodel.numverts );
 
             if( _Header.numverts <= 0 )
                 sys.Error( "model {0} has no vertices", mod.name );
@@ -376,28 +376,28 @@ namespace SharpQuake
             if( _Header.numverts > MAXALIASVERTS )
                 sys.Error( "model {0} has too many vertices", mod.name );
 
-            _Header.numtris = common.LittleLong( pinmodel.numtris );
+            _Header.numtris = QCommon.LittleLong( pinmodel.numtris );
 
             if( _Header.numtris <= 0 )
                 sys.Error( "model {0} has no triangles", mod.name );
 
-            _Header.numframes = common.LittleLong( pinmodel.numframes );
+            _Header.numframes = QCommon.LittleLong( pinmodel.numframes );
             int numframes = _Header.numframes;
             if( numframes < 1 )
                 sys.Error( "Mod_LoadAliasModel: Invalid # of frames: {0}\n", numframes );
 
-            _Header.size = common.LittleFloat( pinmodel.size ) * ALIAS_BASE_SIZE_RATIO;
-            mod.synctype = (synctype_t)common.LittleLong( (int)pinmodel.synctype );
+            _Header.size = QCommon.LittleFloat( pinmodel.size ) * ALIAS_BASE_SIZE_RATIO;
+            mod.synctype = (synctype_t)QCommon.LittleLong( (int)pinmodel.synctype );
             mod.numframes = _Header.numframes;
 
-            _Header.scale = common.LittleVector( common.ToVector( ref pinmodel.scale ) );
-            _Header.scale_origin = common.LittleVector( common.ToVector( ref pinmodel.scale_origin ) );
-            _Header.eyeposition = common.LittleVector( common.ToVector( ref pinmodel.eyeposition ) );
+            _Header.scale = QCommon.LittleVector( QCommon.ToVector( ref pinmodel.scale ) );
+            _Header.scale_origin = QCommon.LittleVector( QCommon.ToVector( ref pinmodel.scale_origin ) );
+            _Header.eyeposition = QCommon.LittleVector( QCommon.ToVector( ref pinmodel.eyeposition ) );
 
             //
             // load the skins
             //
-            int offset = LoadAllSkins( _Header.numskins, new ByteArraySegment( buffer, mdl_t.SizeInBytes ) );
+            int offset = LoadAllSkins( _Header.numskins, new QByteArraySegment( buffer, mdl_t.SizeInBytes ) );
 
             //
             // load base s and t vertices
@@ -407,9 +407,9 @@ namespace SharpQuake
             {
                 _STVerts[i] = sys.BytesToStructure<stvert_t>( buffer, offset );
 
-                _STVerts[i].onseam = common.LittleLong( _STVerts[i].onseam );
-                _STVerts[i].s = common.LittleLong( _STVerts[i].s );
-                _STVerts[i].t = common.LittleLong( _STVerts[i].t );
+                _STVerts[i].onseam = QCommon.LittleLong( _STVerts[i].onseam );
+                _STVerts[i].s = QCommon.LittleLong( _STVerts[i].s );
+                _STVerts[i].t = QCommon.LittleLong( _STVerts[i].t );
             }
 
             //
@@ -420,10 +420,10 @@ namespace SharpQuake
             for( int i = 0; i < _Header.numtris; i++, offset += dtriangle_t.SizeInBytes )
             {
                 _Triangles[i] = sys.BytesToStructure<dtriangle_t>( buffer, offset );
-                _Triangles[i].facesfront = common.LittleLong( _Triangles[i].facesfront );
+                _Triangles[i].facesfront = QCommon.LittleLong( _Triangles[i].facesfront );
 
                 for( int j = 0; j < 3; j++ )
-                    _Triangles[i].vertindex[j] = common.LittleLong( _Triangles[i].vertindex[j] );
+                    _Triangles[i].vertindex[j] = QCommon.LittleLong( _Triangles[i].vertindex[j] );
             }
 
             //
@@ -441,11 +441,11 @@ namespace SharpQuake
 
                 if( frametype == aliasframetype_t.ALIAS_SINGLE )
                 {
-                    framesOffset = LoadAliasFrame( new ByteArraySegment( buffer, framesOffset ), ref _Header.frames[i] );
+                    framesOffset = LoadAliasFrame( new QByteArraySegment( buffer, framesOffset ), ref _Header.frames[i] );
                 }
                 else
                 {
-                    framesOffset = LoadAliasGroup( new ByteArraySegment( buffer, framesOffset ), ref _Header.frames[i] );
+                    framesOffset = LoadAliasGroup( new QByteArraySegment( buffer, framesOffset ), ref _Header.frames[i] );
                 }
             }
 
@@ -478,12 +478,12 @@ namespace SharpQuake
         {
             dsprite_t pin = sys.BytesToStructure<dsprite_t>( buffer, 0 );
 
-            int version = common.LittleLong( pin.version );
+            int version = QCommon.LittleLong( pin.version );
             if( version != SPRITE_VERSION )
                 sys.Error( "{0} has wrong version number ({1} should be {2})",
                     mod.name, version, SPRITE_VERSION );
 
-            int numframes = common.LittleLong( pin.numframes );
+            int numframes = QCommon.LittleLong( pin.numframes );
 
             msprite_t psprite = new msprite_t();
 
@@ -491,11 +491,11 @@ namespace SharpQuake
             mod.cache = new cache_user_t();
             mod.cache.data = psprite;
 
-            psprite.type = common.LittleLong( pin.type );
-            psprite.maxwidth = common.LittleLong( pin.width );
-            psprite.maxheight = common.LittleLong( pin.height );
-            psprite.beamlength = common.LittleFloat( pin.beamlength );
-            mod.synctype = (synctype_t)common.LittleLong( (int)pin.synctype );
+            psprite.type = QCommon.LittleLong( pin.type );
+            psprite.maxwidth = QCommon.LittleLong( pin.width );
+            psprite.maxheight = QCommon.LittleLong( pin.height );
+            psprite.beamlength = QCommon.LittleFloat( pin.beamlength );
+            mod.synctype = (synctype_t)QCommon.LittleLong( (int)pin.synctype );
             psprite.numframes = numframes;
 
             mod.mins.X = mod.mins.Y = -psprite.maxwidth / 2;
@@ -524,11 +524,11 @@ namespace SharpQuake
 
                 if( frametype == spriteframetype_t.SPR_SINGLE )
                 {
-                    frameOffset = LoadSpriteFrame( new ByteArraySegment( buffer, frameOffset ), out psprite.frames[i].frameptr, i );
+                    frameOffset = LoadSpriteFrame( new QByteArraySegment( buffer, frameOffset ), out psprite.frames[i].frameptr, i );
                 }
                 else
                 {
-                    frameOffset = LoadSpriteGroup( new ByteArraySegment( buffer, frameOffset ), out psprite.frames[i].frameptr, i );
+                    frameOffset = LoadSpriteGroup( new QByteArraySegment( buffer, frameOffset ), out psprite.frames[i].frameptr, i );
                 }
             }
 
@@ -544,7 +544,7 @@ namespace SharpQuake
 
             QBSPHeader header = sys.BytesToStructure<QBSPHeader>( buffer, 0 );
 
-            int i = common.LittleLong( header.version );
+            int i = QCommon.LittleLong( header.version );
             if( i != QBSPFile.BSPVERSION )
                 sys.Error( "Mod_LoadBrushModel: {0} has wrong version number ({1} should be {2})", mod.name, i, QBSPFile.BSPVERSION );
 
@@ -555,8 +555,8 @@ namespace SharpQuake
 
             for( i = 0; i < header.lumps.Length; i++ )
             {
-                header.lumps[i].filelen = common.LittleLong( header.lumps[i].filelen );
-                header.lumps[i].fileofs = common.LittleLong( header.lumps[i].fileofs );
+                header.lumps[i].filelen = QCommon.LittleLong( header.lumps[i].filelen );
+                header.lumps[i].fileofs = QCommon.LittleLong( header.lumps[i].fileofs );
             }
 
             // load into heap
@@ -649,8 +649,8 @@ namespace SharpQuake
             }
             mod.firstmodelsurface = submodel.firstface;
             mod.nummodelsurfaces = submodel.numfaces;
-            common.Copy( submodel.maxs, out mod.maxs ); // mod.maxs = submodel.maxs;
-            common.Copy( submodel.mins, out mod.mins ); // mod.mins = submodel.mins;
+            QCommon.Copy( submodel.maxs, out mod.maxs ); // mod.maxs = submodel.maxs;
+            QCommon.Copy( submodel.mins, out mod.mins ); // mod.mins = submodel.mins;
             mod.radius = RadiusFromBounds( ref mod.mins, ref mod.maxs );
             mod.numleafs = submodel.visleafs;
         }
@@ -659,7 +659,7 @@ namespace SharpQuake
         /// Mod_LoadAllSkins
         /// </summary>
         /// <returns>Offset of next data block in source byte array</returns>
-        private static int LoadAllSkins( int numskins, ByteArraySegment data )
+        private static int LoadAllSkins( int numskins, QByteArraySegment data )
         {
             if( numskins < 1 || numskins > MAX_SKINS )
                 sys.Error( "Mod_LoadAliasModel: Invalid # of skins: {0}\n", numskins );
@@ -674,7 +674,7 @@ namespace SharpQuake
             {
                 if( pskintype.type == aliasskintype_t.ALIAS_SKIN_SINGLE )
                 {
-                    FloodFillSkin( new ByteArraySegment( data.Data, skinOffset ), _Header.skinwidth, _Header.skinheight );
+                    FloodFillSkin( new QByteArraySegment( data.Data, skinOffset ), _Header.skinwidth, _Header.skinheight );
 
                     // save 8 bit texels for the player model to remap
                     byte[] texels = new byte[s]; // Hunk_AllocName(s, loadname);
@@ -690,7 +690,7 @@ namespace SharpQuake
                     _Header.gl_texturenum[i, 2] =
                     _Header.gl_texturenum[i, 3] =
                         Drawer.LoadTexture( name, _Header.skinwidth,
-                        _Header.skinheight, new ByteArraySegment( data.Data, offset ), true, false ); // (byte*)(pskintype + 1)
+                        _Header.skinheight, new QByteArraySegment( data.Data, offset ), true, false ); // (byte*)(pskintype + 1)
 
                     // set offset to next daliasskintype_t block...
                     offset += s;
@@ -701,7 +701,7 @@ namespace SharpQuake
                     // animating skin group.  yuck.
                     offset += daliasskintype_t.SizeInBytes;
                     daliasskingroup_t pinskingroup = sys.BytesToStructure<daliasskingroup_t>( data.Data, offset );
-                    int groupskins = common.LittleLong( pinskingroup.numskins );
+                    int groupskins = QCommon.LittleLong( pinskingroup.numskins );
                     offset += daliasskingroup_t.SizeInBytes;
                     daliasskininterval_t pinskinintervals = sys.BytesToStructure<daliasskininterval_t>( data.Data, offset );
 
@@ -711,7 +711,7 @@ namespace SharpQuake
                     int j;
                     for( j = 0; j < groupskins; j++ )
                     {
-                        FloodFillSkin( new ByteArraySegment( data.Data, skinOffset ), _Header.skinwidth, _Header.skinheight );
+                        FloodFillSkin( new QByteArraySegment( data.Data, skinOffset ), _Header.skinwidth, _Header.skinheight );
                         if( j == 0 )
                         {
                             byte[] texels = new byte[s]; // Hunk_AllocName(s, loadname);
@@ -722,7 +722,7 @@ namespace SharpQuake
                         string name = String.Format( "{0}_{1}_{2}", _LoadModel.name, i, j );
                         _Header.gl_texturenum[i, j & 3] =
                             Drawer.LoadTexture( name, _Header.skinwidth,
-                            _Header.skinheight, new ByteArraySegment( data.Data, offset ), true, false ); //  (byte*)(pskintype)
+                            _Header.skinheight, new QByteArraySegment( data.Data, offset ), true, false ); //  (byte*)(pskintype)
 
                         offset += s;
 
@@ -741,11 +741,11 @@ namespace SharpQuake
         /// Mod_LoadAliasFrame
         /// </summary>
         /// <returns>Offset of next data block in source byte array</returns>
-        private static int LoadAliasFrame( ByteArraySegment pin, ref maliasframedesc_t frame )
+        private static int LoadAliasFrame( QByteArraySegment pin, ref maliasframedesc_t frame )
         {
             daliasframe_t pdaliasframe = sys.BytesToStructure<daliasframe_t>( pin.Data, pin.StartIndex );
 
-            frame.name = common.GetString( pdaliasframe.name );
+            frame.name = QCommon.GetString( pdaliasframe.name );
             frame.firstpose = _PoseNum;
             frame.numposes = 1;
             frame.bboxmin.Init();
@@ -775,11 +775,11 @@ namespace SharpQuake
         /// Mod_LoadAliasGroup
         /// </summary>
         /// <returns>Offset of next data block in source byte array</returns>
-        private static int LoadAliasGroup( ByteArraySegment pin, ref maliasframedesc_t frame )
+        private static int LoadAliasGroup( QByteArraySegment pin, ref maliasframedesc_t frame )
         {
             int offset = pin.StartIndex;
             daliasgroup_t pingroup = sys.BytesToStructure<daliasgroup_t>( pin.Data, offset );
-            int numframes = common.LittleLong( pingroup.numframes );
+            int numframes = QCommon.LittleLong( pingroup.numframes );
 
             frame.Init();
             frame.firstpose = _PoseNum;
@@ -795,7 +795,7 @@ namespace SharpQuake
             offset += daliasgroup_t.SizeInBytes;
             daliasinterval_t pin_intervals = sys.BytesToStructure<daliasinterval_t>( pin.Data, offset ); // (daliasinterval_t*)(pingroup + 1);
 
-            frame.interval = common.LittleFloat( pin_intervals.interval );
+            frame.interval = QCommon.LittleFloat( pin_intervals.interval );
 
             offset += numframes * daliasinterval_t.SizeInBytes;
 
@@ -820,12 +820,12 @@ namespace SharpQuake
         ///
         /// </summary>
         /// <returns>Offset of next data block</returns>
-        private static int LoadSpriteFrame( ByteArraySegment pin, out object ppframe, int framenum )
+        private static int LoadSpriteFrame( QByteArraySegment pin, out object ppframe, int framenum )
         {
             dspriteframe_t pinframe = sys.BytesToStructure<dspriteframe_t>( pin.Data, pin.StartIndex );
 
-            int width = common.LittleLong( pinframe.width );
-            int height = common.LittleLong( pinframe.height );
+            int width = QCommon.LittleLong( pinframe.width );
+            int height = QCommon.LittleLong( pinframe.height );
             int size = width * height;
 
             mspriteframe_t pspriteframe = new mspriteframe_t();
@@ -834,8 +834,8 @@ namespace SharpQuake
 
             pspriteframe.width = width;
             pspriteframe.height = height;
-            int orgx = common.LittleLong( pinframe.origin[0] );
-            int orgy = common.LittleLong( pinframe.origin[1] );
+            int orgx = QCommon.LittleLong( pinframe.origin[0] );
+            int orgy = QCommon.LittleLong( pinframe.origin[1] );
 
             pspriteframe.up = orgy;// origin[1];
             pspriteframe.down = orgy - height;
@@ -844,7 +844,7 @@ namespace SharpQuake
 
             string name = _LoadModel.name + "_" + framenum.ToString();
             pspriteframe.gl_texturenum = Drawer.LoadTexture( name, width, height,
-                new ByteArraySegment( pin.Data, pin.StartIndex + dspriteframe_t.SizeInBytes ), true, true ); //   (byte *)(pinframe + 1)
+                new QByteArraySegment( pin.Data, pin.StartIndex + dspriteframe_t.SizeInBytes ), true, true ); //   (byte *)(pinframe + 1)
 
             return pin.StartIndex + dspriteframe_t.SizeInBytes + size;
         }
@@ -852,11 +852,11 @@ namespace SharpQuake
         /// <summary>
         /// Mod_LoadSpriteGroup
         /// </summary>
-        private static int LoadSpriteGroup( ByteArraySegment pin, out object ppframe, int framenum )
+        private static int LoadSpriteGroup( QByteArraySegment pin, out object ppframe, int framenum )
         {
             dspritegroup_t pingroup = sys.BytesToStructure<dspritegroup_t>( pin.Data, pin.StartIndex );
 
-            int numframes = common.LittleLong( pingroup.numframes );
+            int numframes = QCommon.LittleLong( pingroup.numframes );
             mspritegroup_t pspritegroup = new mspritegroup_t();
             pspritegroup.numframes = numframes;
             pspritegroup.frames = new mspriteframe_t[numframes];
@@ -868,7 +868,7 @@ namespace SharpQuake
             for( int i = 0; i < numframes; i++, offset += dspriteinterval_t.SizeInBytes )
             {
                 dspriteinterval_t interval = sys.BytesToStructure<dspriteinterval_t>( pin.Data, offset );
-                poutintervals[i] = common.LittleFloat( interval.interval );
+                poutintervals[i] = QCommon.LittleFloat( interval.interval );
                 if( poutintervals[i] <= 0 )
                     sys.Error( "Mod_LoadSpriteGroup: interval<=0" );
             }
@@ -876,7 +876,7 @@ namespace SharpQuake
             for( int i = 0; i < numframes; i++ )
             {
                 object tmp;
-                offset = LoadSpriteFrame( new ByteArraySegment( pin.Data, offset ), out tmp, framenum * 100 + i );
+                offset = LoadSpriteFrame( new QByteArraySegment( pin.Data, offset ), out tmp, framenum * 100 + i );
                 pspritegroup.frames[i] = (mspriteframe_t)tmp;
             }
 
@@ -900,7 +900,7 @@ namespace SharpQuake
             for( int i = 0, offset = l.fileofs; i < count; i++, offset += QBSPVertex.SizeInBytes )
             {
                 QBSPVertex src = sys.BytesToStructure<QBSPVertex>( _ModBase, offset );
-                verts[i].position = common.LittleVector3( src.point );
+                verts[i].position = QCommon.LittleVector3( src.point );
             }
         }
 
@@ -923,8 +923,8 @@ namespace SharpQuake
             {
                 QBSPEdge src = sys.BytesToStructure<QBSPEdge>( _ModBase, offset );
                 edges[i].v = new ushort[] {
-                    (ushort)common.LittleShort((short)src.v[0]),
-                    (ushort)common.LittleShort((short)src.v[1])
+                    (ushort)QCommon.LittleShort((short)src.v[0]),
+                    (ushort)QCommon.LittleShort((short)src.v[1])
                 };
             }
         }
@@ -963,7 +963,7 @@ namespace SharpQuake
 
             QBSPMipTexLump m = sys.BytesToStructure<QBSPMipTexLump>( _ModBase, l.fileofs );// (QBSPMipTexLump *)(mod_base + l.fileofs);
 
-            m.nummiptex = common.LittleLong( m.nummiptex );
+            m.nummiptex = QCommon.LittleLong( m.nummiptex );
 
             int[] dataofs = new int[m.nummiptex];
 
@@ -974,16 +974,16 @@ namespace SharpQuake
 
             for( int i = 0; i < m.nummiptex; i++ )
             {
-                dataofs[i] = common.LittleLong( dataofs[i] );
+                dataofs[i] = QCommon.LittleLong( dataofs[i] );
                 if( dataofs[i] == -1 )
                     continue;
 
                 int mtOffset = l.fileofs + dataofs[i];
                 QBSPMipTex mt = sys.BytesToStructure<QBSPMipTex>( _ModBase, mtOffset ); //mt = (QBSPMipTex *)((byte *)m + m.dataofs[i]);
-                mt.width = (uint)common.LittleLong( (int)mt.width );
-                mt.height = (uint)common.LittleLong( (int)mt.height );
+                mt.width = (uint)QCommon.LittleLong( (int)mt.width );
+                mt.height = (uint)QCommon.LittleLong( (int)mt.height );
                 for( int j = 0; j < QBSPFile.MIPLEVELS; j++ )
-                    mt.offsets[j] = (uint)common.LittleLong( (int)mt.offsets[j] );
+                    mt.offsets[j] = (uint)QCommon.LittleLong( (int)mt.offsets[j] );
 
                 if( ( mt.width & 15 ) != 0 || ( mt.height & 15 ) != 0 )
                     sys.Error( "Texture {0} is not 16 aligned", mt.name );
@@ -992,7 +992,7 @@ namespace SharpQuake
                 texture_t tx = new texture_t();// Hunk_AllocName(sizeof(texture_t) + pixels, loadname);
                 _LoadModel.textures[i] = tx;
 
-                tx.name = common.GetString( mt.name );//   memcpy (tx->name, mt->name, sizeof(tx.name));
+                tx.name = QCommon.GetString( mt.name );//   memcpy (tx->name, mt->name, sizeof(tx.name));
                 tx.width = mt.width;
                 tx.height = mt.height;
                 for( int j = 0; j < QBSPFile.MIPLEVELS; j++ )
@@ -1013,7 +1013,7 @@ namespace SharpQuake
                 else
                 {
                     tx.gl_texturenum = Drawer.LoadTexture( tx.name, (int)tx.width, (int)tx.height,
-                        new ByteArraySegment( tx.pixels ), true, false, _LoadModel.name );
+                        new QByteArraySegment( tx.pixels ), true, false, _LoadModel.name );
                 }
             }
 
@@ -1149,15 +1149,15 @@ namespace SharpQuake
             {
                 QBSPPlane src = sys.BytesToStructure<QBSPPlane>( _ModBase, l.fileofs + i * QBSPPlane.SizeInBytes );
                 int bits = 0;
-                planes[i].normal = common.LittleVector3( src.normal );
+                planes[i].normal = QCommon.LittleVector3( src.normal );
                 if( planes[i].normal.X < 0 )
                     bits |= 1;
                 if( planes[i].normal.Y < 0 )
                     bits |= 1 << 1;
                 if( planes[i].normal.Z < 0 )
                     bits |= 1 << 2;
-                planes[i].dist = common.LittleFloat( src.dist );
-                planes[i].type = (byte)common.LittleLong( src.type );
+                planes[i].dist = QCommon.LittleFloat( src.dist );
+                planes[i].type = (byte)QCommon.LittleLong( src.type );
                 planes[i].signbits = (byte)bits;
             }
         }
@@ -1185,7 +1185,7 @@ namespace SharpQuake
                 QBSPTexInfo src = sys.BytesToStructure<QBSPTexInfo>( _ModBase, l.fileofs + i * QBSPTexInfo.SizeInBytes );
 
                 for( int j = 0; j < 2; j++ )
-                    infos[i].vecs[j] = common.LittleVector4( src.vecs, j * 4 );
+                    infos[i].vecs[j] = QCommon.LittleVector4( src.vecs, j * 4 );
 
                 float len1 = infos[i].vecs[0].Length;
                 float len2 = infos[i].vecs[1].Length;
@@ -1199,8 +1199,8 @@ namespace SharpQuake
                 else
                     infos[i].mipadjust = 1;
 
-                int miptex = common.LittleLong( src.miptex );
-                infos[i].flags = common.LittleLong( src.flags );
+                int miptex = QCommon.LittleLong( src.miptex );
+                infos[i].flags = QCommon.LittleLong( src.flags );
 
                 if( _LoadModel.textures == null )
                 {
@@ -1242,17 +1242,17 @@ namespace SharpQuake
             {
                 QBSPFace src = sys.BytesToStructure<QBSPFace>( _ModBase, offset );
 
-                dest[surfnum].firstedge = common.LittleLong( src.firstedge );
-                dest[surfnum].numedges = common.LittleShort( src.numedges );
+                dest[surfnum].firstedge = QCommon.LittleLong( src.firstedge );
+                dest[surfnum].numedges = QCommon.LittleShort( src.numedges );
                 dest[surfnum].flags = 0;
 
-                int planenum = common.LittleShort( src.planenum );
-                int side = common.LittleShort( src.side );
+                int planenum = QCommon.LittleShort( src.planenum );
+                int side = QCommon.LittleShort( src.side );
                 if( side != 0 )
                     dest[surfnum].flags |= Surf.SURF_PLANEBACK;
 
                 dest[surfnum].plane = _LoadModel.planes[planenum];
-                dest[surfnum].texinfo = _LoadModel.texinfo[common.LittleShort( src.texinfo )];
+                dest[surfnum].texinfo = _LoadModel.texinfo[QCommon.LittleShort( src.texinfo )];
 
                 CalcSurfaceExtents( dest[surfnum] );
 
@@ -1261,7 +1261,7 @@ namespace SharpQuake
                 for( int i = 0; i < QBSPFile.MAXLIGHTMAPS; i++ )
                     dest[surfnum].styles[i] = src.styles[i];
 
-                int i2 = common.LittleLong( src.lightofs );
+                int i2 = QCommon.LittleLong( src.lightofs );
                 if( i2 == -1 )
                     dest[surfnum].sample_base = null;
                 else
@@ -1353,22 +1353,22 @@ namespace SharpQuake
             {
                 QBSPLeaf src = sys.BytesToStructure<QBSPLeaf>( _ModBase, offset );
 
-                dest[i].mins.X = common.LittleShort( src.mins[0] );
-                dest[i].mins.Y = common.LittleShort( src.mins[1] );
-                dest[i].mins.Z = common.LittleShort( src.mins[2] );
+                dest[i].mins.X = QCommon.LittleShort( src.mins[0] );
+                dest[i].mins.Y = QCommon.LittleShort( src.mins[1] );
+                dest[i].mins.Z = QCommon.LittleShort( src.mins[2] );
 
-                dest[i].maxs.X = common.LittleShort( src.maxs[0] );
-                dest[i].maxs.Y = common.LittleShort( src.maxs[1] );
-                dest[i].maxs.Z = common.LittleShort( src.maxs[2] );
+                dest[i].maxs.X = QCommon.LittleShort( src.maxs[0] );
+                dest[i].maxs.Y = QCommon.LittleShort( src.maxs[1] );
+                dest[i].maxs.Z = QCommon.LittleShort( src.maxs[2] );
 
-                int p = common.LittleLong( src.contents );
+                int p = QCommon.LittleLong( src.contents );
                 dest[i].contents = p;
 
                 dest[i].marksurfaces = _LoadModel.marksurfaces;
-                dest[i].firstmarksurface = common.LittleShort( (short)src.firstmarksurface );
-                dest[i].nummarksurfaces = common.LittleShort( (short)src.nummarksurfaces );
+                dest[i].firstmarksurface = QCommon.LittleShort( (short)src.firstmarksurface );
+                dest[i].nummarksurfaces = QCommon.LittleShort( (short)src.nummarksurfaces );
 
-                p = common.LittleLong( src.visofs );
+                p = QCommon.LittleLong( src.visofs );
                 if( p == -1 )
                     dest[i].compressed_vis = null;
                 else
@@ -1412,23 +1412,23 @@ namespace SharpQuake
             {
                 QBSPNode src = sys.BytesToStructure<QBSPNode>( _ModBase, offset );
 
-                dest[i].mins.X = common.LittleShort( src.mins[0] );
-                dest[i].mins.Y = common.LittleShort( src.mins[1] );
-                dest[i].mins.Z = common.LittleShort( src.mins[2] );
+                dest[i].mins.X = QCommon.LittleShort( src.mins[0] );
+                dest[i].mins.Y = QCommon.LittleShort( src.mins[1] );
+                dest[i].mins.Z = QCommon.LittleShort( src.mins[2] );
 
-                dest[i].maxs.X = common.LittleShort( src.maxs[0] );
-                dest[i].maxs.Y = common.LittleShort( src.maxs[1] );
-                dest[i].maxs.Z = common.LittleShort( src.maxs[2] );
+                dest[i].maxs.X = QCommon.LittleShort( src.maxs[0] );
+                dest[i].maxs.Y = QCommon.LittleShort( src.maxs[1] );
+                dest[i].maxs.Z = QCommon.LittleShort( src.maxs[2] );
 
-                int p = common.LittleLong( src.planenum );
+                int p = QCommon.LittleLong( src.planenum );
                 dest[i].plane = _LoadModel.planes[p];
 
-                dest[i].firstsurface = (ushort)common.LittleShort( (short)src.firstface );
-                dest[i].numsurfaces = (ushort)common.LittleShort( (short)src.numfaces );
+                dest[i].firstsurface = (ushort)QCommon.LittleShort( (short)src.firstface );
+                dest[i].numsurfaces = (ushort)QCommon.LittleShort( (short)src.numfaces );
 
                 for( int j = 0; j < 2; j++ )
                 {
-                    p = common.LittleShort( src.children[j] );
+                    p = QCommon.LittleShort( src.children[j] );
                     if( p >= 0 )
                         dest[i].children[j] = _LoadModel.nodes[p];
                     else
@@ -1481,10 +1481,10 @@ namespace SharpQuake
             {
                 QBSPClipNode src = sys.BytesToStructure<QBSPClipNode>( _ModBase, offset );
 
-                dest[i].planenum = common.LittleLong( src.planenum ); // Uze: changed from LittleShort
+                dest[i].planenum = QCommon.LittleLong( src.planenum ); // Uze: changed from LittleShort
                 dest[i].children = new short[2];
-                dest[i].children[0] = common.LittleShort( src.children[0] );
-                dest[i].children[1] = common.LittleShort( src.children[1] );
+                dest[i].children[0] = QCommon.LittleShort( src.children[0] );
+                dest[i].children[1] = QCommon.LittleShort( src.children[1] );
             }
         }
 
@@ -1526,18 +1526,18 @@ namespace SharpQuake
                 for( int j = 0; j < 3; j++ )
                 {
                     // spread the mins / maxs by a pixel
-                    dest[i].mins[j] = common.LittleFloat( src.mins[j] ) - 1;
-                    dest[i].maxs[j] = common.LittleFloat( src.maxs[j] ) + 1;
-                    dest[i].origin[j] = common.LittleFloat( src.origin[j] );
+                    dest[i].mins[j] = QCommon.LittleFloat( src.mins[j] ) - 1;
+                    dest[i].maxs[j] = QCommon.LittleFloat( src.maxs[j] ) + 1;
+                    dest[i].origin[j] = QCommon.LittleFloat( src.origin[j] );
                 }
 
                 dest[i].headnode = new int[QBSPFile.MAX_MAP_HULLS];
                 for( int j = 0; j < QBSPFile.MAX_MAP_HULLS; j++ )
-                    dest[i].headnode[j] = common.LittleLong( src.headnode[j] );
+                    dest[i].headnode[j] = QCommon.LittleLong( src.headnode[j] );
 
-                dest[i].visleafs = common.LittleLong( src.visleafs );
-                dest[i].firstface = common.LittleLong( src.firstface );
-                dest[i].numfaces = common.LittleLong( src.numfaces );
+                dest[i].visleafs = QCommon.LittleLong( src.visleafs );
+                dest[i].firstface = QCommon.LittleLong( src.firstface );
+                dest[i].numfaces = QCommon.LittleLong( src.numfaces );
             }
         }
 
@@ -1649,7 +1649,7 @@ namespace SharpQuake
         /// Mod_FloodFillSkin
         /// Fill background pixels so mipmapping doesn't have haloes - Ed
         /// </summary>
-        private static void FloodFillSkin( ByteArraySegment skin, int skinwidth, int skinheight )
+        private static void FloodFillSkin( QByteArraySegment skin, int skinwidth, int skinheight )
         {
             FloodFiller filler = new FloodFiller( skin, skinwidth, skinheight );
             filler.Perform();
@@ -1668,7 +1668,7 @@ namespace SharpQuake
 
         private const int FLOODFILL_FIFO_MASK = FLOODFILL_FIFO_SIZE - 1;
 
-        private ByteArraySegment _Skin;
+        private QByteArraySegment _Skin;
         private floodfill_t[] _Fifo;
         private int _Width;
         private int _Height;
@@ -1743,7 +1743,7 @@ namespace SharpQuake
                 _Fdc = pos[off];
         }
 
-        public FloodFiller( ByteArraySegment skin, int skinwidth, int skinheight )
+        public FloodFiller( QByteArraySegment skin, int skinwidth, int skinheight )
         {
             _Skin = skin;
             _Width = skinwidth;

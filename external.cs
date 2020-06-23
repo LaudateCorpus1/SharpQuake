@@ -8,22 +8,22 @@ namespace SharpQuake
     internal static partial class Mci
     {
         [DllImport( "winmm.dll", EntryPoint = "mciSendCommandA", ExactSpelling = true )]
-        public static extern int Open( IntPtr device, int cmd, int flags, ref OpenParams p );
+        public static extern int Open( IntPtr device, int QCommand, int flags, ref OpenParams p );
 
         [DllImport( "winmm.dll", EntryPoint = "mciSendCommandA", ExactSpelling = true )]
-        public static extern int Set( IntPtr device, int cmd, int flags, ref SetParams p );
+        public static extern int Set( IntPtr device, int QCommand, int flags, ref SetParams p );
 
         [DllImport( "winmm.dll", EntryPoint = "mciSendCommandA", ExactSpelling = true )]
-        public static extern int Play( IntPtr device, int cmd, int flags, ref PlayParams p );
+        public static extern int Play( IntPtr device, int QCommand, int flags, ref PlayParams p );
 
         [DllImport( "winmm.dll", EntryPoint = "mciSendCommandA", ExactSpelling = true )]
-        public static extern int Status( IntPtr device, int cmd, int flags, ref StatusParams p );
+        public static extern int Status( IntPtr device, int QCommand, int flags, ref StatusParams p );
 
         [DllImport( "winmm.dll", EntryPoint = "mciSendCommandA", ExactSpelling = true )]
-        public static extern int SendCommand( IntPtr device, int cmd, int flags, IntPtr p );
+        public static extern int SendCommand( IntPtr device, int QCommand, int flags, IntPtr p );
 
         [DllImport( "winmm.dll", EntryPoint = "mciSendCommandA", ExactSpelling = true )]
-        public static extern int SendCommand( IntPtr device, int cmd, int flags, ref GenericParams p );
+        public static extern int SendCommand( IntPtr device, int QCommand, int flags, ref GenericParams p );
     }
 
 #endif

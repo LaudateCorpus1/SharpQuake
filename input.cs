@@ -151,7 +151,7 @@ namespace SharpQuake
         }
 
         // IN_Move
-        // add additional movement on top of the keyboard move cmd
+        // add additional movement on top of the keyboard move QCommand
         public static void Move( QUserCmd cmd )
         {
             if( !mainwindow.Instance.Focused )
@@ -231,7 +231,7 @@ namespace SharpQuake
 
             _Mouse *= QClient.Sensitivity;
 
-            // add mouse X/Y movement to cmd
+            // add mouse X/Y movement to QCommand
             if( QClientInput.StrafeBtn.IsDown || ( QClient.LookStrafe && QClientInput.MLookBtn.IsDown ) )
                 cmd.sidemove += QClient.MSide * _Mouse.X;
             else

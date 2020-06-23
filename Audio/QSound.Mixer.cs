@@ -167,7 +167,7 @@ namespace SharpQuake
             int step = 3 - _shm.channels;
             int snd_vol = (int)( _Volume.Value * 256 );
             byte[] buffer = _Controller.LockBuffer();
-            Union4b uval = Union4b.Empty;
+            QByteUnion4 uval = QByteUnion4.Empty;
             int val, srcIndex = 0;
             bool useLeft = true;
             int destCount = ( count * ( _shm.samplebits >> 3 ) ) & out_mask;
@@ -240,7 +240,7 @@ namespace SharpQuake
             int srcOffset = 0;
             int destCount = 0;//uze
             int destOffset = 0;
-            Union4b uval = Union4b.Empty;
+            QByteUnion4 uval = QByteUnion4.Empty;
 
             while( lpaintedtime < endtime )
             {

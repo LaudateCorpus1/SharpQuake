@@ -92,7 +92,7 @@ namespace SharpQuake
             int r = 0;
             int g = 0;
             int b = 0;
-            Union4b rgba = Union4b.Empty;
+            QByteUnion4 rgba = QByteUnion4.Empty;
             for( int i = 0; i < 128; i++ )
                 for( int j = 0; j < 128; j++ )
                 {
@@ -234,7 +234,7 @@ namespace SharpQuake
             poly.AllocVerts( numverts );
             for( int i = 0; i < numverts; i++ )
             {
-                common.Copy( ref verts[i], poly.verts[i] );
+                QCommon.Copy( ref verts[i], poly.verts[i] );
                 float s = Vector3.Dot( verts[i], _WarpFace.texinfo.vecs[0].Xyz );
                 float t = Vector3.Dot( verts[i], _WarpFace.texinfo.vecs[1].Xyz );
                 poly.verts[i][3] = s;

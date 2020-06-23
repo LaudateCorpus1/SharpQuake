@@ -120,9 +120,9 @@ namespace SharpQuake
         // V_Init
         public static void Init()
         {
-            cmd.Add( "v_cshift", CShift_f );
-            cmd.Add( "bf", BonusFlash_f );
-            cmd.Add( "centerview", StartPitchDrift );
+            QCommand.Add( "v_cshift", CShift_f );
+            QCommand.Add( "bf", BonusFlash_f );
+            QCommand.Add( "centerview", StartPitchDrift );
 
             if( _LcdX == null )
             {
@@ -514,10 +514,10 @@ namespace SharpQuake
         // V_cshift_f
         private static void CShift_f()
         {
-            int.TryParse( cmd.Argv( 1 ), out _CShift_empty.destcolor[0] );
-            int.TryParse( cmd.Argv( 2 ), out _CShift_empty.destcolor[1] );
-            int.TryParse( cmd.Argv( 3 ), out _CShift_empty.destcolor[2] );
-            int.TryParse( cmd.Argv( 4 ), out _CShift_empty.percent );
+            int.TryParse( QCommand.Argv( 1 ), out _CShift_empty.destcolor[0] );
+            int.TryParse( QCommand.Argv( 2 ), out _CShift_empty.destcolor[1] );
+            int.TryParse( QCommand.Argv( 3 ), out _CShift_empty.destcolor[2] );
+            int.TryParse( QCommand.Argv( 4 ), out _CShift_empty.percent );
         }
 
         // V_BonusFlash_f

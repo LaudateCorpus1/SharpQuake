@@ -136,7 +136,7 @@ namespace SharpQuake
                 _Swatch.Start();
                 host.Frame(ts);
             }
-            catch (EndGameException)
+            catch (QEndGameException)
             {
                 // nothing to do
             }
@@ -232,13 +232,13 @@ namespace SharpQuake
             args2[0] = String.Empty;
             args.CopyTo(args2, 1);
 
-            common.InitArgv(args2);
+            QCommon.InitArgv(args2);
 
-            parms.argv = new string[common.Argc];
-            common.Args.CopyTo(parms.argv, 0);
+            parms.argv = new string[QCommon.Argc];
+            QCommon.Args.CopyTo(parms.argv, 0);
 
-            if (common.HasParam("-dedicated"))
-                throw new QuakeException("Dedicated server mode not supported!");
+            if (QCommon.HasParam("-dedicated"))
+                throw new QException("Dedicated server mode not supported!");
 
             Size size = new Size(1280, 720);
             GraphicsMode mode = new GraphicsMode();
@@ -252,7 +252,7 @@ namespace SharpQuake
             host.Shutdown();
 #if !DEBUG
             }
-            catch (QuakeSystemError se)
+            catch (QSystemError se)
             {
                 HandleException(se);
             }
