@@ -132,6 +132,9 @@
     <Compile Include="Common\Math\QLittleEndianConverter.cs" />
     <Compile Include="Common\Math\QSwapHelper.cs" />
     <Compile Include="Common\QCommon.cs" />
+    <Compile Include="Common\QCommon.IO.cs" />
+    <Compile Include="Common\QCommon.Math.cs" />
+    <Compile Include="Common\QCommon.String.cs" />
     <Compile Include="Common\QDelegates.cs" />
     <Compile Include="Common\QGameType.cs" />
     <Compile Include="Common\QMessageReader.cs" />
