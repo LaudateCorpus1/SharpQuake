@@ -48,36 +48,36 @@ namespace SharpQuake
 
         // num frame for '-' stats digit
 
-        private static glpic_t[,] _Nums = new glpic_t[2, 11];
-        private static glpic_t _Colon;
-        private static glpic_t _Slash;
-        private static glpic_t _IBar;
-        private static glpic_t _SBar;
-        private static glpic_t _ScoreBar;
+        private static QGLUITexture[,] _Nums = new QGLUITexture[2, 11];
+        private static QGLUITexture _Colon;
+        private static QGLUITexture _Slash;
+        private static QGLUITexture _IBar;
+        private static QGLUITexture _SBar;
+        private static QGLUITexture _ScoreBar;
 
-        private static glpic_t[,] _Weapons = new glpic_t[7, 8];   // 0 is active, 1 is owned, 2-5 are flashes
-        private static glpic_t[] _Ammo = new glpic_t[4];
-        private static glpic_t[] _Sigil = new glpic_t[4];
-        private static glpic_t[] _Armor = new glpic_t[3];
-        private static glpic_t[] _Items = new glpic_t[32];
+        private static QGLUITexture[,] _Weapons = new QGLUITexture[7, 8];   // 0 is active, 1 is owned, 2-5 are flashes
+        private static QGLUITexture[] _Ammo = new QGLUITexture[4];
+        private static QGLUITexture[] _Sigil = new QGLUITexture[4];
+        private static QGLUITexture[] _Armor = new QGLUITexture[3];
+        private static QGLUITexture[] _Items = new QGLUITexture[32];
 
-        private static glpic_t[,] _Faces = new glpic_t[7, 2];        // 0 is gibbed, 1 is dead, 2-6 are alive
+        private static QGLUITexture[,] _Faces = new QGLUITexture[7, 2];        // 0 is gibbed, 1 is dead, 2-6 are alive
 
         // 0 is static, 1 is temporary animation
-        private static glpic_t _FaceInvis;
+        private static QGLUITexture _FaceInvis;
 
-        private static glpic_t _FaceQuad;
-        private static glpic_t _FaceInvuln;
-        private static glpic_t _FaceInvisInvuln;
+        private static QGLUITexture _FaceQuad;
+        private static QGLUITexture _FaceInvuln;
+        private static QGLUITexture _FaceInvisInvuln;
 
-        private static glpic_t[] _RInvBar = new glpic_t[2];
-        private static glpic_t[] _RWeapons = new glpic_t[5];
-        private static glpic_t[] _RItems = new glpic_t[2];
-        private static glpic_t[] _RAmmo = new glpic_t[3];
-        private static glpic_t _RTeamBord;		// PGM 01/19/97 - team color border
+        private static QGLUITexture[] _RInvBar = new QGLUITexture[2];
+        private static QGLUITexture[] _RWeapons = new QGLUITexture[5];
+        private static QGLUITexture[] _RItems = new QGLUITexture[2];
+        private static QGLUITexture[] _RAmmo = new QGLUITexture[3];
+        private static QGLUITexture _RTeamBord;		// PGM 01/19/97 - team color border
 
         //MED 01/04/97 added two more weapons + 3 alternates for grenade launcher
-        private static glpic_t[,] _HWeapons = new glpic_t[7, 5];   // 0 is active, 1 is owned, 2-5 are flashes
+        private static QGLUITexture[,] _HWeapons = new QGLUITexture[7, 5];   // 0 is active, 1 is owned, 2-5 are flashes
 
         //MED 01/04/97 added array to simplify weapon parsing
         private static int[] _HipWeapons = new int[]
@@ -86,7 +86,7 @@ namespace SharpQuake
         };
 
         //MED 01/04/97 added hipnotic items array
-        private static glpic_t[] _HItems = new glpic_t[2];
+        private static QGLUITexture[] _HItems = new QGLUITexture[2];
 
         private static int[] _FragSort = new int[QDef.MAX_SCOREBOARD];
         private static string[] _ScoreBoardText = new string[QDef.MAX_SCOREBOARD];
@@ -103,138 +103,138 @@ namespace SharpQuake
             for( int i = 0; i < 10; i++ )
             {
                 string str = i.ToString();
-                _Nums[0, i] = Drawer.PicFromWad( "num_" + str );
-                _Nums[1, i] = Drawer.PicFromWad( "anum_" + str );
+                _Nums[0, i] = QGLDraw.PicFromWad( "num_" + str );
+                _Nums[1, i] = QGLDraw.PicFromWad( "anum_" + str );
             }
 
-            _Nums[0, 10] = Drawer.PicFromWad( "num_minus" );
-            _Nums[1, 10] = Drawer.PicFromWad( "anum_minus" );
+            _Nums[0, 10] = QGLDraw.PicFromWad( "num_minus" );
+            _Nums[1, 10] = QGLDraw.PicFromWad( "anum_minus" );
 
-            _Colon = Drawer.PicFromWad( "num_colon" );
-            _Slash = Drawer.PicFromWad( "num_slash" );
+            _Colon = QGLDraw.PicFromWad( "num_colon" );
+            _Slash = QGLDraw.PicFromWad( "num_slash" );
 
-            _Weapons[0, 0] = Drawer.PicFromWad( "inv_shotgun" );
-            _Weapons[0, 1] = Drawer.PicFromWad( "inv_sshotgun" );
-            _Weapons[0, 2] = Drawer.PicFromWad( "inv_nailgun" );
-            _Weapons[0, 3] = Drawer.PicFromWad( "inv_snailgun" );
-            _Weapons[0, 4] = Drawer.PicFromWad( "inv_rlaunch" );
-            _Weapons[0, 5] = Drawer.PicFromWad( "inv_srlaunch" );
-            _Weapons[0, 6] = Drawer.PicFromWad( "inv_lightng" );
+            _Weapons[0, 0] = QGLDraw.PicFromWad( "inv_shotgun" );
+            _Weapons[0, 1] = QGLDraw.PicFromWad( "inv_sshotgun" );
+            _Weapons[0, 2] = QGLDraw.PicFromWad( "inv_nailgun" );
+            _Weapons[0, 3] = QGLDraw.PicFromWad( "inv_snailgun" );
+            _Weapons[0, 4] = QGLDraw.PicFromWad( "inv_rlaunch" );
+            _Weapons[0, 5] = QGLDraw.PicFromWad( "inv_srlaunch" );
+            _Weapons[0, 6] = QGLDraw.PicFromWad( "inv_lightng" );
 
-            _Weapons[1, 0] = Drawer.PicFromWad( "inv2_shotgun" );
-            _Weapons[1, 1] = Drawer.PicFromWad( "inv2_sshotgun" );
-            _Weapons[1, 2] = Drawer.PicFromWad( "inv2_nailgun" );
-            _Weapons[1, 3] = Drawer.PicFromWad( "inv2_snailgun" );
-            _Weapons[1, 4] = Drawer.PicFromWad( "inv2_rlaunch" );
-            _Weapons[1, 5] = Drawer.PicFromWad( "inv2_srlaunch" );
-            _Weapons[1, 6] = Drawer.PicFromWad( "inv2_lightng" );
+            _Weapons[1, 0] = QGLDraw.PicFromWad( "inv2_shotgun" );
+            _Weapons[1, 1] = QGLDraw.PicFromWad( "inv2_sshotgun" );
+            _Weapons[1, 2] = QGLDraw.PicFromWad( "inv2_nailgun" );
+            _Weapons[1, 3] = QGLDraw.PicFromWad( "inv2_snailgun" );
+            _Weapons[1, 4] = QGLDraw.PicFromWad( "inv2_rlaunch" );
+            _Weapons[1, 5] = QGLDraw.PicFromWad( "inv2_srlaunch" );
+            _Weapons[1, 6] = QGLDraw.PicFromWad( "inv2_lightng" );
 
             for( int i = 0; i < 5; i++ )
             {
                 string s = "inva" + ( i + 1 ).ToString();
-                _Weapons[2 + i, 0] = Drawer.PicFromWad( s + "_shotgun" );
-                _Weapons[2 + i, 1] = Drawer.PicFromWad( s + "_sshotgun" );
-                _Weapons[2 + i, 2] = Drawer.PicFromWad( s + "_nailgun" );
-                _Weapons[2 + i, 3] = Drawer.PicFromWad( s + "_snailgun" );
-                _Weapons[2 + i, 4] = Drawer.PicFromWad( s + "_rlaunch" );
-                _Weapons[2 + i, 5] = Drawer.PicFromWad( s + "_srlaunch" );
-                _Weapons[2 + i, 6] = Drawer.PicFromWad( s + "_lightng" );
+                _Weapons[2 + i, 0] = QGLDraw.PicFromWad( s + "_shotgun" );
+                _Weapons[2 + i, 1] = QGLDraw.PicFromWad( s + "_sshotgun" );
+                _Weapons[2 + i, 2] = QGLDraw.PicFromWad( s + "_nailgun" );
+                _Weapons[2 + i, 3] = QGLDraw.PicFromWad( s + "_snailgun" );
+                _Weapons[2 + i, 4] = QGLDraw.PicFromWad( s + "_rlaunch" );
+                _Weapons[2 + i, 5] = QGLDraw.PicFromWad( s + "_srlaunch" );
+                _Weapons[2 + i, 6] = QGLDraw.PicFromWad( s + "_lightng" );
             }
 
-            _Ammo[0] = Drawer.PicFromWad( "sb_shells" );
-            _Ammo[1] = Drawer.PicFromWad( "sb_nails" );
-            _Ammo[2] = Drawer.PicFromWad( "sb_rocket" );
-            _Ammo[3] = Drawer.PicFromWad( "sb_cells" );
+            _Ammo[0] = QGLDraw.PicFromWad( "sb_shells" );
+            _Ammo[1] = QGLDraw.PicFromWad( "sb_nails" );
+            _Ammo[2] = QGLDraw.PicFromWad( "sb_rocket" );
+            _Ammo[3] = QGLDraw.PicFromWad( "sb_cells" );
 
-            _Armor[0] = Drawer.PicFromWad( "sb_armor1" );
-            _Armor[1] = Drawer.PicFromWad( "sb_armor2" );
-            _Armor[2] = Drawer.PicFromWad( "sb_armor3" );
+            _Armor[0] = QGLDraw.PicFromWad( "sb_armor1" );
+            _Armor[1] = QGLDraw.PicFromWad( "sb_armor2" );
+            _Armor[2] = QGLDraw.PicFromWad( "sb_armor3" );
 
-            _Items[0] = Drawer.PicFromWad( "sb_key1" );
-            _Items[1] = Drawer.PicFromWad( "sb_key2" );
-            _Items[2] = Drawer.PicFromWad( "sb_invis" );
-            _Items[3] = Drawer.PicFromWad( "sb_invuln" );
-            _Items[4] = Drawer.PicFromWad( "sb_suit" );
-            _Items[5] = Drawer.PicFromWad( "sb_quad" );
+            _Items[0] = QGLDraw.PicFromWad( "sb_key1" );
+            _Items[1] = QGLDraw.PicFromWad( "sb_key2" );
+            _Items[2] = QGLDraw.PicFromWad( "sb_invis" );
+            _Items[3] = QGLDraw.PicFromWad( "sb_invuln" );
+            _Items[4] = QGLDraw.PicFromWad( "sb_suit" );
+            _Items[5] = QGLDraw.PicFromWad( "sb_quad" );
 
-            _Sigil[0] = Drawer.PicFromWad( "sb_sigil1" );
-            _Sigil[1] = Drawer.PicFromWad( "sb_sigil2" );
-            _Sigil[2] = Drawer.PicFromWad( "sb_sigil3" );
-            _Sigil[3] = Drawer.PicFromWad( "sb_sigil4" );
+            _Sigil[0] = QGLDraw.PicFromWad( "sb_sigil1" );
+            _Sigil[1] = QGLDraw.PicFromWad( "sb_sigil2" );
+            _Sigil[2] = QGLDraw.PicFromWad( "sb_sigil3" );
+            _Sigil[3] = QGLDraw.PicFromWad( "sb_sigil4" );
 
-            _Faces[4, 0] = Drawer.PicFromWad( "face1" );
-            _Faces[4, 1] = Drawer.PicFromWad( "face_p1" );
-            _Faces[3, 0] = Drawer.PicFromWad( "face2" );
-            _Faces[3, 1] = Drawer.PicFromWad( "face_p2" );
-            _Faces[2, 0] = Drawer.PicFromWad( "face3" );
-            _Faces[2, 1] = Drawer.PicFromWad( "face_p3" );
-            _Faces[1, 0] = Drawer.PicFromWad( "face4" );
-            _Faces[1, 1] = Drawer.PicFromWad( "face_p4" );
-            _Faces[0, 0] = Drawer.PicFromWad( "face5" );
-            _Faces[0, 1] = Drawer.PicFromWad( "face_p5" );
+            _Faces[4, 0] = QGLDraw.PicFromWad( "face1" );
+            _Faces[4, 1] = QGLDraw.PicFromWad( "face_p1" );
+            _Faces[3, 0] = QGLDraw.PicFromWad( "face2" );
+            _Faces[3, 1] = QGLDraw.PicFromWad( "face_p2" );
+            _Faces[2, 0] = QGLDraw.PicFromWad( "face3" );
+            _Faces[2, 1] = QGLDraw.PicFromWad( "face_p3" );
+            _Faces[1, 0] = QGLDraw.PicFromWad( "face4" );
+            _Faces[1, 1] = QGLDraw.PicFromWad( "face_p4" );
+            _Faces[0, 0] = QGLDraw.PicFromWad( "face5" );
+            _Faces[0, 1] = QGLDraw.PicFromWad( "face_p5" );
 
-            _FaceInvis = Drawer.PicFromWad( "face_invis" );
-            _FaceInvuln = Drawer.PicFromWad( "face_invul2" );
-            _FaceInvisInvuln = Drawer.PicFromWad( "face_inv2" );
-            _FaceQuad = Drawer.PicFromWad( "face_quad" );
+            _FaceInvis = QGLDraw.PicFromWad( "face_invis" );
+            _FaceInvuln = QGLDraw.PicFromWad( "face_invul2" );
+            _FaceInvisInvuln = QGLDraw.PicFromWad( "face_inv2" );
+            _FaceQuad = QGLDraw.PicFromWad( "face_quad" );
 
             QCommand.Add( "+showscores", ShowScores );
             QCommand.Add( "-showscores", DontShowScores );
 
-            _SBar = Drawer.PicFromWad( "sbar" );
-            _IBar = Drawer.PicFromWad( "ibar" );
-            _ScoreBar = Drawer.PicFromWad( "scorebar" );
+            _SBar = QGLDraw.PicFromWad( "sbar" );
+            _IBar = QGLDraw.PicFromWad( "ibar" );
+            _ScoreBar = QGLDraw.PicFromWad( "scorebar" );
 
             //MED 01/04/97 added new hipnotic weapons
             if( QCommon.GameType == QGameType.Hipnotic )
             {
-                _HWeapons[0, 0] = Drawer.PicFromWad( "inv_laser" );
-                _HWeapons[0, 1] = Drawer.PicFromWad( "inv_mjolnir" );
-                _HWeapons[0, 2] = Drawer.PicFromWad( "inv_gren_prox" );
-                _HWeapons[0, 3] = Drawer.PicFromWad( "inv_prox_gren" );
-                _HWeapons[0, 4] = Drawer.PicFromWad( "inv_prox" );
+                _HWeapons[0, 0] = QGLDraw.PicFromWad( "inv_laser" );
+                _HWeapons[0, 1] = QGLDraw.PicFromWad( "inv_mjolnir" );
+                _HWeapons[0, 2] = QGLDraw.PicFromWad( "inv_gren_prox" );
+                _HWeapons[0, 3] = QGLDraw.PicFromWad( "inv_prox_gren" );
+                _HWeapons[0, 4] = QGLDraw.PicFromWad( "inv_prox" );
 
-                _HWeapons[1, 0] = Drawer.PicFromWad( "inv2_laser" );
-                _HWeapons[1, 1] = Drawer.PicFromWad( "inv2_mjolnir" );
-                _HWeapons[1, 2] = Drawer.PicFromWad( "inv2_gren_prox" );
-                _HWeapons[1, 3] = Drawer.PicFromWad( "inv2_prox_gren" );
-                _HWeapons[1, 4] = Drawer.PicFromWad( "inv2_prox" );
+                _HWeapons[1, 0] = QGLDraw.PicFromWad( "inv2_laser" );
+                _HWeapons[1, 1] = QGLDraw.PicFromWad( "inv2_mjolnir" );
+                _HWeapons[1, 2] = QGLDraw.PicFromWad( "inv2_gren_prox" );
+                _HWeapons[1, 3] = QGLDraw.PicFromWad( "inv2_prox_gren" );
+                _HWeapons[1, 4] = QGLDraw.PicFromWad( "inv2_prox" );
 
                 for( int i = 0; i < 5; i++ )
                 {
                     string s = "inva" + ( i + 1 ).ToString();
-                    _HWeapons[2 + i, 0] = Drawer.PicFromWad( s + "_laser" );
-                    _HWeapons[2 + i, 1] = Drawer.PicFromWad( s + "_mjolnir" );
-                    _HWeapons[2 + i, 2] = Drawer.PicFromWad( s + "_gren_prox" );
-                    _HWeapons[2 + i, 3] = Drawer.PicFromWad( s + "_prox_gren" );
-                    _HWeapons[2 + i, 4] = Drawer.PicFromWad( s + "_prox" );
+                    _HWeapons[2 + i, 0] = QGLDraw.PicFromWad( s + "_laser" );
+                    _HWeapons[2 + i, 1] = QGLDraw.PicFromWad( s + "_mjolnir" );
+                    _HWeapons[2 + i, 2] = QGLDraw.PicFromWad( s + "_gren_prox" );
+                    _HWeapons[2 + i, 3] = QGLDraw.PicFromWad( s + "_prox_gren" );
+                    _HWeapons[2 + i, 4] = QGLDraw.PicFromWad( s + "_prox" );
                 }
 
-                _HItems[0] = Drawer.PicFromWad( "sb_wsuit" );
-                _HItems[1] = Drawer.PicFromWad( "sb_eshld" );
+                _HItems[0] = QGLDraw.PicFromWad( "sb_wsuit" );
+                _HItems[1] = QGLDraw.PicFromWad( "sb_eshld" );
             }
 
             if( QCommon.GameType == QGameType.Rogue )
             {
-                _RInvBar[0] = Drawer.PicFromWad( "r_invbar1" );
-                _RInvBar[1] = Drawer.PicFromWad( "r_invbar2" );
+                _RInvBar[0] = QGLDraw.PicFromWad( "r_invbar1" );
+                _RInvBar[1] = QGLDraw.PicFromWad( "r_invbar2" );
 
-                _RWeapons[0] = Drawer.PicFromWad( "r_lava" );
-                _RWeapons[1] = Drawer.PicFromWad( "r_superlava" );
-                _RWeapons[2] = Drawer.PicFromWad( "r_gren" );
-                _RWeapons[3] = Drawer.PicFromWad( "r_multirock" );
-                _RWeapons[4] = Drawer.PicFromWad( "r_plasma" );
+                _RWeapons[0] = QGLDraw.PicFromWad( "r_lava" );
+                _RWeapons[1] = QGLDraw.PicFromWad( "r_superlava" );
+                _RWeapons[2] = QGLDraw.PicFromWad( "r_gren" );
+                _RWeapons[3] = QGLDraw.PicFromWad( "r_multirock" );
+                _RWeapons[4] = QGLDraw.PicFromWad( "r_plasma" );
 
-                _RItems[0] = Drawer.PicFromWad( "r_shield1" );
-                _RItems[1] = Drawer.PicFromWad( "r_agrav1" );
+                _RItems[0] = QGLDraw.PicFromWad( "r_shield1" );
+                _RItems[1] = QGLDraw.PicFromWad( "r_agrav1" );
 
                 // PGM 01/19/97 - team color border
-                _RTeamBord = Drawer.PicFromWad( "r_teambord" );
+                _RTeamBord = QGLDraw.PicFromWad( "r_teambord" );
                 // PGM 01/19/97 - team color border
 
-                _RAmmo[0] = Drawer.PicFromWad( "r_ammolava" );
-                _RAmmo[1] = Drawer.PicFromWad( "r_ammomulti" );
-                _RAmmo[2] = Drawer.PicFromWad( "r_ammoplasma" );
+                _RAmmo[0] = QGLDraw.PicFromWad( "r_ammolava" );
+                _RAmmo[1] = QGLDraw.PicFromWad( "r_ammomulti" );
+                _RAmmo[2] = QGLDraw.PicFromWad( "r_ammoplasma" );
             }
         }
 
@@ -261,7 +261,7 @@ namespace SharpQuake
             _Updates++;
 
             if( sbar.Lines > 0 && vid.width > 320 )
-                Drawer.TileClear( 0, vid.height - sbar.Lines, vid.width, sbar.Lines );
+                QGLDraw.TileClear( 0, vid.height - sbar.Lines, vid.width, sbar.Lines );
 
             if( sbar.Lines > 24 )
             {
@@ -294,7 +294,7 @@ namespace SharpQuake
                 if( cl.HasItems( QItems.IT_INVULNERABILITY ) )
                 {
                     DrawNum( 24, 0, 666, 3, 1 );
-                    DrawPic( 0, 0, Drawer.Disc );
+                    DrawPic( 0, 0, QGLDraw.Disc );
                 }
                 else
                 {
@@ -381,26 +381,26 @@ namespace SharpQuake
                 return;
             }
 
-            glpic_t pic = Drawer.CachePic( "gfx/complete.lmp" );
-            Drawer.DrawPic( 64, 24, pic );
+            QGLUITexture pic = QGLDraw.CachePic( "gfx/complete.lmp" );
+            QGLDraw.DrawPic( 64, 24, pic );
 
-            pic = Drawer.CachePic( "gfx/inter.lmp" );
-            Drawer.DrawTransPic( 0, 56, pic );
+            pic = QGLDraw.CachePic( "gfx/inter.lmp" );
+            QGLDraw.DrawTransPic( 0, 56, pic );
 
             // time
             int dig = QClient.cl.completed_time / 60;
             IntermissionNumber( 160, 64, dig, 3, 0 );
             int num = QClient.cl.completed_time - dig * 60;
-            Drawer.DrawTransPic( 234, 64, _Colon );
-            Drawer.DrawTransPic( 246, 64, _Nums[0, num / 10] );
-            Drawer.DrawTransPic( 266, 64, _Nums[0, num % 10] );
+            QGLDraw.DrawTransPic( 234, 64, _Colon );
+            QGLDraw.DrawTransPic( 246, 64, _Nums[0, num / 10] );
+            QGLDraw.DrawTransPic( 266, 64, _Nums[0, num % 10] );
 
             IntermissionNumber( 160, 104, QClient.cl.stats[QStats.STAT_SECRETS], 3, 0 );
-            Drawer.DrawTransPic( 232, 104, _Slash );
+            QGLDraw.DrawTransPic( 232, 104, _Slash );
             IntermissionNumber( 240, 104, QClient.cl.stats[QStats.STAT_TOTALSECRETS], 3, 0 );
 
             IntermissionNumber( 160, 144, QClient.cl.stats[QStats.STAT_MONSTERS], 3, 0 );
-            Drawer.DrawTransPic( 232, 144, _Slash );
+            QGLDraw.DrawTransPic( 232, 144, _Slash );
             IntermissionNumber( 240, 144, QClient.cl.stats[QStats.STAT_TOTALMONSTERS], 3, 0 );
         }
 
@@ -411,8 +411,8 @@ namespace SharpQuake
         {
             Scr.CopyEverithing = true;
 
-            glpic_t pic = Drawer.CachePic( "gfx/finale.lmp" );
-            Drawer.DrawTransPic( ( Scr.vid.width - pic.width ) / 2, 16, pic );
+            QGLUITexture pic = QGLDraw.CachePic( "gfx/finale.lmp" );
+            QGLDraw.DrawTransPic( ( Scr.vid.width - pic.width ) / 2, 16, pic );
         }
 
         /// <summary>
@@ -432,7 +432,7 @@ namespace SharpQuake
             for( int i = 0; i < str.Length; i++ )
             {
                 int frame = ( str[i] == '-' ? STAT_MINUS : str[i] - '0' );
-                Drawer.DrawTransPic( x, y, _Nums[color, frame] );
+                QGLDraw.DrawTransPic( x, y, _Nums[color, frame] );
                 x += 24;
             }
         }
@@ -668,7 +668,7 @@ namespace SharpQuake
             {
                 int k = _FragSort[i];
                 QScoreboard s = cl.scores[k];
-                if( String.IsNullOrEmpty( s.name ) )
+                if( string.IsNullOrEmpty( s.name ) )
                     continue;
 
                 // draw background
@@ -677,8 +677,8 @@ namespace SharpQuake
                 top = ColorForMap( top );
                 bottom = ColorForMap( bottom );
 
-                Drawer.Fill( xofs + x * 8 + 10, y, 28, 4, top );
-                Drawer.Fill( xofs + x * 8 + 10, y + 4, 28, 3, bottom );
+                QGLDraw.Fill( xofs + x * 8 + 10, y, 28, 4, top );
+                QGLDraw.Fill( xofs + x * 8 + 10, y + 4, 28, 3, bottom );
 
                 // draw number
                 int f = s.frags;
@@ -699,12 +699,12 @@ namespace SharpQuake
         }
 
         // Sbar_DrawPic
-        private static void DrawPic( int x, int y, glpic_t pic )
+        private static void DrawPic( int x, int y, QGLUITexture pic )
         {
             if( QClient.cl.gametype == protocol.GAME_DEATHMATCH )
-                Drawer.DrawPic( x, y + ( Scr.vid.height - SBAR_HEIGHT ), pic );
+                QGLDraw.DrawPic( x, y + ( Scr.vid.height - SBAR_HEIGHT ), pic );
             else
-                Drawer.DrawPic( x + ( ( Scr.vid.width - 320 ) >> 1 ), y + ( Scr.vid.height - SBAR_HEIGHT ), pic );
+                QGLDraw.DrawPic( x + ( ( Scr.vid.width - 320 ) >> 1 ), y + ( Scr.vid.height - SBAR_HEIGHT ), pic );
         }
 
         // Sbar_DrawScoreboard
@@ -746,8 +746,8 @@ namespace SharpQuake
             // PGM 03/02/97 - fixed so color swatch only appears in CTF modes
             if( QCommon.GameType == QGameType.Rogue &&
                 ( QClient.cl.maxclients != 1 ) &&
-                ( host.TeamPlay > 3 ) &&
-                ( host.TeamPlay < 7 ) )
+                ( QHost.TeamPlay > 3 ) &&
+                ( QHost.TeamPlay < 7 ) )
             {
                 QScoreboard s = cl.scores[cl.viewentity - 1];
 
@@ -764,8 +764,8 @@ namespace SharpQuake
                     xofs = ( ( Scr.vid.width - 320 ) >> 1 ) + 113;
 
                 DrawPic( 112, 0, _RTeamBord );
-                Drawer.Fill( xofs, Scr.vid.height - SBAR_HEIGHT + 3, 22, 9, top );
-                Drawer.Fill( xofs, Scr.vid.height - SBAR_HEIGHT + 12, 22, 9, bottom );
+                QGLDraw.Fill( xofs, Scr.vid.height - SBAR_HEIGHT + 3, 22, 9, top );
+                QGLDraw.Fill( xofs, Scr.vid.height - SBAR_HEIGHT + 12, 22, 9, bottom );
 
                 // draw number
                 string num = s.frags.ToString().PadLeft( 3 );
@@ -868,7 +868,7 @@ namespace SharpQuake
             {
                 int k = _FragSort[i];
                 QScoreboard s = QClient.cl.scores[k];
-                if( String.IsNullOrEmpty( s.name ) )
+                if( string.IsNullOrEmpty( s.name ) )
                     continue;
 
                 // draw background
@@ -877,23 +877,23 @@ namespace SharpQuake
                 top = ColorForMap( top );
                 bottom = ColorForMap( bottom );
 
-                Drawer.Fill( x, y + 1, 40, 3, top );
-                Drawer.Fill( x, y + 4, 40, 4, bottom );
+                QGLDraw.Fill( x, y + 1, 40, 3, top );
+                QGLDraw.Fill( x, y + 4, 40, 4, bottom );
 
                 // draw number
                 string num = s.frags.ToString().PadLeft( 3 );
-                Drawer.DrawCharacter( x + 8, y, num[0] );
-                Drawer.DrawCharacter( x + 16, y, num[1] );
-                Drawer.DrawCharacter( x + 24, y, num[2] );
+                QGLDraw.DrawCharacter( x + 8, y, num[0] );
+                QGLDraw.DrawCharacter( x + 16, y, num[1] );
+                QGLDraw.DrawCharacter( x + 24, y, num[2] );
 
                 if( k == QClient.cl.viewentity - 1 )
                 {
-                    Drawer.DrawCharacter( x, y, 16 );
-                    Drawer.DrawCharacter( x + 32, y, 17 );
+                    QGLDraw.DrawCharacter( x, y, 16 );
+                    QGLDraw.DrawCharacter( x + 32, y, 17 );
                 }
 
                 // draw name
-                Drawer.DrawString( x + 48, y, s.name );
+                QGLDraw.DrawString( x + 48, y, s.name );
 
                 y += 8;
             }
@@ -908,7 +908,7 @@ namespace SharpQuake
             _ScoreBoardLines = 0;
             for( int i = 0; i < cl.maxclients; i++ )
             {
-                if( !String.IsNullOrEmpty( cl.scores[i].name ) )
+                if( !string.IsNullOrEmpty( cl.scores[i].name ) )
                 {
                     _FragSort[_ScoreBoardLines] = i;
                     _ScoreBoardLines++;
@@ -933,9 +933,9 @@ namespace SharpQuake
         private static void DrawCharacter( int x, int y, int num )
         {
             if( QClient.cl.gametype == protocol.GAME_DEATHMATCH )
-                Drawer.DrawCharacter( x + 4, y + Scr.vid.height - SBAR_HEIGHT, num );
+                QGLDraw.DrawCharacter( x + 4, y + Scr.vid.height - SBAR_HEIGHT, num );
             else
-                Drawer.DrawCharacter( x + ( ( Scr.vid.width - 320 ) >> 1 ) + 4, y + Scr.vid.height - SBAR_HEIGHT, num );
+                QGLDraw.DrawCharacter( x + ( ( Scr.vid.width - 320 ) >> 1 ) + 4, y + Scr.vid.height - SBAR_HEIGHT, num );
         }
 
         // Sbar_ColorForMap
@@ -977,7 +977,7 @@ namespace SharpQuake
             Scr.CopyEverithing = true;
             Scr.FullUpdate = 0;
 
-            glpic_t pic = Drawer.CachePic( "gfx/ranking.lmp" );
+            QGLUITexture pic = QGLDraw.CachePic( "gfx/ranking.lmp" );
             menu.DrawPic( ( 320 - pic.width ) / 2, 8, pic );
 
             // scores
@@ -992,7 +992,7 @@ namespace SharpQuake
             {
                 int k = _FragSort[i];
                 QScoreboard s = QClient.cl.scores[k];
-                if( String.IsNullOrEmpty( s.name ) )
+                if( string.IsNullOrEmpty( s.name ) )
                     continue;
 
                 // draw background
@@ -1001,42 +1001,42 @@ namespace SharpQuake
                 top = ColorForMap( top );
                 bottom = ColorForMap( bottom );
 
-                Drawer.Fill( x, y, 40, 4, top );
-                Drawer.Fill( x, y + 4, 40, 4, bottom );
+                QGLDraw.Fill( x, y, 40, 4, top );
+                QGLDraw.Fill( x, y + 4, 40, 4, bottom );
 
                 // draw number
                 string num = s.frags.ToString().PadLeft( 3 );
 
-                Drawer.DrawCharacter( x + 8, y, num[0] );
-                Drawer.DrawCharacter( x + 16, y, num[1] );
-                Drawer.DrawCharacter( x + 24, y, num[2] );
+                QGLDraw.DrawCharacter( x + 8, y, num[0] );
+                QGLDraw.DrawCharacter( x + 16, y, num[1] );
+                QGLDraw.DrawCharacter( x + 24, y, num[2] );
 
                 if( k == QClient.cl.viewentity - 1 )
-                    Drawer.DrawCharacter( x - 8, y, 12 );
+                    QGLDraw.DrawCharacter( x - 8, y, 12 );
 
                 // draw name
-                Drawer.DrawString( x + 64, y, s.name );
+                QGLDraw.DrawString( x + 64, y, s.name );
 
                 y += 10;
             }
         }
 
         // Sbar_DrawTransPic
-        private static void DrawTransPic( int x, int y, glpic_t pic )
+        private static void DrawTransPic( int x, int y, QGLUITexture pic )
         {
             if( QClient.cl.gametype == protocol.GAME_DEATHMATCH )
-                Drawer.DrawTransPic( x, y + ( Scr.vid.height - SBAR_HEIGHT ), pic );
+                QGLDraw.DrawTransPic( x, y + ( Scr.vid.height - SBAR_HEIGHT ), pic );
             else
-                Drawer.DrawTransPic( x + ( ( Scr.vid.width - 320 ) >> 1 ), y + ( Scr.vid.height - SBAR_HEIGHT ), pic );
+                QGLDraw.DrawTransPic( x + ( ( Scr.vid.width - 320 ) >> 1 ), y + ( Scr.vid.height - SBAR_HEIGHT ), pic );
         }
 
         // Sbar_DrawString
         private static void DrawString( int x, int y, string str )
         {
             if( QClient.cl.gametype == protocol.GAME_DEATHMATCH )
-                Drawer.DrawString( x, y + Scr.vid.height - SBAR_HEIGHT, str );
+                QGLDraw.DrawString( x, y + Scr.vid.height - SBAR_HEIGHT, str );
             else
-                Drawer.DrawString( x + ( ( Scr.vid.width - 320 ) >> 1 ), y + Scr.vid.height - SBAR_HEIGHT, str );
+                QGLDraw.DrawString( x + ( ( Scr.vid.width - 320 ) >> 1 ), y + Scr.vid.height - SBAR_HEIGHT, str );
         }
 
         // Sbar_ShowScores

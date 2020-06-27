@@ -125,22 +125,22 @@ namespace SharpQuake
         private static mode_t[] _Modes;
         private static int _ModeNum; // vid_modenum
 
-        private static cvar _glZTrick;// = { "gl_ztrick", "1" };
-        private static cvar _Mode;// = { "vid_mode", "0", false };
+        private static QCVar _glZTrick;// = { "gl_ztrick", "1" };
+        private static QCVar _Mode;// = { "vid_mode", "0", false };
 
         // Note that 0 is MODE_WINDOWED
-        private static cvar _DefaultMode;// = { "_vid_default_mode", "0", true };
+        private static QCVar _DefaultMode;// = { "_vid_default_mode", "0", true };
 
         // Note that 3 is MODE_FULLSCREEN_DEFAULT
-        private static cvar _DefaultModeWin;// = { "_vid_default_mode_win", "3", true };
+        private static QCVar _DefaultModeWin;// = { "_vid_default_mode_win", "3", true };
 
-        private static cvar _Wait;// = { "vid_wait", "0" };
-        private static cvar _NoPageFlip;// = { "vid_nopageflip", "0", true };
-        private static cvar _WaitOverride;// = { "_vid_wait_override", "0", true };
-        private static cvar _ConfigX;// = { "vid_config_x", "800", true };
-        private static cvar _ConfigY;// = { "vid_config_y", "600", true };
-        private static cvar _StretchBy2;// = { "vid_stretch_by_2", "1", true };
-        private static cvar _WindowedMouse;// = { "_windowed_mouse", "1", true };
+        private static QCVar _Wait;// = { "vid_wait", "0" };
+        private static QCVar _NoPageFlip;// = { "vid_nopageflip", "0", true };
+        private static QCVar _WaitOverride;// = { "_vid_wait_override", "0", true };
+        private static QCVar _ConfigX;// = { "vid_config_x", "800", true };
+        private static QCVar _ConfigY;// = { "vid_config_y", "600", true };
+        private static QCVar _StretchBy2;// = { "vid_stretch_by_2", "1", true };
+        private static QCVar _WindowedMouse;// = { "_windowed_mouse", "1", true };
 
         private static bool _Windowed; // windowed
 
@@ -163,17 +163,17 @@ namespace SharpQuake
         {
             if( _glZTrick == null )
             {
-                _glZTrick = new cvar( "gl_ztrick", "1" );
-                _Mode = new cvar( "vid_mode", "0", false );
-                _DefaultMode = new cvar( "_vid_default_mode", "0", true );
-                _DefaultModeWin = new cvar( "_vid_default_mode_win", "3", true );
-                _Wait = new cvar( "vid_wait", "0" );
-                _NoPageFlip = new cvar( "vid_nopageflip", "0", true );
-                _WaitOverride = new cvar( "_vid_wait_override", "0", true );
-                _ConfigX = new cvar( "vid_config_x", "800", true );
-                _ConfigY = new cvar( "vid_config_y", "600", true );
-                _StretchBy2 = new cvar( "vid_stretch_by_2", "1", true );
-                _WindowedMouse = new cvar( "_windowed_mouse", "1", true );
+                _glZTrick = new QCVar( "gl_ztrick", "1" );
+                _Mode = new QCVar( "vid_mode", "0", false );
+                _DefaultMode = new QCVar( "_vid_default_mode", "0", true );
+                _DefaultModeWin = new QCVar( "_vid_default_mode_win", "3", true );
+                _Wait = new QCVar( "vid_wait", "0" );
+                _NoPageFlip = new QCVar( "vid_nopageflip", "0", true );
+                _WaitOverride = new QCVar( "_vid_wait_override", "0", true );
+                _ConfigX = new QCVar( "vid_config_x", "800", true );
+                _ConfigY = new QCVar( "vid_config_y", "600", true );
+                _StretchBy2 = new QCVar( "vid_stretch_by_2", "1", true );
+                _WindowedMouse = new QCVar( "_windowed_mouse", "1", true );
             }
 
             QCommand.Add( "vid_nummodes", NumModes_f );
@@ -285,8 +285,8 @@ namespace SharpQuake
 
             Scr.vid.maxwarpwidth = WARP_WIDTH;
             Scr.vid.maxwarpheight = WARP_HEIGHT;
-            Scr.vid.colormap = host.ColorMap;
-            int v = BitConverter.ToInt32( host.ColorMap, 2048 );
+            Scr.vid.colormap = QHost.ColorMap;
+            int v = BitConverter.ToInt32( QHost.ColorMap, 2048 );
             Scr.vid.fullbright = 256 - QCommon.LittleLong( v );
 
             CheckGamma( palette );
@@ -362,7 +362,7 @@ namespace SharpQuake
                 /*form.WindowState = WindowState.Normal;
                 form.WindowBorder = WindowBorder.Fixed;
                 form.Location = new Point( ( mode.width - form.Width ) / 2, ( mode.height - form.Height ) / 2 );
-                if( _WindowedMouse.Value != 0 && Key.Destination == keydest_t.key_game )
+                if( _WindowedMouse.Value != 0 && QKey.Destination == QKeyDest.Game )
                 {
                     Input.ActivateMouse();
                     Input.HideMouse();
@@ -402,12 +402,12 @@ namespace SharpQuake
             Scr.IsDisabledForLoading = temp;
 
             _ModeNum = modenum;
-            cvar.Set( "vid_mode", (float)_ModeNum );
+            QCVar.Set( "vid_mode", (float)_ModeNum );
 
             // fix the leftover Alt from any Alt-Tab or the like that switched us away
             ClearAllStates();
 
-            Con.SafePrint( "Video mode {0} initialized.\n", GetModeDescription( _ModeNum ) );
+            QConsole.SafePrint( "Video mode {0} initialized.\n", GetModeDescription( _ModeNum ) );
 
             SetPalette( palette );
 
@@ -420,10 +420,10 @@ namespace SharpQuake
         public static string GetModeDescription( int mode )
         {
             if( mode < 0 || mode >= _Modes.Length )
-                return String.Empty;
+                return string.Empty;
 
             mode_t m = _Modes[mode];
-            return String.Format( "{0}x{1}x{2} {3}", m.width, m.height, m.bpp, _Windowed ? "windowed" : "fullscreen" );
+            return string.Format( "{0}x{1}x{2} {3}", m.width, m.height, m.bpp, _Windowed ? "windowed" : "fullscreen" );
         }
 
         /// <summary>
@@ -488,14 +488,14 @@ namespace SharpQuake
         private static void InitOpenGL()
         {
             _glVendor = GL.GetString( StringName.Vendor );
-            Con.Print( "GL_VENDOR: {0}\n", _glVendor );
+            QConsole.Print( "GL_VENDOR: {0}\n", _glVendor );
             _glRenderer = GL.GetString( StringName.Renderer );
-            Con.Print( "GL_RENDERER: {0}\n", _glRenderer );
+            QConsole.Print( "GL_RENDERER: {0}\n", _glRenderer );
 
             _glVersion = GL.GetString( StringName.Version );
-            Con.Print( "GL_VERSION: {0}\n", _glVersion );
+            QConsole.Print( "GL_VERSION: {0}\n", _glVersion );
             _glExtensions = GL.GetString( StringName.Extensions );
-            Con.Print( "GL_EXTENSIONS: {0}\n", _glExtensions );
+            QConsole.Print( "GL_EXTENSIONS: {0}\n", _glExtensions );
 
             if( _glRenderer.StartsWith( "PowerVR", StringComparison.InvariantCultureIgnoreCase ) )
                 Scr.FullSbarDraw = true;
@@ -516,7 +516,7 @@ namespace SharpQuake
             GL.PolygonMode( MaterialFace.FrontAndBack, PolygonMode.Fill );
             GL.ShadeModel( ShadingModel.Flat );
 
-            Drawer.SetTextureFilters( TextureMinFilter.Nearest, TextureMagFilter.Nearest );
+            QGLDraw.SetTextureFilters( TextureMinFilter.Nearest, TextureMagFilter.Nearest );
             GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat );
             GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat );
             GL.BlendFunc( BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha );
@@ -528,15 +528,15 @@ namespace SharpQuake
         {
             int nummodes = _Modes.Length;
             if( nummodes == 1 )
-                Con.Print( "{0} video mode is available\n", nummodes );
+                QConsole.Print( "{0} video mode is available\n", nummodes );
             else
-                Con.Print( "{0} video modes are available\n", nummodes );
+                QConsole.Print( "{0} video modes are available\n", nummodes );
         }
 
         // VID_DescribeCurrentMode_f
         private static void DescribeCurrentMode_f()
         {
-            Con.Print( "{0}\n", GetExtModeDescription( _ModeNum ) );
+            QConsole.Print( "{0}\n", GetExtModeDescription( _ModeNum ) );
         }
 
         // VID_DescribeMode_f
@@ -544,7 +544,7 @@ namespace SharpQuake
         {
             int modenum = QCommon.atoi( QCommand.Argv( 1 ) );
 
-            Con.Print( "{0}\n", GetExtModeDescription( modenum ) );
+            QConsole.Print( "{0}\n", GetExtModeDescription( modenum ) );
         }
 
         // VID_DescribeModes_f
@@ -552,7 +552,7 @@ namespace SharpQuake
         {
             for( int i = 0; i < _Modes.Length; i++ )
             {
-                Con.Print( "{0}:{1}\n", i, GetExtModeDescription( i ) );
+                QConsole.Print( "{0}:{1}\n", i, GetExtModeDescription( i ) );
             }
         }
 
@@ -595,11 +595,11 @@ namespace SharpQuake
             // send an up event for each key, to make sure the server clears them all
             for( int i = 0; i < 256; i++ )
             {
-                Key.Event( i, false );
+                QKey.Event( i, false );
             }
 
-            Key.ClearStates();
-            input.ClearStates();
+            QKey.ClearStates();
+            QInput.ClearStates();
         }
 
         /// <summary>
@@ -620,7 +620,7 @@ namespace SharpQuake
         {
             if( _glExtensions.Contains( "GL_SGIS_multitexture " ) && !QCommon.HasParam( "-nomtex" ) )
             {
-                Con.Print( "Multitexture extensions found.\n" );
+                QConsole.Print( "Multitexture extensions found.\n" );
                 _glMTexable = true;
             }
         }

@@ -159,7 +159,7 @@ namespace SharpQuake
             {
                 if( progs.GlobalStruct.self != 0 )
                     Print( server.ProgToEdict( progs.GlobalStruct.self ) );
-                host.Error( "PR_ExecuteProgram: NULL function" );
+                QHost.Error( "PR_ExecuteProgram: NULL function" );
             }
 
             dfunction_t f = _Functions[fnum];
@@ -280,7 +280,7 @@ namespace SharpQuake
                         break;
 
                     case OP.OP_NOT_S:
-                        c->_float = ( a->_string == 0 || String.IsNullOrEmpty( GetString( a->_string ) ) ) ? 1 : 0;
+                        c->_float = ( a->_string == 0 || string.IsNullOrEmpty( GetString( a->_string ) ) ) ? 1 : 0;
                         break;
 
                     case OP.OP_NOT_FNC:
@@ -467,11 +467,11 @@ namespace SharpQuake
         {
             PrintStatement( ref _Statements[_xStatement] );
             StackTrace();
-            Con.Print( fmt, args );
+            QConsole.Print( fmt, args );
 
             _Depth = 0;		// dump the stack so host_error can shutdown functions
 
-            host.Error( "Program error" );
+            QHost.Error( "Program error" );
         }
 
         public static edict_t EdictFromAddr( int addr, out int ofs )
@@ -505,7 +505,7 @@ namespace SharpQuake
                 if( best != null )
                 {
                     if( num < 10 )
-                        Con.Print( "{0,7} {1}\n", best.profile, GetString( best.s_name ) );
+                        QConsole.Print( "{0,7} {1}\n", best.profile, GetString( best.s_name ) );
                     num++;
                     best.profile = 0;
                 }
@@ -555,7 +555,7 @@ namespace SharpQuake
         {
             if( _Depth == 0 )
             {
-                Con.Print( "<NO STACK>\n" );
+                QConsole.Print( "<NO STACK>\n" );
                 return;
             }
 
@@ -566,10 +566,10 @@ namespace SharpQuake
 
                 if( f == null )
                 {
-                    Con.Print( "<NO FUNCTION>\n" );
+                    QConsole.Print( "<NO FUNCTION>\n" );
                 }
                 else
-                    Con.Print( "{0,12} : {1}\n", GetString( f.s_file ), GetString( f.s_name ) );
+                    QConsole.Print( "{0,12} : {1}\n", GetString( f.s_file ), GetString( f.s_name ) );
             }
         }
 
@@ -580,31 +580,31 @@ namespace SharpQuake
         {
             if( s.op < OpNames.Length )
             {
-                Con.Print( "{0,10} ", OpNames[s.op] );
+                QConsole.Print( "{0,10} ", OpNames[s.op] );
             }
 
             OP op = (OP)s.op;
             if( op == OP.OP_IF || op == OP.OP_IFNOT )
-                Con.Print( "{0}branch {1}", GlobalString( s.a ), s.b );
+                QConsole.Print( "{0}branch {1}", GlobalString( s.a ), s.b );
             else if( op == OP.OP_GOTO )
             {
-                Con.Print( "branch {0}", s.a );
+                QConsole.Print( "branch {0}", s.a );
             }
             else if( (uint)( s.op - OP.OP_STORE_F ) < 6 )
             {
-                Con.Print( GlobalString( s.a ) );
-                Con.Print( GlobalStringNoContents( s.b ) );
+                QConsole.Print( GlobalString( s.a ) );
+                QConsole.Print( GlobalStringNoContents( s.b ) );
             }
             else
             {
                 if( s.a != 0 )
-                    Con.Print( GlobalString( s.a ) );
+                    QConsole.Print( GlobalString( s.a ) );
                 if( s.b != 0 )
-                    Con.Print( GlobalString( s.b ) );
+                    QConsole.Print( GlobalString( s.b ) );
                 if( s.c != 0 )
-                    Con.Print( GlobalStringNoContents( s.c ) );
+                    QConsole.Print( GlobalStringNoContents( s.c ) );
             }
-            Con.Print( "\n" );
+            QConsole.Print( "\n" );
         }
 
         /// <summary>

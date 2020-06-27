@@ -93,7 +93,7 @@ namespace SharpQuake
             if( progs.GlobalStruct.force_retouch != 0 )
                 progs.GlobalStruct.force_retouch -= 1;
 
-            sv.time += host.FrameTime;
+            sv.time += QHost.FrameTime;
         }
 
         /// <summary>
@@ -117,11 +117,11 @@ namespace SharpQuake
                 AddGravity( ent );
 
             // move angles
-            mathlib.VectorMA( ref ent.v.angles, (float)host.FrameTime, ref ent.v.avelocity, out ent.v.angles );
+            mathlib.VectorMA( ref ent.v.angles, (float)QHost.FrameTime, ref ent.v.avelocity, out ent.v.angles );
 
             // move origin
             v3f move;
-            mathlib.VectorScale( ref ent.v.velocity, (float)host.FrameTime, out move );
+            mathlib.VectorScale( ref ent.v.velocity, (float)QHost.FrameTime, out move );
             trace_t trace = PushEntity( ent, ref move );
 
             if( trace.fraction == 1 )
@@ -255,7 +255,7 @@ namespace SharpQuake
             float val = progs.GetEdictFieldFloat( ent, "gravity" );
             if( val == 0 )
                 val = 1;
-            ent.v.velocity.z -= (float)( val * _Gravity.Value * host.FrameTime );
+            ent.v.velocity.z -= (float)( val * _Gravity.Value * QHost.FrameTime );
         }
 
         /// <summary>
@@ -275,7 +275,7 @@ namespace SharpQuake
 
                 AddGravity( ent );
                 CheckVelocity( ent );
-                FlyMove( ent, (float)host.FrameTime, null );
+                FlyMove( ent, (float)QHost.FrameTime, null );
                 LinkEdict( ent, true );
 
                 if( ( (int)ent.v.flags & EdictFlags.FL_ONGROUND ) != 0 )	// just hit ground
@@ -301,8 +301,8 @@ namespace SharpQuake
             if( !RunThink( ent ) )
                 return;
 
-            mathlib.VectorMA( ref ent.v.angles, (float)host.FrameTime, ref ent.v.avelocity, out ent.v.angles );
-            mathlib.VectorMA( ref ent.v.origin, (float)host.FrameTime, ref ent.v.velocity, out ent.v.origin );
+            mathlib.VectorMA( ref ent.v.angles, (float)QHost.FrameTime, ref ent.v.avelocity, out ent.v.angles );
+            mathlib.VectorMA( ref ent.v.origin, (float)QHost.FrameTime, ref ent.v.velocity, out ent.v.origin );
             LinkEdict( ent, false );
         }
 
@@ -324,14 +324,14 @@ namespace SharpQuake
             float oldltime = ent.v.ltime;
             float thinktime = ent.v.nextthink;
             float movetime;
-            if( thinktime < ent.v.ltime + host.FrameTime )
+            if( thinktime < ent.v.ltime + QHost.FrameTime )
             {
                 movetime = thinktime - ent.v.ltime;
                 if( movetime < 0 )
                     movetime = 0;
             }
             else
-                movetime = (float)host.FrameTime;
+                movetime = (float)QHost.FrameTime;
 
             if( movetime != 0 )
             {
@@ -399,13 +399,13 @@ namespace SharpQuake
                 case Movetypes.MOVETYPE_FLY:
                     if( !RunThink( ent ) )
                         return;
-                    FlyMove( ent, (float)host.FrameTime, null );
+                    FlyMove( ent, (float)QHost.FrameTime, null );
                     break;
 
                 case Movetypes.MOVETYPE_NOCLIP:
                     if( !RunThink( ent ) )
                         return;
-                    mathlib.VectorMA( ref ent.v.origin, (float)host.FrameTime, ref ent.v.velocity, out ent.v.origin );
+                    mathlib.VectorMA( ref ent.v.origin, (float)QHost.FrameTime, ref ent.v.velocity, out ent.v.origin );
                     break;
 
                 default:
@@ -438,7 +438,7 @@ namespace SharpQuake
             v3f oldorg = ent.v.origin;
             v3f oldvel = ent.v.velocity;
             trace_t steptrace = new trace_t();
-            int clip = FlyMove( ent, (float)host.FrameTime, steptrace );
+            int clip = FlyMove( ent, (float)QHost.FrameTime, steptrace );
 
             if( ( clip & 2 ) == 0 )
                 return;		// move didn't block on a step
@@ -466,7 +466,7 @@ namespace SharpQuake
             v3f upmove = QCommon.ZeroVector3f;
             v3f downmove = upmove;
             upmove.z = STEPSIZE;
-            downmove.z = (float)( -STEPSIZE + oldvel.z * host.FrameTime );
+            downmove.z = (float)( -STEPSIZE + oldvel.z * QHost.FrameTime );
 
             // move up
             PushEntity( ent, ref upmove );	// FIXME: don't link?
@@ -475,7 +475,7 @@ namespace SharpQuake
             ent.v.velocity.x = oldvel.x;
             ent.v.velocity.y = oldvel.y;
             ent.v.velocity.z = 0;
-            clip = FlyMove( ent, (float)host.FrameTime, steptrace );
+            clip = FlyMove( ent, (float)QHost.FrameTime, steptrace );
 
             // check for stuckness, possibly due to the limited precision of floats
             // in the clipping hulls
@@ -635,7 +635,7 @@ namespace SharpQuake
             ent.v.origin = ent.v.oldorigin;
             if( TestEntityPosition( ent ) == null )
             {
-                Con.DPrint( "Unstuck.\n" );
+                QConsole.DPrint( "Unstuck.\n" );
                 LinkEdict( ent, true );
                 return;
             }
@@ -649,14 +649,14 @@ namespace SharpQuake
                         ent.v.origin.z = org.z + z;
                         if( TestEntityPosition( ent ) == null )
                         {
-                            Con.DPrint( "Unstuck.\n" );
+                            QConsole.DPrint( "Unstuck.\n" );
                             LinkEdict( ent, true );
                             return;
                         }
                     }
 
             ent.v.origin = org;
-            Con.DPrint( "player is stuck.\n" );
+            QConsole.DPrint( "player is stuck.\n" );
         }
 
         /// <summary>
@@ -703,7 +703,7 @@ namespace SharpQuake
             float thinktime;
 
             thinktime = ent.v.nextthink;
-            if( thinktime <= 0 || thinktime > sv.time + host.FrameTime )
+            if( thinktime <= 0 || thinktime > sv.time + QHost.FrameTime )
                 return true;
 
             if( thinktime < sv.time )
@@ -730,12 +730,12 @@ namespace SharpQuake
             //
             if( mathlib.CheckNaN( ref ent.v.velocity, 0 ) )
             {
-                Con.Print( "Got a NaN velocity on {0}\n", progs.GetString( ent.v.classname ) );
+                QConsole.Print( "Got a NaN velocity on {0}\n", progs.GetString( ent.v.classname ) );
             }
 
             if( mathlib.CheckNaN( ref ent.v.origin, 0 ) )
             {
-                Con.Print( "Got a NaN origin on {0}\n", progs.GetString( ent.v.classname ) );
+                QConsole.Print( "Got a NaN origin on {0}\n", progs.GetString( ent.v.classname ) );
             }
 
             Vector3 max = Vector3.One * _MaxVelocity.Value;

@@ -76,17 +76,17 @@ namespace SharpQuake
             1, sizeof(int)/4, 1, 3, 1, 1, sizeof(int)/4, IntPtr.Size/4
         };
 
-        private static cvar _NoMonsters;// = { "nomonsters", "0" };
-        private static cvar _GameCfg;// = { "gamecfg", "0" };
-        private static cvar _Scratch1;// = { "scratch1", "0" };
-        private static cvar _Scratch2;// = { "scratch2", "0" };
-        private static cvar _Scratch3;// = { "scratch3", "0" };
-        private static cvar _Scratch4;// = { "scratch4", "0" };
-        private static cvar _SavedGameCfg;// = { "savedgamecfg", "0", true };
-        private static cvar _Saved1;// = { "saved1", "0", true };
-        private static cvar _Saved2;// = { "saved2", "0", true };
-        private static cvar _Saved3;// = { "saved3", "0", true };
-        private static cvar _Saved4;// = { "saved4", "0", true };
+        private static QCVar _NoMonsters;// = { "nomonsters", "0" };
+        private static QCVar _GameCfg;// = { "gamecfg", "0" };
+        private static QCVar _Scratch1;// = { "scratch1", "0" };
+        private static QCVar _Scratch2;// = { "scratch2", "0" };
+        private static QCVar _Scratch3;// = { "scratch3", "0" };
+        private static QCVar _Scratch4;// = { "scratch4", "0" };
+        private static QCVar _SavedGameCfg;// = { "savedgamecfg", "0", true };
+        private static QCVar _Saved1;// = { "saved1", "0", true };
+        private static QCVar _Saved2;// = { "saved2", "0", true };
+        private static QCVar _Saved3;// = { "saved3", "0", true };
+        private static QCVar _Saved4;// = { "saved4", "0", true };
 
         private static dprograms_t _Progs; // progs
         private static dfunction_t[] _Functions; // pr_functions
@@ -117,17 +117,17 @@ namespace SharpQuake
 
             if( _NoMonsters == null )
             {
-                _NoMonsters = new cvar( "nomonsters", "0" );
-                _GameCfg = new cvar( "gamecfg", "0" );
-                _Scratch1 = new cvar( "scratch1", "0" );
-                _Scratch2 = new cvar( "scratch2", "0" );
-                _Scratch3 = new cvar( "scratch3", "0" );
-                _Scratch4 = new cvar( "scratch4", "0" );
-                _SavedGameCfg = new cvar( "savedgamecfg", "0", true );
-                _Saved1 = new cvar( "saved1", "0", true );
-                _Saved2 = new cvar( "saved2", "0", true );
-                _Saved3 = new cvar( "saved3", "0", true );
-                _Saved4 = new cvar( "saved4", "0", true );
+                _NoMonsters = new QCVar( "nomonsters", "0" );
+                _GameCfg = new QCVar( "gamecfg", "0" );
+                _Scratch1 = new QCVar( "scratch1", "0" );
+                _Scratch2 = new QCVar( "scratch2", "0" );
+                _Scratch3 = new QCVar( "scratch3", "0" );
+                _Scratch4 = new QCVar( "scratch4", "0" );
+                _SavedGameCfg = new QCVar( "savedgamecfg", "0", true );
+                _Saved1 = new QCVar( "saved1", "0", true );
+                _Saved2 = new QCVar( "saved2", "0", true );
+                _Saved3 = new QCVar( "saved3", "0", true );
+                _Saved4 = new QCVar( "saved4", "0", true );
             }
         }
 
@@ -145,17 +145,17 @@ namespace SharpQuake
             for( int i = 0; i < GEFV_CACHESIZE; i++ )
                 _gefvCache[i].field = null;
 
-            crc.Init( out _Crc );
+            QCRC.Init( out _Crc );
 
             byte[] buf = QCommon.LoadFile( "progs.dat" );
 
             _Progs = sys.BytesToStructure<dprograms_t>( buf, 0 );
             if( _Progs == null )
                 sys.Error( "PR_LoadProgs: couldn't load progs.dat" );
-            Con.DPrint( "Programs occupy {0}K.\n", buf.Length / 1024 );
+            QConsole.DPrint( "Programs occupy {0}K.\n", buf.Length / 1024 );
 
             for( int i = 0; i < buf.Length; i++ )
-                crc.ProcessByte( ref _Crc, buf[i] );
+                QCRC.ProcessByte( ref _Crc, buf[i] );
 
             // byte swap the header
             _Progs.SwapBytes();
@@ -242,7 +242,7 @@ namespace SharpQuake
         // For debugging, prints all the entities in the current server
         public static void PrintEdicts()
         {
-            Con.Print( "{0} entities\n", server.sv.num_edicts );
+            QConsole.Print( "{0} entities\n", server.sv.num_edicts );
             for( int i = 0; i < server.sv.num_edicts; i++ )
                 PrintNum( i );
         }
@@ -302,7 +302,7 @@ namespace SharpQuake
                 data = ParseEdict( data, ent );
 
                 // remove things from different skill levels or deathmatch
-                if( host.Deathmatch != 0 )
+                if( QHost.Deathmatch != 0 )
                 {
                     if( ( (int)ent.v.spawnflags & SpawnFlags.SPAWNFLAG_NOT_DEATHMATCH ) != 0 )
                     {
@@ -311,9 +311,9 @@ namespace SharpQuake
                         continue;
                     }
                 }
-                else if( ( host.CurrentSkill == 0 && ( (int)ent.v.spawnflags & SpawnFlags.SPAWNFLAG_NOT_EASY ) != 0 ) ||
-                    ( host.CurrentSkill == 1 && ( (int)ent.v.spawnflags & SpawnFlags.SPAWNFLAG_NOT_MEDIUM ) != 0 ) ||
-                    ( host.CurrentSkill >= 2 && ( (int)ent.v.spawnflags & SpawnFlags.SPAWNFLAG_NOT_HARD ) != 0 ) )
+                else if( ( QHost.CurrentSkill == 0 && ( (int)ent.v.spawnflags & SpawnFlags.SPAWNFLAG_NOT_EASY ) != 0 ) ||
+                    ( QHost.CurrentSkill == 1 && ( (int)ent.v.spawnflags & SpawnFlags.SPAWNFLAG_NOT_MEDIUM ) != 0 ) ||
+                    ( QHost.CurrentSkill >= 2 && ( (int)ent.v.spawnflags & SpawnFlags.SPAWNFLAG_NOT_HARD ) != 0 ) )
                 {
                     server.FreeEdict( ent );
                     inhibit++;
@@ -325,7 +325,7 @@ namespace SharpQuake
                 //
                 if( ent.v.classname == 0 )
                 {
-                    Con.Print( "No classname for:\n" );
+                    QConsole.Print( "No classname for:\n" );
                     Print( ent );
                     server.FreeEdict( ent );
                     continue;
@@ -335,7 +335,7 @@ namespace SharpQuake
                 int func = IndexOfFunction( GetString( ent.v.classname ) );
                 if( func == -1 )
                 {
-                    Con.Print( "No spawn function for:\n" );
+                    QConsole.Print( "No spawn function for:\n" );
                     Print( ent );
                     server.FreeEdict( ent );
                     continue;
@@ -345,7 +345,7 @@ namespace SharpQuake
                 Execute( func );
             }
 
-            Con.DPrint( "{0} entities inhibited\n", inhibit );
+            QConsole.DPrint( "{0} entities inhibited\n", inhibit );
         }
 
         /// <summary>
@@ -410,7 +410,7 @@ namespace SharpQuake
                 ddef_t key = FindField( keyname );
                 if( key == null )
                 {
-                    Con.Print( "'{0}' is not a field\n", keyname );
+                    QConsole.Print( "'{0}' is not a field\n", keyname );
                     continue;
                 }
 
@@ -421,7 +421,7 @@ namespace SharpQuake
                 }
 
                 if( !ParsePair( ent, key, token ) )
-                    host.Error( "ED_ParseEdict: parse error" );
+                    QHost.Error( "ED_ParseEdict: parse error" );
             }
 
             if( !init )
@@ -438,11 +438,11 @@ namespace SharpQuake
         {
             if( ed.free )
             {
-                Con.Print( "FREE\n" );
+                QConsole.Print( "FREE\n" );
                 return;
             }
 
-            Con.Print( "\nEDICT {0}:\n", server.NumForEdict( ed ) );
+            QConsole.Print( "\nEDICT {0}:\n", server.NumForEdict( ed ) );
             for( int i = 1; i < _Progs.numfielddefs; i++ )
             {
                 ddef_t d = _FieldDefs[i];
@@ -461,8 +461,8 @@ namespace SharpQuake
                         if( IsEmptyField( type, v ) )
                             continue;
 
-                        Con.Print( "{0,15} ", name );
-                        Con.Print( "{0}\n", ValueString( (etype_t)d.type, (void*)v ) );
+                        QConsole.Print( "{0,15} ", name );
+                        QConsole.Print( "{0}\n", ValueString( (etype_t)d.type, (void*)v ) );
                     }
                 }
                 else
@@ -473,8 +473,8 @@ namespace SharpQuake
                         if( IsEmptyField( type, v ) )
                             continue;
 
-                        Con.Print( "{0,15} ", name );
-                        Con.Print( "{0}\n", ValueString( (etype_t)d.type, (void*)v ) );
+                        QConsole.Print( "{0,15} ", name );
+                        QConsole.Print( "{0}\n", ValueString( (etype_t)d.type, (void*)v ) );
                     }
                 }
             }
@@ -502,7 +502,7 @@ namespace SharpQuake
                 return _DynamicStrings[offset];
             }
 
-            return String.Empty;
+            return string.Empty;
         }
 
         public static bool SameName( int name1, string name2 )
@@ -569,7 +569,7 @@ namespace SharpQuake
         public static int AllocString()
         {
             int id = _DynamicStrings.Count;
-            _DynamicStrings.Add( String.Empty );
+            _DynamicStrings.Add( string.Empty );
             return MakeStingId( id, false );
         }
 
@@ -675,14 +675,14 @@ namespace SharpQuake
                 if( QCommon.Token.StartsWith( "}" ) )
                     break;
 
-                if( String.IsNullOrEmpty( data ) )
+                if( string.IsNullOrEmpty( data ) )
                     sys.Error( "ED_ParseEntity: EOF without closing brace" );
 
                 string keyname = QCommon.Token;
 
                 // parse value
                 data = QCommon.Parse( data );
-                if( String.IsNullOrEmpty( data ) )
+                if( string.IsNullOrEmpty( data ) )
                     sys.Error( "ED_ParseEntity: EOF without closing brace" );
 
                 if( QCommon.Token.StartsWith( "}" ) )
@@ -691,12 +691,12 @@ namespace SharpQuake
                 ddef_t key = FindGlobal( keyname );
                 if( key == null )
                 {
-                    Con.Print( "'{0}' is not a global\n", keyname );
+                    QConsole.Print( "'{0}' is not a global\n", keyname );
                     continue;
                 }
 
                 if( !ParseGlobalPair( key, QCommon.Token ) )
-                    host.Error( "ED_ParseGlobals: parse error" );
+                    QHost.Error( "ED_ParseGlobals: parse error" );
             }
         }
 
@@ -730,7 +730,7 @@ namespace SharpQuake
                 if( org.X >= vmin.X && org.Y >= vmin.Y && org.Z >= vmin.Z &&
                     org.X <= vmax.X && org.Y <= vmax.Y && org.Z <= vmax.Z )
                 {
-                    Con.Print( "{0}\n", i );
+                    QConsole.Print( "{0}\n", i );
                 }
             }
         }
@@ -758,7 +758,7 @@ namespace SharpQuake
             int i = QCommon.atoi( QCommand.Argv( 1 ) );
             if( i >= server.sv.num_edicts )
             {
-                Con.Print( "Bad edict number\n" );
+                QConsole.Print( "Bad edict number\n" );
                 return;
             }
             progs.PrintNum( i );
@@ -785,11 +785,11 @@ namespace SharpQuake
                     step++;
             }
 
-            Con.Print( "num_edicts:{0}\n", server.sv.num_edicts );
-            Con.Print( "active    :{0}\n", active );
-            Con.Print( "view      :{0}\n", models );
-            Con.Print( "touch     :{0}\n", solid );
-            Con.Print( "step      :{0}\n", step );
+            QConsole.Print( "num_edicts:{0}\n", server.sv.num_edicts );
+            QConsole.Print( "active    :{0}\n", active );
+            QConsole.Print( "view      :{0}\n", models );
+            QConsole.Print( "touch     :{0}\n", solid );
+            QConsole.Print( "step      :{0}\n", step );
         }
 
         /// <summary>
@@ -818,7 +818,7 @@ namespace SharpQuake
         /// Since memory block containing original edict_t plus additional data
         /// is split into two fiels - edict_t.v and edict_t.fields we must check key.ofs
         /// to choose between thistwo parts.
-        /// Warning: Key offset is in integers not bytes!
+        /// Warning: QKey offset is in integers not bytes!
         /// </summary>
         private static unsafe bool ParsePair( edict_t ent, ddef_t key, string s )
         {
@@ -871,7 +871,7 @@ namespace SharpQuake
                     int f = IndexOfField( s );
                     if( f == -1 )
                     {
-                        Con.Print( "Can't find field {0}\n", s );
+                        QConsole.Print( "Can't find field {0}\n", s );
                         return false;
                     }
                     *(int*)d = GetInt32( _FieldDefs[f].ofs );
@@ -881,7 +881,7 @@ namespace SharpQuake
                     int func = IndexOfFunction( s );
                     if( func == -1 )
                     {
-                        Con.Print( "Can't find function {0}\n", s );
+                        QConsole.Print( "Can't find function {0}\n", s );
                         return false;
                     }
                     *(int*)d = func;// - pr_functions;
@@ -999,7 +999,7 @@ namespace SharpQuake
                     break;
 
                 case etype_t.ev_vector:
-                    result = String.Format( CultureInfo.InvariantCulture.NumberFormat,
+                    result = string.Format( CultureInfo.InvariantCulture.NumberFormat,
                         "{0,5:F1} {1,5:F1} {2,5:F1}", ( (float*)val )[0], ( (float*)val )[1], ( (float*)val )[2] );
                     break;
 
@@ -1108,7 +1108,7 @@ namespace SharpQuake
                     break;
 
                 case etype_t.ev_vector:
-                    result = String.Format( CultureInfo.InvariantCulture.NumberFormat,
+                    result = string.Format( CultureInfo.InvariantCulture.NumberFormat,
                         "{0:F6} {1:F6} {2:F6}", val->vector[0], val->vector[1], val->vector[2] );
                     break;
 
@@ -1160,15 +1160,15 @@ namespace SharpQuake
         /// </summary>
         private static unsafe string GlobalString( int ofs )
         {
-            string line = String.Empty;
+            string line = string.Empty;
             void* val = Get( ofs );// (void*)&pr_globals[ofs];
             ddef_t def = GlobalAtOfs( ofs );
             if( def == null )
-                line = String.Format( "{0}(???)", ofs );
+                line = string.Format( "{0}(???)", ofs );
             else
             {
                 string s = ValueString( (etype_t)def.type, val );
-                line = String.Format( "{0}({1}){2} ", ofs, GetString( def.s_name ), s );
+                line = string.Format( "{0}({1}){2} ", ofs, GetString( def.s_name ), s );
             }
 
             line = line.PadRight( 20 );
@@ -1181,12 +1181,12 @@ namespace SharpQuake
         /// </summary>
         private static string GlobalStringNoContents( int ofs )
         {
-            string line = String.Empty;
+            string line = string.Empty;
             ddef_t def = GlobalAtOfs( ofs );
             if( def == null )
-                line = String.Format( "{0}(???)", ofs );
+                line = string.Format( "{0}(???)", ofs );
             else
-                line = String.Format( "{0}({1}) ", ofs, GetString( def.s_name ) );
+                line = string.Format( "{0}({1}) ", ofs, GetString( def.s_name ) );
 
             line = line.PadRight( 20 );
 

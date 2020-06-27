@@ -1,24 +1,24 @@
-/// <copyright>
-///
-/// Rewritten in C# by Yury Kiselev, 2010.
-///
-/// Copyright (C) 1996-1997 Id Software, Inc.
-///
-/// This program is free software; you can redistribute it and/or
-/// modify it under the terms of the GNU General Public License
-/// as published by the Free Software Foundation; either version 2
-/// of the License, or (at your option) any later version.
-///
-/// This program is distributed in the hope that it will be useful,
-/// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-///
-/// See the GNU General Public License for more details.
-///
-/// You should have received a copy of the GNU General Public License
-/// along with this program; if not, write to the Free Software
-/// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-/// </copyright>
+/* Rewritten in C# by Yury Kiselev, 2010.
+ *
+ * Copyright (C) 1996-1997 Id Software, Inc.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * $TODO: Split things out a little bit.
+ */
 
 using System;
 using System.IO;
@@ -26,79 +26,63 @@ using System.Text;
 using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
 
-// host.c
+// QHost.c
 
 namespace SharpQuake
 {
     /// <summary>
     /// Host_functions
     /// </summary>
-    static partial class host
+    static partial class QHost
     {
-        public static quakeparms_t Params => _Params;
+        public static quakeparms_t Params        => _Params;
+        public static bool         IsDedicated   => false;
+        public static bool         IsInitialized => _IsInitialized;
+        public static double       Time          => _Time;
+        public static int          FrameCount    => _FrameCount;
+        public static bool         IsDeveloper   => ( _Developer != null ? _Developer.Value != 0 : false );
+        public static byte[]       ColorMap      => _ColorMap;
+        public static float        TeamPlay      => _Teamplay.Value;
+        public static byte[]       BasePal       => _BasePal;
+        public static bool         IsCoop        => _Coop.Value != 0;
+        public static float        Skill         => _Skill.Value;
+        public static float        Deathmatch    => _Deathmatch.Value;
+        public static int          ClientNum     => Array.IndexOf( server.svs.clients, QHost.HostClient );
+        public static float        FragLimit     => _FragLimit.Value;
+        public static float        TimeLimit     => _TimeLimit.Value;
+        public static BinaryReader VcrReader     => _VcrReader;
+        public static BinaryWriter VcrWriter     => _VcrWriter;
 
-        public static bool IsDedicated => false;
-
-        public static bool IsInitialized => _IsInitialized;
-
-        public static double Time => _Time;
-
-        public static int FrameCount => _FrameCount;
-
-        public static bool IsDeveloper => ( _Developer != null ? _Developer.Value != 0 : false );
-
-        public static byte[] ColorMap => _ColorMap;
-
-        public static float TeamPlay => _Teamplay.Value;
-
-        public static byte[] BasePal => _BasePal;
-
-        public static bool IsCoop => _Coop.Value != 0;
-
-        public static float Skill => _Skill.Value;
-
-        public static float Deathmatch => _Deathmatch.Value;
-
-        public static int ClientNum => Array.IndexOf( server.svs.clients, host.HostClient );
-
-        public static float FragLimit => _FragLimit.Value;
-
-        public static float TimeLimit => _TimeLimit.Value;
-
-        public static BinaryReader VcrReader => _VcrReader;
-
-        public static BinaryWriter VcrWriter => _VcrWriter;
-
-        public static double FrameTime;
-        public static double RealTime;
-        public static int CurrentSkill;
-        public static bool NoClipAngleHack;
+        public static double   FrameTime;
+        public static double   RealTime;
+        public static int      CurrentSkill;
+        public static bool     NoClipAngleHack;
         public static client_t HostClient;
-        private const int VCR_SIGNATURE = 0x56435231;
-        private const int SAVEGAME_VERSION = 5;
+        private const int      VCR_SIGNATURE    = 0x56435231;
+        private const int      SAVEGAME_VERSION = 5;
 
         private static quakeparms_t _Params; // quakeparms_t host_parms;
 
-        private static cvar _Sys_TickRate; // = {"sys_ticrate","0.05"};
-        private static cvar _Developer; // {"developer","0"};
-        private static cvar _FrameRate;// = {"host_framerate","0"};	// set for slow motion
-        private static cvar _Speeds;// = {"host_speeds","0"};			// set for running times
-        private static cvar _ServerProfile;// = {"serverprofile","0"};
-        private static cvar _FragLimit;// = {"fraglimit","0",false,true};
-        private static cvar _TimeLimit;// = {"timelimit","0",false,true};
-        private static cvar _Teamplay;// = {"teamplay","0",false,true};
-        private static cvar _SameLevel;// = {"samelevel","0"};
-        private static cvar _NoExit; // = {"noexit","0",false,true};
-        private static cvar _Skill;// = {"skill","1"};						// 0 - 3
-        private static cvar _Deathmatch;// = {"deathmatch","0"};			// 0, 1, or 2
-        private static cvar _Coop;// = {"coop","0"};			// 0 or 1
-        private static cvar _Pausable;// = {"pausable","1"};
-        private static cvar _Temp1;// = {"temp1","0"};
+        private static QCVar _Sys_TickRate;  // = {"sys_ticrate","0.05"};
+        private static QCVar _Developer;     // {"developer","0"};
+        private static QCVar _FrameRate;     // = {"host_framerate","0"};	// set for slow motion
+        private static QCVar _Speeds;        // = {"host_speeds","0"};			// set for running times
+        private static QCVar _ServerProfile; // = {"serverprofile","0"};
+        private static QCVar _FragLimit;     // = {"fraglimit","0",false,true};
+        private static QCVar _TimeLimit;     // = {"timelimit","0",false,true};
+        private static QCVar _Teamplay;      // = {"teamplay","0",false,true};
+        private static QCVar _SameLevel;     // = {"samelevel","0"};
+        private static QCVar _NoExit;        // = {"noexit","0",false,true};
+        private static QCVar _Skill;         // = {"skill","1"};						// 0 - 3
+        private static QCVar _Deathmatch;    // = {"deathmatch","0"};			// 0, 1, or 2
+        private static QCVar _Coop;          // = {"coop","0"};			// 0 or 1
+        private static QCVar _Pausable;      // = {"pausable","1"};
+        private static QCVar _Temp1;         // = {"temp1","0"};
 
-        private static bool _IsInitialized; //extern	qboolean	host_initialized;		// true if into command execution
-        private static int _FrameCount; //extern	int			host_framecount;	// incremented every frame, never reset
-        private static byte[] _BasePal; // host_basepal
-        private static byte[] _ColorMap; // host_colormap
+        private static bool   _IsInitialized; //extern	qboolean	host_initialized;		// true if into command execution
+        private static int    _FrameCount;    //extern	int			host_framecount;	// incremented every frame, never reset
+        private static byte[] _BasePal;       // host_basepal
+        private static byte[] _ColorMap;      // host_colormap
 
         // host_framtime
         private static double _Time; // host_time
@@ -108,7 +92,7 @@ namespace SharpQuake
         private static double _OldRealTime; //double oldrealtime;			// last frame run
 
         // current_skill;		// skill level for currently loaded level (in case
-        //  the user changes the cvar while the level is
+        //  the user changes the QCVar while the level is
         //  running, this reflects the level actually in use)
 
         // qboolean noclip_anglehack;
@@ -119,7 +103,7 @@ namespace SharpQuake
         // client_t* host_client;			// current QClient
 
         private static double _TimeTotal; // static double timetotal from Host_Frame
-        private static int _TimeCount; // static int timecount from Host_Frame
+        private static int    _TimeCount; // static int timecount from Host_Frame
         private static double _Time1 = 0; // static double time1 from _Host_Frame
         private static double _Time2 = 0; // static double time2 from _Host_Frame
         private static double _Time3 = 0; // static double time3 from _Host_Frame
@@ -132,7 +116,7 @@ namespace SharpQuake
         /// </summary>
         public static void ClearMemory()
         {
-            Con.DPrint( "Clearing memory\n" );
+            QConsole.DPrint( "Clearing memory\n" );
 
             Mod.ClearAll();
             QClient.cls.signon = 0;
@@ -146,7 +130,7 @@ namespace SharpQuake
         public static void ServerFrame()
         {
             // run the world state
-            progs.GlobalStruct.frametime = (float)host.FrameTime;
+            progs.GlobalStruct.frametime = (float) QHost.FrameTime;
 
             // set the time and clear the general datagram
             server.ClearDatagram();
@@ -159,7 +143,7 @@ namespace SharpQuake
 
             // move things around and think
             // always pause in single player if in console or menus
-            if( !server.sv.paused && ( server.svs.maxclients > 1 || Key.Destination == keydest_t.key_game ) )
+            if( !server.sv.paused && ( server.svs.maxclients > 1 || QKey.Destination == QKeyDest.Game ) )
                 server.Physics();
 
             // send all messages to the clients
@@ -179,20 +163,20 @@ namespace SharpQuake
             QCommon.Init( parms.basedir, parms.argv );
             InitLocal();
             wad.LoadWadFile( "gfx.wad" );
-            Key.Init();
-            Con.Init();
+            QKey.Init();
+            QConsole.Init();
             menu.Init();
             progs.Init();
             Mod.Init();
             net.Init();
             server.Init();
 
-            //Con.Print("Exe: "__TIME__" "__DATE__"\n");
-            //Con.Print("%4.1f megabyte heap\n",parms->memsize/ (1024*1024.0));
+            //QConsole.Print("Exe: "__TIME__" "__DATE__"\n");
+            //QConsole.Print("%4.1f megabyte heap\n",parms->memsize/ (1024*1024.0));
 
-            render.InitTextures();		// needed even for dedicated servers
+            render.InitTextures(); // needed even for dedicated servers
 
-            if( QClient.cls.state != ServerType.DEDICATED )
+            if( QClient.cls.state != QServerType.DEDICATED )
             {
                 _BasePal = QCommon.LoadFile( "gfx/palette.lmp" );
                 if( _BasePal == null )
@@ -202,9 +186,9 @@ namespace SharpQuake
                     sys.Error( "Couldn't load gfx/colormap.lmp" );
 
                 // on non win32, mouse comes before video for security reasons
-                input.Init();
+                QInput.Init();
                 vid.Init( _BasePal );
-                Drawer.Init();
+                QGLDraw.Init();
                 Scr.Init();
                 render.Init();
                 QSound.Init();
@@ -217,7 +201,7 @@ namespace SharpQuake
 
             _IsInitialized = true;
 
-            Con.DPrint( "========Quake Initialized=========\n" );
+            QConsole.DPrint( "========Quake Initialized=========\n" );
         }
 
         /// <summary>
@@ -239,34 +223,33 @@ namespace SharpQuake
                 QCDAudio.Shutdown();
                 net.Shutdown();
                 QSound.Shutdown();
-                input.Shutdown();
+                QInput.Shutdown();
 
                 if( _VcrWriter != null )
                 {
-                    Con.Print( "Closing vcrfile.\n" );
+                    QConsole.Print( "Closing vcrfile.\n" );
                     _VcrWriter.Close();
                     _VcrWriter = null;
                 }
+
                 if( _VcrReader != null )
                 {
-                    Con.Print( "Closing vcrfile.\n" );
+                    QConsole.Print( "Closing vcrfile.\n" );
                     _VcrReader.Close();
                     _VcrReader = null;
                 }
 
-                if( QClient.cls.state != ServerType.DEDICATED )
+                if( QClient.cls.state != QServerType.DEDICATED )
                 {
                     vid.Shutdown();
                 }
 
-                Con.Shutdown();
+                QConsole.Shutdown();
             }
             finally
             {
                 _ShutdownDepth--;
             }
-            
-            
         }
 
         /// <summary>
@@ -281,16 +264,16 @@ namespace SharpQuake
                 if( _ErrorDepth > 1 )
                     sys.Error( "Host_Error: recursively entered. " + error, args );
 
-                Scr.EndLoadingPlaque();		// reenable screen updates
+                Scr.EndLoadingPlaque(); // reenable screen updates
 
                 string message = ( args.Length > 0 ? string.Format( error, args ) : error );
-                Con.Print( "Host_Error: {0}\n", message );
+                QConsole.Print( "Host_Error: {0}\n", message );
 
                 if( server.sv.active )
                     ShutdownServer( false );
 
-                if( QClient.cls.state == ServerType.DEDICATED )
-                    sys.Error( "Host_Error: {0}\n", message );	// dedicated servers exit
+                if( QClient.cls.state == QServerType.DEDICATED )
+                    sys.Error( "Host_Error: {0}\n", message ); // dedicated servers exit
 
                 QClient.Disconnect();
                 QClient.cls.demonum = -1;
@@ -309,20 +292,20 @@ namespace SharpQuake
         public static void EndGame( string message, params object[] args )
         {
             string str = string.Format( message, args );
-            Con.DPrint( "Host_EndGame: {0}\n", str );
+            QConsole.DPrint( "Host_EndGame: {0}\n", str );
 
             if( server.IsActive )
-                host.ShutdownServer( false );
+                QHost.ShutdownServer( false );
 
-            if( QClient.cls.state == ServerType.DEDICATED )
-                sys.Error( "Host_EndGame: {0}\n", str );	// dedicated servers exit
+            if( QClient.cls.state == QServerType.DEDICATED )
+                sys.Error( "Host_EndGame: {0}\n", str ); // dedicated servers exit
 
             if( QClient.cls.demonum != -1 )
                 QClient.NextDemo();
             else
                 QClient.Disconnect();
 
-            throw new QEndGameException();  //longjmp (host_abortserver, 1);
+            throw new QEndGameException(); //longjmp (host_abortserver, 1);
         }
 
         // Host_Frame
@@ -344,7 +327,7 @@ namespace SharpQuake
             if( _TimeCount < 1000 )
                 return;
 
-            int m = (int)( _TimeTotal * 1000 / _TimeCount );
+            int m = (int) ( _TimeTotal * 1000 / _TimeCount );
             _TimeCount = 0;
             _TimeTotal = 0;
             int c = 0;
@@ -354,7 +337,7 @@ namespace SharpQuake
                     c++;
             }
 
-            Con.Print( "serverprofile: {0,2:d} clients {1,2:d} msec\n", c, m );
+            QConsole.Print( "serverprofile: {0,2:d} clients {1,2:d} msec\n", c, m );
         }
 
         /// <summary>
@@ -380,12 +363,12 @@ namespace SharpQuake
             server.sv.active = false;
 
             // stop all QClient sounds immediately
-            if( QClient.cls.state == ServerType.CONNECTED )
+            if( QClient.cls.state == QServerType.CONNECTED )
                 QClient.Disconnect();
 
             // flush any pending messages - like the score!!!
             double start = sys.GetFloatTime();
-            int count;
+            int    count;
             do
             {
                 count = 0;
@@ -406,6 +389,7 @@ namespace SharpQuake
                         }
                     }
                 }
+
                 if( ( sys.GetFloatTime() - start ) > 3.0 )
                     break;
             }
@@ -416,7 +400,7 @@ namespace SharpQuake
             writer.WriteByte( protocol.svc_disconnect );
             count = net.SendToAll( writer, 5 );
             if( count != 0 )
-                Con.Print( "Host_ShutdownServer: NET_SendToAll failed for {0} clients\n", count );
+                QConsole.Print( "Host_ShutdownServer: NET_SendToAll failed for {0} clients\n", count );
 
             for( int i = 0; i < server.svs.maxclients; i++ )
             {
@@ -439,17 +423,17 @@ namespace SharpQuake
         /// </summary>
         private static void WriteConfiguration()
         {
-            // dedicated servers initialize the host but don't parse and set the
+            // dedicated servers initialize the QHost but don't parse and set the
             // config.cfg cvars
-            if( _IsInitialized & !host.IsDedicated )
+            if( _IsInitialized & !QHost.IsDedicated )
             {
                 string path = Path.Combine( QCommon.GameDir, "config.cfg" );
                 using( FileStream fs = sys.FileOpenWrite( path, true ) )
                 {
                     if( fs != null )
                     {
-                        Key.WriteBindings( fs );
-                        cvar.WriteVariables( fs );
+                        QKey.WriteBindings( fs );
+                        QCVar.WriteVariables( fs );
                     }
                 }
             }
@@ -462,26 +446,26 @@ namespace SharpQuake
 
             if( _Sys_TickRate == null )
             {
-                _Sys_TickRate = new cvar( "sys_ticrate", "0.05" );
-                _Developer = new cvar( "developer", "0" );
-                _FrameRate = new cvar( "host_framerate", "0" ); // set for slow motion
-                _Speeds = new cvar( "host_speeds", "0" );	// set for running times
-                _ServerProfile = new cvar( "serverprofile", "0" );
-                _FragLimit = new cvar( "fraglimit", "0", false, true );
-                _TimeLimit = new cvar( "timelimit", "0", false, true );
-                _Teamplay = new cvar( "teamplay", "0", false, true );
-                _SameLevel = new cvar( "samelevel", "0" );
-                _NoExit = new cvar( "noexit", "0", false, true );
-                _Skill = new cvar( "skill", "1" ); // 0 - 3
-                _Deathmatch = new cvar( "deathmatch", "0" ); // 0, 1, or 2
-                _Coop = new cvar( "coop", "0" ); // 0 or 1
-                _Pausable = new cvar( "pausable", "1" );
-                _Temp1 = new cvar( "temp1", "0" );
+                _Sys_TickRate  = new QCVar( "sys_ticrate",    "0.05" );
+                _Developer     = new QCVar( "developer",      "0" );
+                _FrameRate     = new QCVar( "host_framerate", "0" ); // set for slow motion
+                _Speeds        = new QCVar( "host_speeds",    "0" ); // set for running times
+                _ServerProfile = new QCVar( "serverprofile",  "0" );
+                _FragLimit     = new QCVar( "fraglimit",      "0", false, true );
+                _TimeLimit     = new QCVar( "timelimit",      "0", false, true );
+                _Teamplay      = new QCVar( "teamplay",       "0", false, true );
+                _SameLevel     = new QCVar( "samelevel",      "0" );
+                _NoExit        = new QCVar( "noexit",         "0", false, true );
+                _Skill         = new QCVar( "skill",          "1" ); // 0 - 3
+                _Deathmatch    = new QCVar( "deathmatch",     "0" ); // 0, 1, or 2
+                _Coop          = new QCVar( "coop",           "0" ); // 0 or 1
+                _Pausable      = new QCVar( "pausable",       "1" );
+                _Temp1         = new QCVar( "temp1",          "0" );
             }
 
             FindMaxClients();
 
-            _Time = 1.0;		// so a think at time 0 won't get called
+            _Time = 1.0; // so a think at time 0 won't get called
         }
 
         /// <summary>
@@ -490,14 +474,14 @@ namespace SharpQuake
         private static void FindMaxClients()
         {
             server_static_t svs = server.svs;
-            QStaticClient cls = QClient.cls;
+            QStaticClient   cls = QClient.cls;
 
             svs.maxclients = 1;
 
             int i = QCommon.CheckParm( "-dedicated" );
             if( i > 0 )
             {
-                cls.state = ServerType.DEDICATED;
+                cls.state = QServerType.DEDICATED;
                 if( i != ( QCommon.Argc - 1 ) )
                 {
                     svs.maxclients = QCommon.atoi( QCommon.Argv( i + 1 ) );
@@ -506,18 +490,19 @@ namespace SharpQuake
                     svs.maxclients = 8;
             }
             else
-                cls.state = ServerType.DISCONNECTED;
+                cls.state = QServerType.DISCONNECTED;
 
             i = QCommon.CheckParm( "-listen" );
             if( i > 0 )
             {
-                if( cls.state == ServerType.DEDICATED )
+                if( cls.state == QServerType.DEDICATED )
                     sys.Error( "Only one of -dedicated or -listen can be specified" );
                 if( i != ( QCommon.Argc - 1 ) )
                     svs.maxclients = QCommon.atoi( QCommon.Argv( i + 1 ) );
                 else
                     svs.maxclients = 8;
             }
+
             if( svs.maxclients < 1 )
                 svs.maxclients = 8;
             else if( svs.maxclients > QDef.MAX_SCOREBOARD )
@@ -531,9 +516,9 @@ namespace SharpQuake
                 svs.clients[i] = new client_t();
 
             if( svs.maxclients > 1 )
-                cvar.Set( "deathmatch", 1.0f );
+                QCVar.Set( "deathmatch", 1.0f );
             else
-                cvar.Set( "deathmatch", 0.0f );
+                QCVar.Set( "deathmatch", 0.0f );
         }
 
         private static void InitVCR( quakeparms_t parms )
@@ -548,11 +533,11 @@ namespace SharpQuake
                     sys.Error( "playback file not found\n" );
 
                 _VcrReader = new BinaryReader( file, Encoding.ASCII );
-                int signature = _VcrReader.ReadInt32();  //Sys_FileRead(vcrFile, &i, sizeof(int));
-                if( signature != host.VCR_SIGNATURE )
+                int signature = _VcrReader.ReadInt32(); //Sys_FileRead(vcrFile, &i, sizeof(int));
+                if( signature != QHost.VCR_SIGNATURE )
                     sys.Error( "Invalid signature in vcr file\n" );
 
-                int argc = _VcrReader.ReadInt32(); // Sys_FileRead(vcrFile, &com_argc, sizeof(int));
+                int      argc = _VcrReader.ReadInt32(); // Sys_FileRead(vcrFile, &com_argc, sizeof(int));
                 string[] argv = new string[argc + 1];
                 argv[0] = parms.argv[0];
 
@@ -560,8 +545,9 @@ namespace SharpQuake
                 {
                     argv[i] = sys.ReadString( _VcrReader );
                 }
+
                 QCommon.Args = argv;
-                parms.argv = argv;
+                parms.argv   = argv;
             }
 
             int n = QCommon.CheckParm( "-record" );
@@ -579,6 +565,7 @@ namespace SharpQuake
                         sys.WriteString( _VcrWriter, "-playback" );
                         continue;
                     }
+
                     sys.WriteString( _VcrWriter, QCommon.Argv( i ) );
                 }
             }
@@ -594,13 +581,13 @@ namespace SharpQuake
 
             // decide the simulation time
             if( !FilterTime( time ) )
-                return;			// don't run too fast, or packets will flood out
+                return; // don't run too fast, or packets will flood out
 
             // get new key events
             sys.SendKeyEvents();
 
             // allow mice or other external controllers to add commands
-            input.Commands();
+            QInput.Commands();
 
             // process console commands
             QCommandBuffer.Execute();
@@ -617,7 +604,7 @@ namespace SharpQuake
             //
             //-------------------
 
-            // check for commands typed to the host
+            // check for commands typed to the QHost
             GetConsoleCommands();
 
             if( server.sv.active )
@@ -637,7 +624,7 @@ namespace SharpQuake
             _Time += FrameTime;
 
             // fetch results from server
-            if( QClient.cls.state == ServerType.CONNECTED )
+            if( QClient.cls.state == QServerType.CONNECTED )
             {
                 QClient.ReadFromServer();
             }
@@ -664,11 +651,11 @@ namespace SharpQuake
 
             if( Math.Abs( _Speeds.Value ) > 0.001f )
             {
-                int pass1 = (int)( ( _Time1 - _Time3 ) * 1000 );
+                int pass1 = (int) ( ( _Time1 - _Time3 ) * 1000 );
                 _Time3 = sys.GetFloatTime();
-                int pass2 = (int)( ( _Time2 - _Time1 ) * 1000 );
-                int pass3 = (int)( ( _Time3 - _Time2 ) * 1000 );
-                Con.Print( "{0,3} tot {1,3} server {2,3} gfx {3,3} QSound\n", pass1 + pass2 + pass3, pass1, pass2, pass3 );
+                int pass2 = (int) ( ( _Time2 - _Time1 ) * 1000 );
+                int pass3 = (int) ( ( _Time3 - _Time2 ) * 1000 );
+                QConsole.Print( "{0,3} tot {1,3} server {2,3} gfx {3,3} QSound\n", pass1 + pass2 + pass3, pass1, pass2, pass3 );
             }
 
             _FrameCount++;
@@ -680,18 +667,19 @@ namespace SharpQuake
         /// </summary>
         private static bool FilterTime( double time )
         {
-            host.RealTime += time;
+            QHost.RealTime += time;
 
             if( !QClient.cls.timedemo && RealTime - _OldRealTime < 1.0 / 72.0 )
-                return false;	// framerate is too high
+                return false; // framerate is too high
 
-            FrameTime = RealTime - _OldRealTime;
+            FrameTime    = RealTime - _OldRealTime;
             _OldRealTime = RealTime;
 
             if( _FrameRate.Value > 0 )
                 FrameTime = _FrameRate.Value;
             else
-            {	// don't allow really long or short frames
+            {
+                // don't allow really long or short frames
                 if( FrameTime > 0.1 )
                     FrameTime = 0.1;
                 if( FrameTime < 0.001 )

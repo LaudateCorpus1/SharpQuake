@@ -33,25 +33,25 @@ namespace SharpQuake
 
             if( _Name == null )
             {
-                _Name          = new cvar( "_cl_name",         "player", true );
-                _Color         = new cvar( "_cl_color",        "0",      true );
-                _ShowNet       = new cvar( "cl_shownet",       "0" ); // can be 0, 1, or 2
-                _NoLerp        = new cvar( "cl_nolerp",        "0" );
-                _LookSpring    = new cvar( "lookspring",       "0",     true );
-                _LookStrafe    = new cvar( "lookstrafe",       "0",     true );
-                _Sensitivity   = new cvar( "sensitivity",      "3",     true );
-                _MPitch        = new cvar( "m_pitch",          "0.022", true );
-                _MYaw          = new cvar( "m_yaw",            "0.022", true );
-                _MForward      = new cvar( "m_forward",        "1",     true );
-                _MSide         = new cvar( "m_side",           "0.8",   true );
-                _UpSpeed       = new cvar( "cl_upspeed",       "200" );
-                _ForwardSpeed  = new cvar( "cl_forwardspeed",  "200", true );
-                _BackSpeed     = new cvar( "cl_backspeed",     "200", true );
-                _SideSpeed     = new cvar( "cl_sidespeed",     "350" );
-                _MoveSpeedKey  = new cvar( "cl_movespeedkey",  "2.0" );
-                _YawSpeed      = new cvar( "cl_yawspeed",      "140" );
-                _PitchSpeed    = new cvar( "cl_pitchspeed",    "150" );
-                _AngleSpeedKey = new cvar( "cl_anglespeedkey", "1.5" );
+                _Name          = new QCVar( "_cl_name",         "player", true );
+                _Color         = new QCVar( "_cl_color",        "0",      true );
+                _ShowNet       = new QCVar( "cl_shownet",       "0" ); // can be 0, 1, or 2
+                _NoLerp        = new QCVar( "cl_nolerp",        "0" );
+                _LookSpring    = new QCVar( "lookspring",       "0",     true );
+                _LookStrafe    = new QCVar( "lookstrafe",       "0",     true );
+                _Sensitivity   = new QCVar( "sensitivity",      "3",     true );
+                _MPitch        = new QCVar( "m_pitch",          "0.022", true );
+                _MYaw          = new QCVar( "m_yaw",            "0.022", true );
+                _MForward      = new QCVar( "m_forward",        "1",     true );
+                _MSide         = new QCVar( "m_side",           "0.8",   true );
+                _UpSpeed       = new QCVar( "cl_upspeed",       "200" );
+                _ForwardSpeed  = new QCVar( "cl_forwardspeed",  "200", true );
+                _BackSpeed     = new QCVar( "cl_backspeed",     "200", true );
+                _SideSpeed     = new QCVar( "cl_sidespeed",     "350" );
+                _MoveSpeedKey  = new QCVar( "cl_movespeedkey",  "2.0" );
+                _YawSpeed      = new QCVar( "cl_yawspeed",      "140" );
+                _PitchSpeed    = new QCVar( "cl_pitchspeed",    "150" );
+                _AngleSpeedKey = new QCVar( "cl_anglespeedkey", "1.5" );
             }
 
             for( int i = 0; i < _EFrags.Length; i++ )
@@ -82,7 +82,7 @@ namespace SharpQuake
         /// </summary>
         public static void EstablishConnection( string host )
         {
-            if( cls.state == ServerType.DEDICATED )
+            if( cls.state == QServerType.DEDICATED )
                 return;
 
             if( cls.demoplayback )
@@ -92,12 +92,12 @@ namespace SharpQuake
 
             cls.netcon = net.Connect( host );
             if( cls.netcon == null )
-                SharpQuake.host.Error( "CL_Connect: connect failed\n" );
+                SharpQuake.QHost.Error( "CL_Connect: connect failed\n" );
 
-            Con.DPrint( "CL_EstablishConnection: connected to {0}\n", host );
+            QConsole.DPrint( "CL_EstablishConnection: connected to {0}\n", host );
 
             cls.demonum = -1; // not in the demo loop now
-            cls.state   = ServerType.CONNECTED;
+            cls.state   = QServerType.CONNECTED;
             cls.signon  = 0; // need all the signon messages before playing
         }
 
@@ -118,7 +118,7 @@ namespace SharpQuake
                 cls.demonum = 0;
                 if( string.IsNullOrEmpty( cls.demos[cls.demonum] ) )
                 {
-                    Con.Print( "No demos listed with startdemos\n" );
+                    QConsole.Print( "No demos listed with startdemos\n" );
                     cls.demonum = -1;
                     return;
                 }
@@ -193,13 +193,13 @@ namespace SharpQuake
         {
             Disconnect();
             if( server.IsActive )
-                host.ShutdownServer( false );
+                QHost.ShutdownServer( false );
         }
 
         // CL_SendCmd
         public static void SendCmd()
         {
-            if( cls.state != ServerType.CONNECTED )
+            if( cls.state != QServerType.CONNECTED )
                 return;
 
             if( cls.signon == SIGNONS )
@@ -210,7 +210,7 @@ namespace SharpQuake
                 BaseMove( ref cmd );
 
                 // allow mice or other external controllers to add to the move
-                input.Move( cmd );
+                QInput.Move( cmd );
 
                 // send the unreliable message
                 QClient.SendMove( ref cmd );
@@ -228,12 +228,12 @@ namespace SharpQuake
 
             if( !net.CanSendMessage( cls.netcon ) )
             {
-                Con.DPrint( "CL_WriteToServer: can't send\n" );
+                QConsole.DPrint( "CL_WriteToServer: can't send\n" );
                 return;
             }
 
             if( net.SendMessage( cls.netcon, cls.message ) == -1 )
-                host.Error( "CL_WriteToServer: lost server connection" );
+                QHost.Error( "CL_WriteToServer: lost server connection" );
 
             cls.message.Clear();
         }
@@ -244,24 +244,24 @@ namespace SharpQuake
         public static int ReadFromServer()
         {
             cl.oldtime =  cl.time;
-            cl.time    += host.FrameTime;
+            cl.time    += QHost.FrameTime;
 
             int ret;
             do
             {
                 ret = GetMessage();
                 if( ret == -1 )
-                    host.Error( "CL_ReadFromServer: lost server connection" );
+                    QHost.Error( "CL_ReadFromServer: lost server connection" );
                 if( ret == 0 )
                     break;
 
-                cl.last_received_message = (float) host.RealTime;
+                cl.last_received_message = (float) QHost.RealTime;
                 ParseServerMessage();
             }
-            while( ret != 0 && cls.state == ServerType.CONNECTED );
+            while( ret != 0 && cls.state == QServerType.CONNECTED );
 
             if( Math.Abs( _ShowNet.Value ) > 0.001f )
-                Con.Print( "\n" );
+                QConsole.Print( "\n" );
 
             //
             // bring the links up to date
@@ -289,21 +289,21 @@ namespace SharpQuake
             // if running a local server, shut it down
             if( cls.demoplayback )
                 StopPlayback();
-            else if( cls.state == ServerType.CONNECTED )
+            else if( cls.state == QServerType.CONNECTED )
             {
                 if( cls.demorecording )
                     Stop_f();
 
-                Con.DPrint( "Sending clc_disconnect\n" );
+                QConsole.DPrint( "Sending clc_disconnect\n" );
                 cls.message.Clear();
                 cls.message.WriteByte( protocol.clc_disconnect );
                 net.SendUnreliableMessage( cls.netcon, cls.message );
                 cls.message.Clear();
                 net.Close( cls.netcon );
 
-                cls.state = ServerType.DISCONNECTED;
+                cls.state = QServerType.DISCONNECTED;
                 if( server.sv.active )
-                    host.ShutdownServer( false );
+                    QHost.ShutdownServer( false );
             }
 
             cls.demoplayback = cls.timedemo = false;
@@ -316,14 +316,14 @@ namespace SharpQuake
             for( int i = 0; i < _State.num_entities; i++ )
             {
                 entity_t ent = _Entities[i];
-                Con.Print( "{0:d3}:", i );
+                QConsole.Print( "{0:d3}:", i );
                 if( ent.model == null )
                 {
-                    Con.Print( "EMPTY\n" );
+                    QConsole.Print( "EMPTY\n" );
                     continue;
                 }
 
-                Con.Print( "{0}:{1:d2}  ({2}) [{3}]\n", ent.model.name, ent.frame, ent.origin, ent.angles );
+                QConsole.Print( "{0}:{1:d2}  ({2}) [{3}]\n", ent.model.name, ent.frame, ent.origin, ent.angles );
             }
         }
 
@@ -399,10 +399,10 @@ namespace SharpQuake
                 if( ( ent.model.flags & EF.EF_ROTATE ) != 0 )
                     ent.angles.Y = bobjrotate;
 
-                if( ( ent.effects & EntityEffects.EF_BRIGHTFIELD ) != 0 )
+                if( ( ent.effects & QEntityEffects.EF_BRIGHTFIELD ) != 0 )
                     render.EntityParticles( ent );
 
-                if( ( ent.effects & EntityEffects.EF_MUZZLEFLASH ) != 0 )
+                if( ( ent.effects & QEntityEffects.EF_MUZZLEFLASH ) != 0 )
                 {
                     QDynamicLight dl = AllocDlight( i );
                     dl.origin   =  ent.origin;
@@ -415,7 +415,7 @@ namespace SharpQuake
                     dl.die      =  (float) cl.time + 0.1f;
                 }
 
-                if( ( ent.effects & EntityEffects.EF_BRIGHTLIGHT ) != 0 )
+                if( ( ent.effects & QEntityEffects.EF_BRIGHTLIGHT ) != 0 )
                 {
                     QDynamicLight dl = AllocDlight( i );
                     dl.origin   =  ent.origin;
@@ -424,7 +424,7 @@ namespace SharpQuake
                     dl.die      =  (float) cl.time + 0.001f;
                 }
 
-                if( ( ent.effects & EntityEffects.EF_DIMLIGHT ) != 0 )
+                if( ( ent.effects & QEntityEffects.EF_DIMLIGHT ) != 0 )
                 {
                     QDynamicLight dl = AllocDlight( i );
                     dl.origin = ent.origin;
@@ -473,7 +473,7 @@ namespace SharpQuake
         /// </summary>
         private static void SignonReply()
         {
-            Con.DPrint( "CL_SignonReply: {0}\n", cls.signon );
+            QConsole.DPrint( "CL_SignonReply: {0}\n", cls.signon );
 
             switch( cls.signon )
             {
@@ -484,10 +484,10 @@ namespace SharpQuake
 
                 case 2:
                     cls.message.WriteByte( protocol.clc_stringcmd );
-                    cls.message.WriteString( String.Format( "name \"{0}\"\n", _Name.String ) );
+                    cls.message.WriteString( string.Format( "name \"{0}\"\n", _Name.String ) );
 
                     cls.message.WriteByte( protocol.clc_stringcmd );
-                    cls.message.WriteString( String.Format( "color {0} {1}\n", ( (int) _Color.Value ) >> 4, ( (int) _Color.Value ) & 15 ) );
+                    cls.message.WriteString( string.Format( "color {0} {1}\n", ( (int) _Color.Value ) >> 4, ( (int) _Color.Value ) & 15 ) );
 
                     cls.message.WriteByte( protocol.clc_stringcmd );
                     cls.message.WriteString( "spawn " + cls.spawnparms );
@@ -511,7 +511,7 @@ namespace SharpQuake
         private static void ClearState()
         {
             if( !server.sv.active )
-                host.ClearMemory();
+                QHost.ClearMemory();
 
             // wipe the entire cl structure
             _State.Clear();

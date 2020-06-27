@@ -367,11 +367,11 @@ namespace SharpQuake
         private static void PF_error()
         {
             string s = PF_VarString( 0 );
-            Con.Print( "======SERVER ERROR in {0}:\n{1}\n",
+            QConsole.Print( "======SERVER ERROR in {0}:\n{1}\n",
                 progs.GetString( progs.xFunction.s_name ), s );
             edict_t ed = server.ProgToEdict( progs.GlobalStruct.self );
             progs.Print( ed );
-            host.Error( "Program error" );
+            QHost.Error( "Program error" );
         }
 
         /*
@@ -388,12 +388,12 @@ namespace SharpQuake
         private static void PF_objerror()
         {
             string s = PF_VarString( 0 );
-            Con.Print( "======OBJECT ERROR in {0}:\n{1}\n",
+            QConsole.Print( "======OBJECT ERROR in {0}:\n{1}\n",
                 GetString( progs.xFunction.s_name ), s );
             edict_t ed = server.ProgToEdict( progs.GlobalStruct.self );
             progs.Print( ed );
             server.FreeEdict( ed );
-            host.Error( "Program error" );
+            QHost.Error( "Program error" );
         }
 
         /*
@@ -589,7 +589,7 @@ namespace SharpQuake
 
             if( entnum < 1 || entnum > server.svs.maxclients )
             {
-                Con.Print( "tried to sprint to a non-QClient\n" );
+                QConsole.Print( "tried to sprint to a non-QClient\n" );
                 return;
             }
 
@@ -616,7 +616,7 @@ namespace SharpQuake
 
             if( entnum < 1 || entnum > server.svs.maxclients )
             {
-                Con.Print( "tried to centerprint to a non-QClient\n" );
+                QConsole.Print( "tried to centerprint to a non-QClient\n" );
                 return;
             }
 
@@ -791,7 +791,7 @@ namespace SharpQuake
                 }
             }
 
-            Con.Print( "no precache: {0}\n", samp );
+            QConsole.Print( "no precache: {0}\n", samp );
         }
 
         /*
@@ -831,7 +831,7 @@ namespace SharpQuake
 
         private static void PF_break()
         {
-            Con.Print( "break statement\n" );
+            QConsole.Print( "break statement\n" );
             //*(int *)-4 = 0;	// dump to debugger
         }
 
@@ -992,10 +992,10 @@ namespace SharpQuake
                 progs.RunError( "Parm 0 not a QClient" );
             string str = GetString( OFS.OFS_PARM1 );
 
-            client_t old = host.HostClient;
-            host.HostClient = server.svs.clients[entnum - 1];
-            host.ClientCommands( "{0}", str );
-            host.HostClient = old;
+            client_t old = QHost.HostClient;
+            QHost.HostClient = server.svs.clients[entnum - 1];
+            QHost.ClientCommands( "{0}", str );
+            QHost.HostClient = old;
         }
 
         /// <summary>
@@ -1013,27 +1013,27 @@ namespace SharpQuake
         =================
         PF_cvar
 
-        float cvar (string)
+        float QCVar (string)
         =================
         */
 
         private static void PF_cvar()
         {
             string str = GetString( OFS.OFS_PARM0 );
-            ReturnFloat( cvar.GetValue( str ) );
+            ReturnFloat( QCVar.GetValue( str ) );
         }
 
         /*
         =================
         PF_cvar_set
 
-        float cvar (string)
+        float QCVar (string)
         =================
         */
 
         private static void PF_cvar_set()
         {
-            cvar.Set( GetString( OFS.OFS_PARM0 ), GetString( OFS.OFS_PARM1 ) );
+            QCVar.Set( GetString( OFS.OFS_PARM0 ), GetString( OFS.OFS_PARM1 ) );
         }
 
         /*
@@ -1084,7 +1084,7 @@ namespace SharpQuake
 
         private static void PF_dprint()
         {
-            Con.DPrint( PF_VarString( 0 ) );
+            QConsole.DPrint( PF_VarString( 0 ) );
         }
 
         private static void PF_ftos()
@@ -1092,9 +1092,9 @@ namespace SharpQuake
             float v = GetFloat( OFS.OFS_PARM0 );
 
             if( v == (int)v )
-                SetTempString( String.Format( "{0}", (int)v ) );
+                SetTempString( string.Format( "{0}", (int)v ) );
             else
-                SetTempString( String.Format( "{0:F1}", v ) ); //  sprintf(pr_string_temp, "%5.1f", v);
+                SetTempString( string.Format( "{0:F1}", v ) ); //  sprintf(pr_string_temp, "%5.1f", v);
             ReturnInt( _TempString );
         }
 
@@ -1107,7 +1107,7 @@ namespace SharpQuake
         private static unsafe void PF_vtos()
         {
             float* v = GetVector( OFS.OFS_PARM0 );
-            SetTempString( String.Format( "'{0,5:F1} {1,5:F1} {2,5:F1}'", v[0], v[1], v[2] ) );
+            SetTempString( string.Format( "'{0,5:F1} {1,5:F1} {2,5:F1}'", v[0], v[1], v[2] ) );
             ReturnInt( _TempString );
         }
 
@@ -1141,7 +1141,7 @@ namespace SharpQuake
                 if( ed.free )
                     continue;
                 string t = progs.GetString( ed.GetInt( f ) ); // E_STRING(ed, f);
-                if( String.IsNullOrEmpty( t ) )
+                if( string.IsNullOrEmpty( t ) )
                     continue;
                 if( t == s )
                 {
@@ -1419,7 +1419,7 @@ namespace SharpQuake
             Vector3 end = start + dir * 2048;
             trace_t tr = server.Move( ref start, ref QCommon.ZeroVector, ref QCommon.ZeroVector, ref end, 0, ent );
             if( tr.ent != null && tr.ent.v.takedamage == Damages.DAMAGE_AIM &&
-                ( host.TeamPlay == 0 || ent.v.team <= 0 || ent.v.team != tr.ent.v.team ) )
+                ( QHost.TeamPlay == 0 || ent.v.team <= 0 || ent.v.team != tr.ent.v.team ) )
             {
                 ReturnVector( ref progs.GlobalStruct.v_forward );
                 return;
@@ -1437,7 +1437,7 @@ namespace SharpQuake
                     continue;
                 if( check == ent )
                     continue;
-                if( host.TeamPlay != 0 && ent.v.team > 0 && ent.v.team == check.v.team )
+                if( QHost.TeamPlay != 0 && ent.v.team > 0 && ent.v.team == check.v.team )
                     continue;	// don't aim at teammate
 
                 v3f tmp;
@@ -1576,7 +1576,7 @@ namespace SharpQuake
             server.svs.changelevel_issued = true;
 
             string s = GetString( OFS.OFS_PARM0 );
-            QCommandBuffer.AddText( String.Format( "changelevel {0}\n", s ) );
+            QCommandBuffer.AddText( string.Format( "changelevel {0}\n", s ) );
         }
 
         private static void PF_Fixme()

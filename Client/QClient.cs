@@ -76,25 +76,25 @@ namespace SharpQuake
         private static QLightStyle[]   _LightStyle     = new QLightStyle[QDef.MAX_LIGHTSTYLES]; // cl_lightstyle
         private static QDynamicLight[] _DLights        = new QDynamicLight[MAX_DLIGHTS];        // cl_dlights
 
-        private static cvar _Name;          // = { "_cl_name", "player", true };
-        private static cvar _Color;         // = { "_cl_color", "0", true };
-        private static cvar _ShowNet;       // = { "cl_shownet", "0" };	// can be 0, 1, or 2
-        private static cvar _NoLerp;        // = { "cl_nolerp", "0" };
-        private static cvar _LookSpring;    // = { "lookspring", "0", true };
-        private static cvar _LookStrafe;    // = { "lookstrafe", "0", true };
-        private static cvar _Sensitivity;   // = { "sensitivity", "3", true };
-        private static cvar _MPitch;        // = { "m_pitch", "0.022", true };
-        private static cvar _MYaw;          // = { "m_yaw", "0.022", true };
-        private static cvar _MForward;      // = { "m_forward", "1", true };
-        private static cvar _MSide;         // = { "m_side", "0.8", true };
-        private static cvar _UpSpeed;       // = { "cl_upspeed", "200" };
-        private static cvar _ForwardSpeed;  // = { "cl_forwardspeed", "200", true };
-        private static cvar _BackSpeed;     // = { "cl_backspeed", "200", true };
-        private static cvar _SideSpeed;     // = { "cl_sidespeed", "350" };
-        private static cvar _MoveSpeedKey;  // = { "cl_movespeedkey", "2.0" };
-        private static cvar _YawSpeed;      // = { "cl_yawspeed", "140" };
-        private static cvar _PitchSpeed;    // = { "cl_pitchspeed", "150" };
-        private static cvar _AngleSpeedKey; // = { "cl_anglespeedkey", "1.5" };
+        private static QCVar _Name;          // = { "_cl_name", "player", true };
+        private static QCVar _Color;         // = { "_cl_color", "0", true };
+        private static QCVar _ShowNet;       // = { "cl_shownet", "0" };	// can be 0, 1, or 2
+        private static QCVar _NoLerp;        // = { "cl_nolerp", "0" };
+        private static QCVar _LookSpring;    // = { "lookspring", "0", true };
+        private static QCVar _LookStrafe;    // = { "lookstrafe", "0", true };
+        private static QCVar _Sensitivity;   // = { "sensitivity", "3", true };
+        private static QCVar _MPitch;        // = { "m_pitch", "0.022", true };
+        private static QCVar _MYaw;          // = { "m_yaw", "0.022", true };
+        private static QCVar _MForward;      // = { "m_forward", "1", true };
+        private static QCVar _MSide;         // = { "m_side", "0.8", true };
+        private static QCVar _UpSpeed;       // = { "cl_upspeed", "200" };
+        private static QCVar _ForwardSpeed;  // = { "cl_forwardspeed", "200", true };
+        private static QCVar _BackSpeed;     // = { "cl_backspeed", "200", true };
+        private static QCVar _SideSpeed;     // = { "cl_sidespeed", "350" };
+        private static QCVar _MoveSpeedKey;  // = { "cl_movespeedkey", "2.0" };
+        private static QCVar _YawSpeed;      // = { "cl_yawspeed", "140" };
+        private static QCVar _PitchSpeed;    // = { "cl_pitchspeed", "150" };
+        private static QCVar _AngleSpeedKey; // = { "cl_anglespeedkey", "1.5" };
 
         private static entity_t[] _VisEdicts = new entity_t[MAX_VISEDICTS]; // cl_visedicts[MAX_VISEDICTS]
     }

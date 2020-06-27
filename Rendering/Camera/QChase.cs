@@ -33,10 +33,10 @@ namespace SharpQuake
         /// </summary>
         public static bool IsActive => ( Math.Abs( _Active.Value ) > 0.001f ); // fix code improvement warning for possible floating point precision problems
 
-        private static cvar _Back;// = { "chase_back", "100" };
-        private static cvar _Up;// = { "chase_up", "16" };
-        private static cvar _Right;// = { "chase_right", "0" };
-        private static cvar _Active;// = { "chase_active", "0" };
+        private static QCVar _Back;// = { "chase_back", "100" };
+        private static QCVar _Up;// = { "chase_up", "16" };
+        private static QCVar _Right;// = { "chase_right", "0" };
+        private static QCVar _Active;// = { "chase_active", "0" };
         private static Vector3 _Dest;
 
         // Chase_Init
@@ -44,10 +44,10 @@ namespace SharpQuake
         {
             if( _Back == null )
             {
-                _Back = new cvar( "chase_back", "100" );
-                _Up = new cvar( "chase_up", "16" );
-                _Right = new cvar( "chase_right", "0" );
-                _Active = new cvar( "chase_active", "0" );
+                _Back = new QCVar( "chase_back", "100" );
+                _Up = new QCVar( "chase_up", "16" );
+                _Right = new QCVar( "chase_right", "0" );
+                _Active = new QCVar( "chase_active", "0" );
             }
         }
 

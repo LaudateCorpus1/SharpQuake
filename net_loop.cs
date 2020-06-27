@@ -51,7 +51,7 @@ namespace SharpQuake
 
         public void Init()
         {
-            if( QClient.cls.state == ServerType.DEDICATED )
+            if( QClient.cls.state == QServerType.DEDICATED )
                 return;// -1;
 
             _IsInitialized = true;
@@ -92,7 +92,7 @@ namespace SharpQuake
                 _Client = net.NewSocket();
                 if( _Client == null )
                 {
-                    Con.Print( "Loop_Connect: no qsocket available\n" );
+                    QConsole.Print( "Loop_Connect: no qsocket available\n" );
                     return null;
                 }
                 _Client.address = "localhost";
@@ -105,7 +105,7 @@ namespace SharpQuake
                 _Server = net.NewSocket();
                 if( _Server == null )
                 {
-                    Con.Print( "Loop_Connect: no qsocket available\n" );
+                    QConsole.Print( "Loop_Connect: no qsocket available\n" );
                     return null;
                 }
                 _Server.address = "LOCAL";

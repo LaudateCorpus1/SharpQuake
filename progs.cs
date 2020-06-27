@@ -213,24 +213,24 @@ namespace SharpQuake
         public v3f angles;
         public v3f avelocity;
         public v3f punchangle;
-        public string_t classname;
-        public string_t model;
+        public int classname;
+        public int model;
         public float frame;
         public float skin;
         public float effects;
         public v3f mins;
         public v3f maxs;
         public v3f size;
-        public func_t touch;
-        public func_t use;
-        public func_t think;
-        public func_t blocked;
+        public int touch;
+        public int use;
+        public int think;
+        public int blocked;
         public float nextthink;
         public int groundentity;
         public float health;
         public float frags;
         public float weapon;
-        public string_t weaponmodel;
+        public int weaponmodel;
         public float weaponframe;
         public float currentammo;
         public float ammo_shells;
@@ -249,7 +249,7 @@ namespace SharpQuake
         public float fixangle;
         public v3f v_angle;
         public float idealpitch;
-        public string_t netname;
+        public int netname;
         public int enemy;
         public float flags;
         public float colormap;
@@ -265,19 +265,19 @@ namespace SharpQuake
         public int aiment;
         public int goalentity;
         public float spawnflags;
-        public string_t target;
-        public string_t targetname;
+        public int target;
+        public int targetname;
         public float dmg_take;
         public float dmg_save;
         public int dmg_inflictor;
         public int owner;
         public v3f movedir;
-        public string_t message;
+        public int message;
         public float sounds;
-        public string_t noise;
-        public string_t noise1;
-        public string_t noise2;
-        public string_t noise3;
+        public int noise;
+        public int noise1;
+        public int noise2;
+        public int noise3;
 
         public static int SizeInBytes = Marshal.SizeOf(typeof(entvars_t));
     }
@@ -589,7 +589,7 @@ namespace SharpQuake
 
         public override string ToString()
         {
-            return String.Format( "{{{0}: {1}()}}", this.FileName, this.Name );
+            return string.Format( "{{{0}: {1}()}}", this.FileName, this.Name );
         }
     } // dfunction_t;
 
@@ -655,7 +655,7 @@ namespace SharpQuake
         public float time;
         public float frametime;
         public float force_retouch;
-        public string_t mapname;
+        public int mapname;
         public float deathmatch;
         public float coop;
         public float teamplay;
@@ -693,23 +693,23 @@ namespace SharpQuake
         public float trace_inopen;
         public float trace_inwater;
         public int msg_entity;
-        public func_t main;
-        public func_t StartFrame;
-        public func_t PlayerPreThink;
-        public func_t PlayerPostThink;
-        public func_t ClientKill;
-        public func_t ClientConnect;
-        public func_t PutClientInServer;
-        public func_t ClientDisconnect;
-        public func_t SetNewParms;
-        public func_t SetChangeParms;
+        public int main;
+        public int StartFrame;
+        public int PlayerPreThink;
+        public int PlayerPostThink;
+        public int ClientKill;
+        public int ClientConnect;
+        public int PutClientInServer;
+        public int ClientDisconnect;
+        public int SetNewParms;
+        public int SetChangeParms;
 
         public static int SizeInBytes = Marshal.SizeOf(typeof(globalvars_t));
 
         public void SetParams( float[] src )
         {
             if( src.Length < server.NUM_SPAWN_PARMS )
-                throw new ArgumentException( String.Format( "There must be {0} parameters!", server.NUM_SPAWN_PARMS ) );
+                throw new ArgumentException( string.Format( "There must be {0} parameters!", server.NUM_SPAWN_PARMS ) );
 
             this.parm1 = src[0];
             this.parm2 = src[1];

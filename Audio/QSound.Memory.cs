@@ -50,14 +50,14 @@ namespace SharpQuake
             int riff = helper.FindChunk( "RIFF", offset );
             if( riff == -1 )
             {
-                Con.Print( "Missing RIFF chunk\n" );
+                QConsole.Print( "Missing RIFF chunk\n" );
                 return info;
             }
 
             string wave = Encoding.ASCII.GetString( wav, offset + 8, 4 );
             if( wave != "WAVE" )
             {
-                Con.Print( "RIFF chunk is not WAVE\n" );
+                QConsole.Print( "RIFF chunk is not WAVE\n" );
                 return info;
             }
 
@@ -67,14 +67,14 @@ namespace SharpQuake
             int fmt = helper.FindChunk( "fmt ", offset );
             if( fmt == -1 )
             {
-                Con.Print( "Missing fmt chunk\n" );
+                QConsole.Print( "Missing fmt chunk\n" );
                 return info;
             }
 
             int format = helper.GetLittleShort( fmt + 8 );
             if( format != 1 )
             {
-                Con.Print( "Microsoft PCM format only\n" );
+                QConsole.Print( "Microsoft PCM format only\n" );
                 return info;
             }
 
@@ -108,7 +108,7 @@ namespace SharpQuake
             int data = helper.FindChunk( "data", offset );
             if( data == -1 )
             {
-                Con.Print( "Missing data chunk\n" );
+                QConsole.Print( "Missing data chunk\n" );
                 return info;
             }
 

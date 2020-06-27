@@ -1,24 +1,22 @@
-/// <copyright>
-///
-/// Rewritten in C# by Yury Kiselev, 2010.
-///
-/// Copyright (C) 1996-1997 Id Software, Inc.
-///
-/// This program is free software; you can redistribute it and/or
-/// modify it under the terms of the GNU General Public License
-/// as published by the Free Software Foundation; either version 2
-/// of the License, or (at your option) any later version.
-///
-/// This program is distributed in the hope that it will be useful,
-/// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-///
-/// See the GNU General Public License for more details.
-///
-/// You should have received a copy of the GNU General Public License
-/// along with this program; if not, write to the Free Software
-/// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-/// </copyright>
+/* Rewritten in C# by Yury Kiselev, 2010.
+ *
+ * Copyright (C) 1996-1997 Id Software, Inc.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 
 using System;
 using System.IO;
@@ -29,50 +27,42 @@ namespace SharpQuake
     /// <summary>
     /// Con_functions
     /// </summary>
-    internal static class Con
+    internal static class QConsole
     {
         public static bool IsInitialized => _IsInitialized;
 
-        public static bool ForcedUp
-        {
-            get => _ForcedUp;
-            set => _ForcedUp = value;
-        }
+        public static bool ForcedUp { get => _ForcedUp; set => _ForcedUp = value; }
 
-        public static int NotifyLines
-        {
-            get => _NotifyLines;
-            set => _NotifyLines = value;
-        }
+        public static int NotifyLines { get => _NotifyLines; set => _NotifyLines = value; }
 
         public static int TotalLines => _TotalLines;
 
-        public static int BackScroll;
-        private const string LOG_FILE_NAME = "qconsole.log";
+        public static int    BackScroll;
+        private const string LOG_FILE_NAME = "console.log";
 
-        private const int CON_TEXTSIZE = 16384;
+        private const int CON_TEXTSIZE  = 16384;
         private const int NUM_CON_TIMES = 4;
 
         private static char[] _Text = new char[CON_TEXTSIZE]; // char		*con_text=0;
-        private static int _VisLines; // con_vislines
-        private static int _TotalLines; // con_totallines   // total lines in console scrollback
+        private static int    _VisLines;                      // con_vislines
+        private static int    _TotalLines;                    // con_totallines   // total lines in console scrollback
 
         // con_backscroll		// lines up from bottom to display
         private static int _Current; // con_current		// where next message will be printed
 
-        private static int _X; // con_x		// offset in current line for next print
-        private static int _CR; // from Print()
+        private static int      _X;                                 // con_x		// offset in current line for next print
+        private static int      _CR;                                // from Print()
         private static double[] _Times = new double[NUM_CON_TIMES]; // con_times	// realtime time the line was generated
 
         // for transparent notify lines
         private static int _LineWidth; // con_linewidth
 
-        private static bool _DebugLog; // qboolean	con_debuglog;
-        private static bool _IsInitialized; // qboolean con_initialized;
-        private static bool _ForcedUp; // qboolean con_forcedup		// because no entities to refresh
-        private static int _NotifyLines; // con_notifylines	// scan lines to clear for notify lines
-        private static cvar _NotifyTime; // con_notifytime = { "con_notifytime", "3" };		//seconds
-        private static float _CursorSpeed = 4; // con_cursorspeed
+        private static bool       _DebugLog;        // qboolean	con_debuglog;
+        private static bool       _IsInitialized;   // qboolean con_initialized;
+        private static bool       _ForcedUp;        // qboolean con_forcedup		// because no entities to refresh
+        private static int        _NotifyLines;     // con_notifylines	// scan lines to clear for notify lines
+        private static QCVar       _NotifyTime;      // con_notifytime = { "con_notifytime", "3" };		//seconds
+        private static float      _CursorSpeed = 4; // con_cursorspeed
         private static FileStream _Log;
 
         // Con_CheckResize (void)
@@ -84,8 +74,8 @@ namespace SharpQuake
 
             if( width < 1 ) // video hasn't been initialized yet
             {
-                width = 38;
-                _LineWidth = width; // con_linewidth = width;
+                width       = 38;
+                _LineWidth  = width; // con_linewidth = width;
                 _TotalLines = CON_TEXTSIZE / _LineWidth;
                 QCommon.FillArray( _Text, ' ' ); // Q_memset (con_text, ' ', CON_TEXTSIZE);
             }
@@ -114,7 +104,7 @@ namespace SharpQuake
                     for( int j = 0; j < numchars; j++ )
                     {
                         _Text[( _TotalLines - 1 - i ) * _LineWidth + j] = tmp[( ( _Current - i + oldtotallines ) %
-                                      oldtotallines ) * oldwidth + j];
+                                                                                oldtotallines ) * oldwidth + j];
                     }
                 }
 
@@ -122,7 +112,7 @@ namespace SharpQuake
             }
 
             BackScroll = 0;
-            _Current = _TotalLines - 1;
+            _Current   = _TotalLines - 1;
         }
 
         // Con_Init (void)
@@ -141,20 +131,20 @@ namespace SharpQuake
             _LineWidth = -1;
             CheckResize();
 
-            Con.Print( "Console initialized.\n" );
+            QConsole.Print( "Console initialized.\n" );
 
             //
             // register our commands
             //
             if( _NotifyTime == null )
             {
-                _NotifyTime = new cvar( "con_notifytime", "3" );
+                _NotifyTime = new QCVar( "con_notifytime", "3" );
             }
 
             QCommand.Add( "toggleconsole", ToggleConsole_f );
-            QCommand.Add( "messagemode", MessageMode_f );
-            QCommand.Add( "messagemode2", MessageMode2_f );
-            QCommand.Add( "clear", Clear_f );
+            QCommand.Add( "messagemode",   MessageMode_f );
+            QCommand.Add( "messagemode2",  MessageMode2_f );
+            QCommand.Add( "clear",         Clear_f );
 
             _IsInitialized = true;
         }
@@ -162,20 +152,20 @@ namespace SharpQuake
         // Con_DrawConsole
         //
         // Draws the console with the solid background
-        // The typing input line at the bottom should only be drawn if typing is allowed
+        // The typing QInput line at the bottom should only be drawn if typing is allowed
         public static void Draw( int lines, bool drawinput )
         {
             if( lines <= 0 )
                 return;
 
             // draw the background
-            Drawer.DrawConsoleBackground( lines );
+            QGLDraw.DrawConsoleBackground( lines );
 
             // draw the text
             _VisLines = lines;
 
-            int rows = ( lines - 16 ) >> 3;		// rows of text to draw
-            int y = lines - 16 - ( rows << 3 );	// may start slightly negative
+            int rows = ( lines - 16 ) >> 3;        // rows of text to draw
+            int y    = lines - 16 - ( rows << 3 ); // may start slightly negative
 
             for( int i = _Current - rows + 1; i <= _Current; i++, y += 8 )
             {
@@ -186,10 +176,10 @@ namespace SharpQuake
                 int offset = ( j % _TotalLines ) * _LineWidth;
 
                 for( int x = 0; x < _LineWidth; x++ )
-                    Drawer.DrawCharacter( ( x + 1 ) << 3, y, _Text[offset + x] );
+                    QGLDraw.DrawCharacter( ( x + 1 ) << 3, y, _Text[offset + x] );
             }
 
-            // draw the input prompt, user text, and cursor if desired
+            // draw the QInput prompt, user text, and cursor if desired
             if( drawinput )
                 DrawInput();
         }
@@ -199,9 +189,9 @@ namespace SharpQuake
         /// </summary>
         public static void Print( string fmt, params object[] args )
         {
-            string msg = ( args.Length > 0 ? String.Format( fmt, args ) : fmt );
+            string msg = ( args.Length > 0 ? string.Format( fmt, args ) : fmt );
 
-            Console.WriteLine(msg); // Debug stuff
+            Console.WriteLine( msg ); // Debug stuff
 
             // log all messages to file
             if( _DebugLog )
@@ -210,8 +200,8 @@ namespace SharpQuake
             if( !_IsInitialized )
                 return;
 
-            if( QClient.cls.state == ServerType.DEDICATED )
-                return;		// no graphics mode
+            if( QClient.cls.state == QServerType.DEDICATED )
+                return; // no graphics mode
 
             // write it to the scrollable buffer
             Print( msg );
@@ -234,11 +224,11 @@ namespace SharpQuake
         //
         // Con_DPrintf
         //
-        // A Con_Printf that only shows up if the "developer" cvar is set
+        // A Con_Printf that only shows up if the "developer" QCVar is set
         public static void DPrint( string fmt, params object[] args )
         {
             // don't confuse non-developers with techie stuff...
-            if( host.IsDeveloper )
+            if( QHost.IsDeveloper )
                 Print( fmt, args );
         }
 
@@ -266,35 +256,36 @@ namespace SharpQuake
                 double time = _Times[i % NUM_CON_TIMES];
                 if( Math.Abs( time ) < 0.001f )
                     continue;
-                time = host.RealTime - time;
+                time = QHost.RealTime - time;
                 if( time > _NotifyTime.Value )
                     continue;
 
                 int textOffset = ( i % _TotalLines ) * _LineWidth;
 
                 Scr.ClearNotify = 0;
-                Scr.CopyTop = true;
+                Scr.CopyTop     = true;
 
                 for( int x = 0; x < _LineWidth; x++ )
-                    Drawer.DrawCharacter( ( x + 1 ) << 3, v, _Text[textOffset + x] );
+                    QGLDraw.DrawCharacter( ( x + 1 ) << 3, v, _Text[textOffset + x] );
 
                 v += 8;
             }
 
-            if( Key.Destination == keydest_t.key_message )
+            if( QKey.Destination == QKeyDest.Message )
             {
                 Scr.ClearNotify = 0;
-                Scr.CopyTop = true;
+                Scr.CopyTop     = true;
 
                 int x = 0;
 
-                Drawer.DrawString( 8, v, "say:" );
-                string chat = Key.ChatBuffer;
+                QGLDraw.DrawString( 8, v, "say:" );
+                string chat = QKey.ChatBuffer;
                 for( ; x < chat.Length; x++ )
                 {
-                    Drawer.DrawCharacter( ( x + 5 ) << 3, v, chat[x] );
+                    QGLDraw.DrawCharacter( ( x + 5 ) << 3, v, chat[x] );
                 }
-                Drawer.DrawCharacter( ( x + 5 ) << 3, v, 10 + ( (int)( host.RealTime * _CursorSpeed ) & 1 ) );
+
+                QGLDraw.DrawCharacter( ( x + 5 ) << 3, v, 10 + ( (int) ( QHost.RealTime * _CursorSpeed ) & 1 ) );
                 v += 8;
             }
 
@@ -314,13 +305,13 @@ namespace SharpQuake
         /// </summary>
         public static void ToggleConsole_f()
         {
-            if( Key.Destination == keydest_t.key_console )
+            if( QKey.Destination == QKeyDest.Console )
             {
-                if( QClient.cls.state == ServerType.CONNECTED )
+                if( QClient.cls.state == QServerType.CONNECTED )
                 {
-                    Key.Destination = keydest_t.key_game;
-                    Key.Lines[Key.EditLine][1] = '\0';	// clear any typing
-                    Key.LinePos = 1;
+                    QKey.Destination            = QKeyDest.Game;
+                    QKey.Lines[QKey.EditLine][1] = '\0'; // clear any typing
+                    QKey.LinePos                = 1;
                 }
                 else
                 {
@@ -328,7 +319,7 @@ namespace SharpQuake
                 }
             }
             else
-                Key.Destination = keydest_t.key_console;
+                QKey.Destination = QKeyDest.Console;
 
             Scr.EndLoadingPlaque();
             Array.Clear( _Times, 0, _Times.Length );
@@ -353,20 +344,20 @@ namespace SharpQuake
         // If no console is visible, the notify window will pop up.
         private static void Print( string txt )
         {
-            if( String.IsNullOrEmpty( txt ) )
+            if( string.IsNullOrEmpty( txt ) )
                 return;
 
             int mask, offset = 0;
 
             BackScroll = 0;
 
-            if( txt.StartsWith( ( (char)1 ).ToString() ) )// [0] == 1)
+            if( txt.StartsWith( ( (char) 1 ).ToString() ) ) // [0] == 1)
             {
-                mask = 128;	// go to colored text
+                mask = 128;                           // go to colored text
                 QSound.LocalSound( "misc/talk.wav" ); // play talk wav
                 offset++;
             }
-            else if( txt.StartsWith( ( (char)2 ).ToString() ) ) //txt[0] == 2)
+            else if( txt.StartsWith( ( (char) 2 ).ToString() ) ) //txt[0] == 2)
             {
                 mask = 128; // go to colored text
                 offset++;
@@ -403,7 +394,7 @@ namespace SharpQuake
                     LineFeed();
                     // mark time for transparent overlay
                     if( _Current >= 0 )
-                        _Times[_Current % NUM_CON_TIMES] = host.RealTime; // realtime
+                        _Times[_Current % NUM_CON_TIMES] = QHost.RealTime; // realtime
                 }
 
                 switch( c )
@@ -413,13 +404,13 @@ namespace SharpQuake
                         break;
 
                     case '\r':
-                        _X = 0;
+                        _X  = 0;
                         _CR = 1;
                         break;
 
-                    default:    // display character and advance
+                    default: // display character and advance
                         int y = _Current % _TotalLines;
-                        _Text[y * _LineWidth + _X] = (char)( c | mask );
+                        _Text[y * _LineWidth + _X] = (char) ( c | mask );
                         _X++;
                         if( _X >= _LineWidth )
                             _X = 0;
@@ -439,15 +430,15 @@ namespace SharpQuake
         // Con_MessageMode_f
         private static void MessageMode_f()
         {
-            Key.Destination = keydest_t.key_message;
-            Key.TeamMessage = false;
+            QKey.Destination = QKeyDest.Message;
+            QKey.TeamMessage = false;
         }
 
         //Con_MessageMode2_f
         private static void MessageMode2_f()
         {
-            Key.Destination = keydest_t.key_message;
-            Key.TeamMessage = true;
+            QKey.Destination = QKeyDest.Message;
+            QKey.TeamMessage = true;
         }
 
         // Con_Linefeed
@@ -464,33 +455,33 @@ namespace SharpQuake
 
         // Con_DrawInput
         //
-        // The input line scrolls horizontally if typing goes beyond the right edge
+        // The QInput line scrolls horizontally if typing goes beyond the right edge
         private static void DrawInput()
         {
-            if( Key.Destination != keydest_t.key_console && !_ForcedUp )
-                return;		// don't draw anything
+            if( QKey.Destination != QKeyDest.Console && !_ForcedUp )
+                return; // don't draw anything
 
             // add the cursor frame
-            Key.Lines[Key.EditLine][Key.LinePos] = (char)( 10 + ( (int)( host.RealTime * _CursorSpeed ) & 1 ) );
+            QKey.Lines[QKey.EditLine][QKey.LinePos] = (char) ( 10 + ( (int) ( QHost.RealTime * _CursorSpeed ) & 1 ) );
 
             // fill out remainder with spaces
-            for( int i = Key.LinePos + 1; i < _LineWidth; i++ )
-                Key.Lines[Key.EditLine][i] = ' ';
+            for( int i = QKey.LinePos + 1; i < _LineWidth; i++ )
+                QKey.Lines[QKey.EditLine][i] = ' ';
 
             //	prestep if horizontally scrolling
             int offset = 0;
-            if( Key.LinePos >= _LineWidth )
-                offset = 1 + Key.LinePos - _LineWidth;
+            if( QKey.LinePos >= _LineWidth )
+                offset = 1 + QKey.LinePos - _LineWidth;
             //text += 1 + key_linepos - con_linewidth;
 
             // draw it
             int y = _VisLines - 16;
 
             for( int i = 0; i < _LineWidth; i++ )
-                Drawer.DrawCharacter( ( i + 1 ) << 3, _VisLines - 16, Key.Lines[Key.EditLine][offset + i] );
+                QGLDraw.DrawCharacter( ( i + 1 ) << 3, _VisLines - 16, QKey.Lines[QKey.EditLine][offset + i] );
 
             // remove cursor
-            Key.Lines[Key.EditLine][Key.LinePos] = '\0';
+            QKey.Lines[QKey.EditLine][QKey.LinePos] = '\0';
         }
     }
 }

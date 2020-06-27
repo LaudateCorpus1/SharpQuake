@@ -80,7 +80,7 @@ namespace SharpQuake
 
             if( net.SendUnreliableMessage( cls.netcon, MessageWriter ) == -1 )
             {
-                Con.Print( "CL_SendMove: lost server connection\n" );
+                QConsole.Print( "CL_SendMove: lost server connection\n" );
                 Disconnect();
             }
         }
@@ -138,7 +138,7 @@ namespace SharpQuake
         // Moves the local angle positions
         private static void AdjustAngles()
         {
-            float speed = (float)host.FrameTime;
+            float speed = (float)QHost.FrameTime;
 
             if( QClientInput.SpeedBtn.IsDown )
                 speed *= _AngleSpeedKey.Value;

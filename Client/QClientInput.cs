@@ -101,7 +101,7 @@ namespace SharpQuake
                 b.down1 = k;
             else
             {
-                Con.Print( "Three keys down for a button!\n" );
+                QConsole.Print( "Three keys down for a button!\n" );
                 return;
             }
 

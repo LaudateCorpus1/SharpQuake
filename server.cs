@@ -83,16 +83,16 @@ namespace SharpQuake
         public const int NUM_PING_TIMES = 16;
         public const int NUM_SPAWN_PARMS = 16;
 
-        private static cvar _Friction;// = { "sv_friction", "4", false, true };
-        private static cvar _EdgeFriction;// = { "edgefriction", "2" };
-        private static cvar _StopSpeed;// = { "sv_stopspeed", "100" };
-        private static cvar _Gravity;// = { "sv_gravity", "800", false, true };
-        private static cvar _MaxVelocity;// = { "sv_maxvelocity", "2000" };
-        private static cvar _NoStep;// = { "sv_nostep", "0" };
-        private static cvar _MaxSpeed;// = { "sv_maxspeed", "320", false, true };
-        private static cvar _Accelerate;// = { "sv_accelerate", "10" };
-        private static cvar _Aim;// = { "sv_aim", "0.93" };
-        private static cvar _IdealPitchScale;// = { "sv_idealpitchscale", "0.8" };
+        private static QCVar _Friction;// = { "sv_friction", "4", false, true };
+        private static QCVar _EdgeFriction;// = { "edgefriction", "2" };
+        private static QCVar _StopSpeed;// = { "sv_stopspeed", "100" };
+        private static QCVar _Gravity;// = { "sv_gravity", "800", false, true };
+        private static QCVar _MaxVelocity;// = { "sv_maxvelocity", "2000" };
+        private static QCVar _NoStep;// = { "sv_nostep", "0" };
+        private static QCVar _MaxSpeed;// = { "sv_maxspeed", "320", false, true };
+        private static QCVar _Accelerate;// = { "sv_accelerate", "10" };
+        private static QCVar _Aim;// = { "sv_aim", "0.93" };
+        private static QCVar _IdealPitchScale;// = { "sv_idealpitchscale", "0.8" };
 
         private static server_t _Server;
         private static server_static_t _ServerStatic;
@@ -173,7 +173,7 @@ namespace SharpQuake
         /// </summary>
         public static int EdictToProg( edict_t e )
         {
-            return Array.IndexOf( _Server.edicts, e ); // todo: optimize this
+            return QCommon.IndexOf( _Server.edicts, e ); //Array.IndexOf( _Server.edicts, e );
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace SharpQuake
         /// </summary>
         public static int NumForEdict( edict_t e )
         {
-            int i = Array.IndexOf( sv.edicts, e ); // todo: optimize this
+            int i = QCommon.IndexOf( sv.edicts, e ); //Array.IndexOf( sv.edicts, e );
 
             if( i < 0 )
                 sys.Error( "NUM_FOR_EDICT: bad pointer" );
@@ -392,7 +392,7 @@ namespace SharpQuake
         public bool active;             // false = QClient is free
         public bool spawned;            // false = don't send datagrams
         public bool dropasap;           // has been told to go to another level
-        public bool privileged;         // can execute any host command
+        public bool privileged;         // can execute any QHost command
         public bool sendsignon;         // only valid before spawned
 
         public double last_message;     // reliable messages must be sent

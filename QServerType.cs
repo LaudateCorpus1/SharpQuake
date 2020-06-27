@@ -20,7 +20,7 @@
 
 namespace SharpQuake
 {
-    internal enum ServerType
+    internal enum QServerType
     {
         DEDICATED,    // a dedicated server with no ability to start a QClient
         DISCONNECTED, // full screen console with no connection

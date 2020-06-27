@@ -1,24 +1,22 @@
-/// <copyright>
-///
-/// Rewritten in C# by Yury Kiselev, 2010.
-///
-/// Copyright (C) 1996-1997 Id Software, Inc.
-///
-/// This program is free software; you can redistribute it and/or
-/// modify it under the terms of the GNU General Public License
-/// as published by the Free Software Foundation; either version 2
-/// of the License, or (at your option) any later version.
-///
-/// This program is distributed in the hope that it will be useful,
-/// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-///
-/// See the GNU General Public License for more details.
-///
-/// You should have received a copy of the GNU General Public License
-/// along with this program; if not, write to the Free Software
-/// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-/// </copyright>
+/* Rewritten in C# by Yury Kiselev, 2010.
+ *
+ * Copyright (C) 1996-1997 Id Software, Inc.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 
 using System;
 using System.Collections.Generic;
@@ -29,9 +27,9 @@ using System.Text;
 
 namespace SharpQuake
 {
-    internal class cvar
+    internal class QCVar
     {
-        public static cvar First => _Vars;
+        public static QCVar First => _Vars;
 
         public string Name => _Name;
 
@@ -43,9 +41,9 @@ namespace SharpQuake
 
         public bool IsServer => _Flags[Flags.Server];
 
-        public cvar Next => _Next;
+        public QCVar Next => _Next;
 
-        private static cvar _Vars;
+        private static QCVar _Vars;
 
         private string _Name;
 
@@ -60,12 +58,12 @@ namespace SharpQuake
         private float _Value;
 
         // float	value;
-        private cvar _Next;
+        private QCVar _Next;
 
         // Cvar_FindVar()
-        public static cvar Find( string name )
+        public static QCVar Find( string name )
         {
-            cvar var = _Vars;
+            QCVar var = _Vars;
             while( var != null )
             {
                 if( var._Name.Equals( name ) )
@@ -86,7 +84,7 @@ namespace SharpQuake
         public static float GetValue( string name )
         {
             float result = 0;
-            cvar var = Find( name );
+            QCVar var = Find( name );
             if( var != null )
             {
                 result = QCommon.atof( var._String );
@@ -97,7 +95,7 @@ namespace SharpQuake
         // Cvar_VariableString()
         public static string GetString( string name )
         {
-            cvar var = Find( name );
+            QCVar var = Find( name );
             if( var != null )
             {
                 return var._String;
@@ -112,7 +110,7 @@ namespace SharpQuake
                 return null;
 
             List<string> result = new List<string>();
-            cvar var = _Vars;
+            QCVar var = _Vars;
             while( var != null )
             {
                 if( var._Name.StartsWith( partial ) )
@@ -126,11 +124,11 @@ namespace SharpQuake
         // Cvar_Set()
         public static void Set( string name, string value )
         {
-            cvar var = Find( name );
+            QCVar var = Find( name );
             if( var == null )
             {
                 // there is an error in C code if this happens
-                Con.Print( "Cvar.Set: variable {0} not found\n", name );
+                QConsole.Print( "Cvar.Set: variable {0} not found\n", name );
                 return;
             }
             var.Set( value );
@@ -147,14 +145,14 @@ namespace SharpQuake
         public static bool Command()
         {
             // check variables
-            cvar var = Find( QCommand.Argv( 0 ) );
+            QCVar var = Find( QCommand.Argv( 0 ) );
             if( var == null )
                 return false;
 
             // perform a variable print or set
             if( QCommand.Argc == 1 )
             {
-                Con.Print( "\"{0}\" is \"{1}\"\n", var._Name, var._String );
+                QConsole.Print( "\"{0}\" is \"{1}\"\n", var._Name, var._String );
             }
             else
             {
@@ -171,7 +169,7 @@ namespace SharpQuake
         public static void WriteVariables( Stream dest )
         {
             StringBuilder sb = new StringBuilder( 4096 );
-            cvar var = _Vars;
+            QCVar var = _Vars;
             while( var != null )
             {
                 if( var.IsArchive )
@@ -208,23 +206,23 @@ namespace SharpQuake
             public const int Server = 2;
         }
 
-        public cvar( string name, string value )
+        public QCVar( string name, string value )
                     : this( name, value, false )
         {
         }
 
-        public cvar( string name, string value, bool archive )
+        public QCVar( string name, string value, bool archive )
                     : this( name, value, archive, false )
         {
         }
 
-        public cvar( string name, string value, bool archive, bool server )
+        public QCVar( string name, string value, bool archive, bool server )
         {
             if( string.IsNullOrEmpty( name ) )
             {
                 throw new ArgumentNullException( nameof( name ) );
             }
-            cvar var = Find( name );
+            QCVar var = Find( name );
             if( var != null )
             {
                 throw new ArgumentException( $"Can't register variable {name}, already defined!\n" );
@@ -246,7 +244,7 @@ namespace SharpQuake
         }
 
         //struct cvar_s *next;
-        protected cvar()
+        protected QCVar()
         {
         }
     }

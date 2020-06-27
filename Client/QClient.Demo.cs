@@ -42,7 +42,7 @@ namespace SharpQuake
                 cls.demofile = null;
             }
             cls.demoplayback = false;
-            cls.state = ServerType.DISCONNECTED;
+            cls.state = QServerType.DISCONNECTED;
 
             if( cls.timedemo )
                 FinishTimeDemo();
@@ -60,19 +60,19 @@ namespace SharpQuake
             int c = QCommand.Argc;
             if( c != 2 && c != 3 && c != 4 )
             {
-                Con.Print( "record <demoname> [<map> [cd track]]\n" );
+                QConsole.Print( "record <demoname> [<map> [cd track]]\n" );
                 return;
             }
 
             if( QCommand.Argv( 1 ).Contains( ".." ) )
             {
-                Con.Print( "Relative pathnames are not allowed.\n" );
+                QConsole.Print( "Relative pathnames are not allowed.\n" );
                 return;
             }
 
-            if( c == 2 && cls.state == ServerType.CONNECTED )
+            if( c == 2 && cls.state == QServerType.CONNECTED )
             {
-                Con.Print( "Can not record - already connected to server\nClient demo recording must be started before connecting\n" );
+                QConsole.Print( "Can not record - already connected to server\nClient demo recording must be started before connecting\n" );
                 return;
             }
 
@@ -81,7 +81,7 @@ namespace SharpQuake
             if( c == 4 )
             {
                 track = QCommon.atoi( QCommand.Argv( 3 ) );
-                Con.Print( "Forcing CD track to {0}\n", track );
+                QConsole.Print( "Forcing CD track to {0}\n", track );
             }
             else
                 track = -1;
@@ -99,11 +99,11 @@ namespace SharpQuake
             //
             name = Path.ChangeExtension( name, ".dem" );
 
-            Con.Print( "recording to {0}.\n", name );
+            QConsole.Print( "recording to {0}.\n", name );
             FileStream fs = sys.FileOpenWrite( name, true );
             if( fs == null )
             {
-                Con.Print( "ERROR: couldn't open.\n" );
+                QConsole.Print( "ERROR: couldn't open.\n" );
                 return;
             }
             BinaryWriter writer = new BinaryWriter( fs, Encoding.ASCII );
@@ -126,7 +126,7 @@ namespace SharpQuake
 
             if( !cls.demorecording )
             {
-                Con.Print( "Not recording a demo.\n" );
+                QConsole.Print( "Not recording a demo.\n" );
                 return;
             }
 
@@ -142,7 +142,7 @@ namespace SharpQuake
                 cls.demofile = null;
             }
             cls.demorecording = false;
-            Con.Print( "Completed demo\n" );
+            QConsole.Print( "Completed demo\n" );
         }
 
         // CL_PlayDemo_f
@@ -155,7 +155,7 @@ namespace SharpQuake
 
             if( QCommand.Argc != 2 )
             {
-                Con.Print( "play <demoname> : plays a demo\n" );
+                QConsole.Print( "play <demoname> : plays a demo\n" );
                 return;
             }
 
@@ -169,19 +169,19 @@ namespace SharpQuake
             //
             string name = Path.ChangeExtension( QCommand.Argv( 1 ), ".dem" );
 
-            Con.Print( "Playing demo from {0}.\n", name );
+            QConsole.Print( "Playing demo from {0}.\n", name );
             cls.demofile?.Dispose();
             QCommon.FOpenFile( name, out QDisposableWrapper<BinaryReader> reader );
             cls.demofile = reader;
             if( cls.demofile == null )
             {
-                Con.Print( "ERROR: couldn't open.\n" );
+                QConsole.Print( "ERROR: couldn't open.\n" );
                 cls.demonum = -1;		// stop demo loop
                 return;
             }
 
             cls.demoplayback = true;
-            cls.state = ServerType.CONNECTED;
+            cls.state = QServerType.CONNECTED;
             cls.forcetrack = 0;
 
             BinaryReader s = reader.Object;
@@ -215,7 +215,7 @@ namespace SharpQuake
 
             if( QCommand.Argc != 2 )
             {
-                Con.Print( "timedemo <demoname> : gets demo speeds\n" );
+                QConsole.Print( "timedemo <demoname> : gets demo speeds\n" );
                 return;
             }
 
@@ -224,7 +224,7 @@ namespace SharpQuake
             // cls.td_starttime will be grabbed at the second frame of the demo, so
             // all the loading time doesn't get counted
             _Static.timedemo = true;
-            _Static.td_startframe = host.FrameCount;
+            _Static.td_startframe = QHost.FrameCount;
             _Static.td_lastframe = -1;		// get a new message this frame
         }
 
@@ -242,13 +242,13 @@ namespace SharpQuake
                 {
                     if( cls.timedemo )
                     {
-                        if( host.FrameCount == cls.td_lastframe )
+                        if( QHost.FrameCount == cls.td_lastframe )
                             return 0;		// allready read this frame's message
-                        cls.td_lastframe = host.FrameCount;
+                        cls.td_lastframe = QHost.FrameCount;
                         // if this is the second frame, grab the real td_starttime
                         // so the bogus time on the first frame doesn't count
-                        if( host.FrameCount == cls.td_startframe + 1 )
-                            cls.td_starttime = (float)host.RealTime;
+                        if( QHost.FrameCount == cls.td_startframe + 1 )
+                            cls.td_starttime = (float)QHost.RealTime;
                     }
                     else if( cl.time <= cl.mtime[0] )
                     {
@@ -286,7 +286,7 @@ namespace SharpQuake
 
                 // discard nop keepalive message
                 if( net.Message.Length == 1 && net.Message.Data[0] == protocol.svc_nop )
-                    Con.Print( "<-- server to QClient keepalive\n" );
+                    QConsole.Print( "<-- server to QClient keepalive\n" );
                 else
                     break;
             }
@@ -305,11 +305,11 @@ namespace SharpQuake
             cls.timedemo = false;
 
             // the first frame didn't count
-            int frames = ( host.FrameCount - cls.td_startframe ) - 1;
-            float time = (float)host.RealTime - cls.td_starttime;
+            int frames = ( QHost.FrameCount - cls.td_startframe ) - 1;
+            float time = (float)QHost.RealTime - cls.td_starttime;
             if( Math.Abs( time ) < 0.001f )
                 time = 1;
-            Con.Print( "{0} frames {1:F5} seconds {2:F2} fps\n", frames, time, frames / time );
+            QConsole.Print( "{0} frames {1:F5} seconds {2:F2} fps\n", frames, time, frames / time );
         }
 
         /// <summary>

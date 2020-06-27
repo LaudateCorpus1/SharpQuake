@@ -61,11 +61,11 @@ namespace SharpQuake
         {
             for( int i = 0; i < svs.maxclients; i++ )
             {
-                host.HostClient = svs.clients[i];
-                if( !host.HostClient.active )
+                QHost.HostClient = svs.clients[i];
+                if( !QHost.HostClient.active )
                     continue;
 
-                _Player = host.HostClient.edict;
+                _Player = QHost.HostClient.edict;
 
                 if( !ReadClientMessage() )
                 {
@@ -73,15 +73,15 @@ namespace SharpQuake
                     continue;
                 }
 
-                if( !host.HostClient.spawned )
+                if( !QHost.HostClient.spawned )
                 {
                     // clear QClient movement until a new packet is received
-                    host.HostClient.cmd.Clear();
+                    QHost.HostClient.cmd.Clear();
                     continue;
                 }
 
                 // always pause in single player if in console or menus
-                if( !sv.paused && ( svs.maxclients > 1 || Key.Destination == keydest_t.key_game ) )
+                if( !sv.paused && ( svs.maxclients > 1 || QKey.Destination == QKeyDest.Game ) )
                     ClientThink();
             }
         }
@@ -152,10 +152,10 @@ namespace SharpQuake
         {
             while( true )
             {
-                int ret = net.GetMessage( host.HostClient.netconnection );
+                int ret = net.GetMessage( QHost.HostClient.netconnection );
                 if( ret == -1 )
                 {
-                    Con.DPrint( "SV_ReadClientMessage: NET_GetMessage failed\n" );
+                    QConsole.DPrint( "SV_ReadClientMessage: NET_GetMessage failed\n" );
                     return false;
                 }
                 if( ret == 0 )
@@ -166,12 +166,12 @@ namespace SharpQuake
                 bool flag = true;
                 while( flag )
                 {
-                    if( !host.HostClient.active )
+                    if( !QHost.HostClient.active )
                         return false;	// a command caused an error
 
                     if( net.Reader.IsBadRead )
                     {
-                        Con.DPrint( "SV_ReadClientMessage: badread\n" );
+                        QConsole.DPrint( "SV_ReadClientMessage: badread\n" );
                         return false;
                     }
 
@@ -188,7 +188,7 @@ namespace SharpQuake
 
                         case protocol.clc_stringcmd:
                             string s = net.Reader.ReadString();
-                            if( host.HostClient.privileged )
+                            if( QHost.HostClient.privileged )
                                 ret = 2;
                             else
                                 ret = 0;
@@ -235,18 +235,18 @@ namespace SharpQuake
                             else if( ret == 1 )
                                 SharpQuake.QCommand.ExecuteString( s, QCommandSource.src_client );
                             else
-                                Con.DPrint( "{0} tried to {1}\n", host.HostClient.name, s );
+                                QConsole.DPrint( "{0} tried to {1}\n", QHost.HostClient.name, s );
                             break;
 
                         case protocol.clc_disconnect:
                             return false;
 
                         case protocol.clc_move:
-                            ReadClientMove( ref host.HostClient.cmd );
+                            ReadClientMove( ref QHost.HostClient.cmd );
                             break;
 
                         default:
-                            Con.DPrint( "SV_ReadClientMessage: unknown command char\n" );
+                            QConsole.DPrint( "SV_ReadClientMessage: unknown command char\n" );
                             return false;
                     }
                 }
@@ -263,7 +263,7 @@ namespace SharpQuake
         /// </summary>
         private static void ReadClientMove( ref QUserCmd move )
         {
-            client_t client = host.HostClient;
+            client_t client = QHost.HostClient;
 
             // read ping time
             client.ping_times[client.num_pings % NUM_PING_TIMES] = (float)( sv.time - net.Reader.ReadFloat() );
@@ -311,7 +311,7 @@ namespace SharpQuake
             //
             // angles
             // show 1/3 the pitch angle and all the roll angle
-            _Cmd = host.HostClient.cmd;
+            _Cmd = QHost.HostClient.cmd;
 
             v3f v_angle;
             mathlib.VectorAdd( ref _Player.v.v_angle, ref _Player.v.punchangle, out v_angle );
@@ -344,7 +344,7 @@ namespace SharpQuake
         private static void DropPunchAngle()
         {
             Vector3 v = QCommon.ToVector( ref _Player.v.punchangle );
-            double len = mathlib.Normalize( ref v ) - 10 * host.FrameTime;
+            double len = mathlib.Normalize( ref v ) - 10 * QHost.FrameTime;
             if( len < 0 )
                 len = 0;
             v *= (float)len;
@@ -396,7 +396,7 @@ namespace SharpQuake
             float newspeed, speed = mathlib.Length( ref _Player.v.velocity );
             if( speed != 0 )
             {
-                newspeed = (float)( speed - host.FrameTime * speed * _Friction.Value );
+                newspeed = (float)( speed - QHost.FrameTime * speed * _Friction.Value );
                 if( newspeed < 0 )
                     newspeed = 0;
                 mathlib.VectorScale( ref _Player.v.velocity, newspeed / speed, out _Player.v.velocity );
@@ -415,7 +415,7 @@ namespace SharpQuake
                 return;
 
             mathlib.Normalize( ref wishvel );
-            float accelspeed = (float)( _Accelerate.Value * wishspeed * host.FrameTime );
+            float accelspeed = (float)( _Accelerate.Value * wishspeed * QHost.FrameTime );
             if( accelspeed > addspeed )
                 accelspeed = addspeed;
 
@@ -494,7 +494,7 @@ namespace SharpQuake
 
             // apply friction
             float control = speed < _StopSpeed.Value ? _StopSpeed.Value : speed;
-            float newspeed = (float)( speed - host.FrameTime * control * friction );
+            float newspeed = (float)( speed - QHost.FrameTime * control * friction );
 
             if( newspeed < 0 )
                 newspeed = 0;
@@ -513,7 +513,7 @@ namespace SharpQuake
             if( addspeed <= 0 )
                 return;
 
-            float accelspeed = (float)( _Accelerate.Value * host.FrameTime * _WishSpeed );
+            float accelspeed = (float)( _Accelerate.Value * QHost.FrameTime * _WishSpeed );
             if( accelspeed > addspeed )
                 accelspeed = addspeed;
 
@@ -534,7 +534,7 @@ namespace SharpQuake
             float addspeed = wishspd - currentspeed;
             if( addspeed <= 0 )
                 return;
-            float accelspeed = (float)( _Accelerate.Value * _WishSpeed * host.FrameTime );
+            float accelspeed = (float)( _Accelerate.Value * _WishSpeed * QHost.FrameTime );
             if( accelspeed > addspeed )
                 accelspeed = addspeed;
 

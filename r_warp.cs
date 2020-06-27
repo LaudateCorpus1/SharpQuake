@@ -112,10 +112,10 @@ namespace SharpQuake
             uint transpix = rgba.ui0;
 
             if( _SolidSkyTexture == 0 )
-                _SolidSkyTexture = Drawer.GenerateTextureNumber();
-            Drawer.Bind( _SolidSkyTexture );
-            GL.TexImage2D( TextureTarget.Texture2D, 0, Drawer.SolidFormat, 128, 128, 0, PixelFormat.Rgba, PixelType.UnsignedByte, trans );
-            Drawer.SetTextureFilters( TextureMinFilter.Linear, TextureMagFilter.Linear );
+                _SolidSkyTexture = QGLDraw.GenerateTextureNumber();
+            QGLDraw.Bind( _SolidSkyTexture );
+            GL.TexImage2D( TextureTarget.Texture2D, 0, QGLDraw.SolidFormat, 128, 128, 0, PixelFormat.Rgba, PixelType.UnsignedByte, trans );
+            QGLDraw.SetTextureFilters( TextureMinFilter.Linear, TextureMagFilter.Linear );
 
             for( int i = 0; i < 128; i++ )
                 for( int j = 0; j < 128; j++ )
@@ -128,10 +128,10 @@ namespace SharpQuake
                 }
 
             if( _AlphaSkyTexture == 0 )
-                _AlphaSkyTexture = Drawer.GenerateTextureNumber();
-            Drawer.Bind( _AlphaSkyTexture );
-            GL.TexImage2D( TextureTarget.Texture2D, 0, Drawer.AlphaFormat, 128, 128, 0, PixelFormat.Rgba, PixelType.UnsignedByte, trans );
-            Drawer.SetTextureFilters( TextureMinFilter.Linear, TextureMagFilter.Linear );
+                _AlphaSkyTexture = QGLDraw.GenerateTextureNumber();
+            QGLDraw.Bind( _AlphaSkyTexture );
+            GL.TexImage2D( TextureTarget.Texture2D, 0, QGLDraw.AlphaFormat, 128, 128, 0, PixelFormat.Rgba, PixelType.UnsignedByte, trans );
+            QGLDraw.SetTextureFilters( TextureMinFilter.Linear, TextureMagFilter.Linear );
         }
 
         /// <summary>
@@ -271,10 +271,10 @@ namespace SharpQuake
                     float os = v[3];
                     float ot = v[4];
 
-                    float s = os + _TurbSin[(int)( ( ot * 0.125 + host.RealTime ) * TURBSCALE ) & 255];
+                    float s = os + _TurbSin[(int)( ( ot * 0.125 + QHost.RealTime ) * TURBSCALE ) & 255];
                     s *= ( 1.0f / 64 );
 
-                    float t = ot + _TurbSin[(int)( ( os * 0.125 + host.RealTime ) * TURBSCALE ) & 255];
+                    float t = ot + _TurbSin[(int)( ( os * 0.125 + QHost.RealTime ) * TURBSCALE ) & 255];
                     t *= ( 1.0f / 64 );
 
                     GL.TexCoord2( s, t );
@@ -319,16 +319,16 @@ namespace SharpQuake
             DisableMultitexture();
 
             // used when gl_texsort is on
-            Drawer.Bind( _SolidSkyTexture );
-            _SpeedScale = (float)host.RealTime * 8;
+            QGLDraw.Bind( _SolidSkyTexture );
+            _SpeedScale = (float)QHost.RealTime * 8;
             _SpeedScale -= (int)_SpeedScale & ~127;
 
             for( msurface_t fa = s; fa != null; fa = fa.texturechain )
                 EmitSkyPolys( fa );
 
             GL.Enable( EnableCap.Blend );
-            Drawer.Bind( _AlphaSkyTexture );
-            _SpeedScale = (float)host.RealTime * 16;
+            QGLDraw.Bind( _AlphaSkyTexture );
+            _SpeedScale = (float)QHost.RealTime * 16;
             _SpeedScale -= (int)_SpeedScale & ~127;
 
             for( msurface_t fa = s; fa != null; fa = fa.texturechain )
@@ -347,15 +347,15 @@ namespace SharpQuake
         {
             DisableMultitexture();
 
-            Drawer.Bind( _SolidSkyTexture );
-            _SpeedScale = (float)host.RealTime * 8;
+            QGLDraw.Bind( _SolidSkyTexture );
+            _SpeedScale = (float)QHost.RealTime * 8;
             _SpeedScale -= (int)_SpeedScale & ~127;
 
             EmitSkyPolys( fa );
 
             GL.Enable( EnableCap.Blend );
-            Drawer.Bind( _AlphaSkyTexture );
-            _SpeedScale = (float)host.RealTime * 16;
+            QGLDraw.Bind( _AlphaSkyTexture );
+            _SpeedScale = (float)QHost.RealTime * 16;
             _SpeedScale -= (int)_SpeedScale & ~127;
 
             EmitSkyPolys( fa );

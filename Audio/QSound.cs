@@ -43,17 +43,17 @@ namespace SharpQuake
 
         private const int MAX_SFX = 512;
 
-        private static cvar _BgmVolume     = new cvar( "bgmvolume",         "1",   true ); // = { "bgmvolume", "1", true };
-        private static cvar _Volume        = new cvar( "volume",            "0.7", true ); // = { "volume", "0.7", true };
-        private static cvar _NoSound       = new cvar( "nosound",           "0" );         // = { "nosound", "0" };
-        private static cvar _Precache      = new cvar( "precache",          "1" );         // = { "precache", "1" };
-        private static cvar _LoadAs8bit    = new cvar( "loadas8bit",        "0" );         // = { "loadas8bit", "0" };
-        private static cvar _BgmBuffer     = new cvar( "bgmbuffer",         "4096" );      // = { "bgmbuffer", "4096" };
-        private static cvar _AmbientLevel  = new cvar( "ambient_level",     "0.3" );       // = { "ambient_level", "0.3" };
-        private static cvar _AmbientFade   = new cvar( "ambient_fade",      "100" );       // = { "ambient_fade", "100" };
-        private static cvar _NoExtraUpdate = new cvar( "snd_noextraupdate", "0" );         // = { "snd_noextraupdate", "0" };
-        private static cvar _Show          = new cvar( "snd_show",          "0" );         // = { "snd_show", "0" };
-        private static cvar _MixAhead      = new cvar( "_snd_mixahead",     "0.1", true ); // = { "_snd_mixahead", "0.1", true };
+        private static QCVar _BgmVolume     = new QCVar( "bgmvolume",         "1",   true ); // = { "bgmvolume", "1", true };
+        private static QCVar _Volume        = new QCVar( "volume",            "0.7", true ); // = { "volume", "0.7", true };
+        private static QCVar _NoSound       = new QCVar( "nosound",           "0" );         // = { "nosound", "0" };
+        private static QCVar _Precache      = new QCVar( "precache",          "1" );         // = { "precache", "1" };
+        private static QCVar _LoadAs8bit    = new QCVar( "loadas8bit",        "0" );         // = { "loadas8bit", "0" };
+        private static QCVar _BgmBuffer     = new QCVar( "bgmbuffer",         "4096" );      // = { "bgmbuffer", "4096" };
+        private static QCVar _AmbientLevel  = new QCVar( "ambient_level",     "0.3" );       // = { "ambient_level", "0.3" };
+        private static QCVar _AmbientFade   = new QCVar( "ambient_fade",      "100" );       // = { "ambient_fade", "100" };
+        private static QCVar _NoExtraUpdate = new QCVar( "snd_noextraupdate", "0" );         // = { "snd_noextraupdate", "0" };
+        private static QCVar _Show          = new QCVar( "snd_show",          "0" );         // = { "snd_show", "0" };
+        private static QCVar _MixAhead      = new QCVar( "_snd_mixahead",     "0.1", true ); // = { "_snd_mixahead", "0.1", true };
 
         private static ISoundController _Controller = new OpenALController(); // NullSoundController();
         private static bool             _IsInitialized;                       // snd_initialized
@@ -89,7 +89,7 @@ namespace SharpQuake
         // S_Init (void)
         public static void Init()
         {
-            Con.Print( "\nSound Initialization\n" );
+            QConsole.Print( "\nSound Initialization\n" );
 
             if( QCommon.HasParam( "-nosound" ) )
                 return;
@@ -111,7 +111,7 @@ namespace SharpQuake
 
             _NumSfx = 0;
 
-            Con.Print( "Sound sampling rate: {0}\n", _shm.speed );
+            QConsole.Print( "Sound sampling rate: {0}\n", _shm.speed );
 
             // provides a tick sound until washed clean
             _AmbientSfx[QBSPAmbientFlag.AMBIENT_WATER] = PrecacheSound( "ambience/water1.wav" );
@@ -172,7 +172,7 @@ namespace SharpQuake
 
             if( _TotalChannels == MAX_CHANNELS )
             {
-                Con.Print( "total_channels == MAX_CHANNELS\n" );
+                QConsole.Print( "total_channels == MAX_CHANNELS\n" );
                 return;
             }
 
@@ -185,7 +185,7 @@ namespace SharpQuake
 
             if( sc.loopstart == -1 )
             {
-                Con.Print( "Sound {0} not looped\n", sfx.name );
+                QConsole.Print( "Sound {0} not looped\n", sfx.name );
                 return;
             }
 
@@ -380,7 +380,7 @@ namespace SharpQuake
                     }
                 }
 
-                Con.Print( "----({0})----\n", total );
+                QConsole.Print( "----({0})----\n", total );
             }
 
             // mix some sound
@@ -440,7 +440,7 @@ namespace SharpQuake
             QSoundFX sfx = PrecacheSound( sound );
             if( sfx == null )
             {
-                Con.Print( "S_LocalSound: can't cache {0}\n", sound );
+                QConsole.Print( "S_LocalSound: can't cache {0}\n", sound );
                 return;
             }
 
@@ -523,13 +523,13 @@ namespace SharpQuake
                 int size = sc.length * sc.width * ( sc.stereo + 1 );
                 total += size;
                 if( sc.loopstart >= 0 )
-                    Con.Print( "L" );
+                    QConsole.Print( "L" );
                 else
-                    Con.Print( " " );
-                Con.Print( "({0:d2}b) {1:g6} : {2}\n", sc.width * 8, size, sfx.name );
+                    QConsole.Print( " " );
+                QConsole.Print( "({0:d2}b) {1:g6} : {2}\n", sc.width * 8, size, sfx.name );
             }
 
-            Con.Print( "Total resident: {0}\n", total );
+            QConsole.Print( "Total resident: {0}\n", total );
         }
 
         // S_SoundInfo_f
@@ -537,18 +537,18 @@ namespace SharpQuake
         {
             if( !_Controller.IsInitialized || _shm == null )
             {
-                Con.Print( "sound system not started\n" );
+                QConsole.Print( "sound system not started\n" );
                 return;
             }
 
-            Con.Print( "{0:d5} stereo\n",           _shm.channels - 1 );
-            Con.Print( "{0:d5} samples\n",          _shm.samples );
-            Con.Print( "{0:d5} samplepos\n",        _shm.samplepos );
-            Con.Print( "{0:d5} samplebits\n",       _shm.samplebits );
-            Con.Print( "{0:d5} submission_chunk\n", _shm.submission_chunk );
-            Con.Print( "{0:d5} speed\n",            _shm.speed );
-            //Con.Print("0x%x dma buffer\n", _shm.buffer);
-            Con.Print( "{0:d5} total_channels\n", _TotalChannels );
+            QConsole.Print( "{0:d5} stereo\n",           _shm.channels - 1 );
+            QConsole.Print( "{0:d5} samples\n",          _shm.samples );
+            QConsole.Print( "{0:d5} samplepos\n",        _shm.samplepos );
+            QConsole.Print( "{0:d5} samplebits\n",       _shm.samplebits );
+            QConsole.Print( "{0:d5} submission_chunk\n", _shm.submission_chunk );
+            QConsole.Print( "{0:d5} speed\n",            _shm.speed );
+            //QConsole.Print("0x%x dma buffer\n", _shm.buffer);
+            QConsole.Print( "{0:d5} total_channels\n", _TotalChannels );
         }
 
         // S_StopAllSoundsC
@@ -560,7 +560,7 @@ namespace SharpQuake
         // S_FindName
         private static QSoundFX FindName( string name )
         {
-            if( String.IsNullOrEmpty( name ) )
+            if( string.IsNullOrEmpty( name ) )
                 sys.Error( "S_FindName: NULL or empty\n" );
 
             if( name.Length >= QDef.MAX_QPATH )
@@ -639,14 +639,14 @@ namespace SharpQuake
             byte[] data = QCommon.LoadFile( namebuffer );
             if( data == null )
             {
-                Con.Print( "Couldn't load {0}\n", namebuffer );
+                QConsole.Print( "Couldn't load {0}\n", namebuffer );
                 return null;
             }
 
             QSoundWAVInfo info = GetWavInfo( s.name, data );
             if( info.channels != 1 )
             {
-                Con.Print( "{0} is a stereo sample\n", s.name );
+                QConsole.Print( "{0} is a stereo sample\n", s.name );
                 return null;
             }
 
@@ -739,13 +739,13 @@ namespace SharpQuake
                 // don't adjust volume too fast
                 if( chan.master_vol < vol )
                 {
-                    chan.master_vol += (int) ( host.FrameTime * _AmbientFade.Value );
+                    chan.master_vol += (int) ( QHost.FrameTime * _AmbientFade.Value );
                     if( chan.master_vol > vol )
                         chan.master_vol = (int) vol;
                 }
                 else if( chan.master_vol > vol )
                 {
-                    chan.master_vol -= (int) ( host.FrameTime * _AmbientFade.Value );
+                    chan.master_vol -= (int) ( QHost.FrameTime * _AmbientFade.Value );
                     if( chan.master_vol < vol )
                         chan.master_vol = (int) vol;
                 }

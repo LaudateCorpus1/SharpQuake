@@ -88,31 +88,31 @@ namespace SharpQuake
         private static refdef_t _RefDef = new refdef_t(); // refdef_t	r_refdef;
         private static texture_t _NoTextureMip; // r_notexture_mip
 
-        private static cvar _NoRefresh;// = { "r_norefresh", "0" };
-        private static cvar _DrawEntities;// = { "r_drawentities", "1" };
-        private static cvar _DrawViewModel;// = { "r_drawviewmodel", "1" };
-        private static cvar _Speeds;// = { "r_speeds", "0" };
-        private static cvar _FullBright;// = { "r_fullbright", "0" };
-        private static cvar _LightMap;// = { "r_lightmap", "0" };
-        private static cvar _Shadows;// = { "r_shadows", "0" };
-        private static cvar _MirrorAlpha;// = { "r_mirroralpha", "1" };
-        private static cvar _WaterAlpha;// = { "r_wateralpha", "1" };
-        private static cvar _Dynamic;// = { "r_dynamic", "1" };
-        private static cvar _NoVis;// = { "r_novis", "0" };
+        private static QCVar _NoRefresh;// = { "r_norefresh", "0" };
+        private static QCVar _DrawEntities;// = { "r_drawentities", "1" };
+        private static QCVar _DrawViewModel;// = { "r_drawviewmodel", "1" };
+        private static QCVar _Speeds;// = { "r_speeds", "0" };
+        private static QCVar _FullBright;// = { "r_fullbright", "0" };
+        private static QCVar _LightMap;// = { "r_lightmap", "0" };
+        private static QCVar _Shadows;// = { "r_shadows", "0" };
+        private static QCVar _MirrorAlpha;// = { "r_mirroralpha", "1" };
+        private static QCVar _WaterAlpha;// = { "r_wateralpha", "1" };
+        private static QCVar _Dynamic;// = { "r_dynamic", "1" };
+        private static QCVar _NoVis;// = { "r_novis", "0" };
 
-        private static cvar _glFinish;// = { "gl_finish", "0" };
-        private static cvar _glClear;// = { "gl_clear", "0" };
-        private static cvar _glCull;// = { "gl_cull", "1" };
-        private static cvar _glTexSort;// = { "gl_texsort", "1" };
-        private static cvar _glSmoothModels;// = { "gl_smoothmodels", "1" };
-        private static cvar _glAffineModels;// = { "gl_affinemodels", "0" };
-        private static cvar _glPolyBlend;// = { "gl_polyblend", "1" };
-        private static cvar _glFlashBlend;// = { "gl_flashblend", "1" };
-        private static cvar _glPlayerMip;// = { "gl_playermip", "0" };
-        private static cvar _glNoColors;// = { "gl_nocolors", "0" };
-        private static cvar _glKeepTJunctions;// = { "gl_keeptjunctions", "0" };
-        private static cvar _glReportTJunctions;// = { "gl_reporttjunctions", "0" };
-        private static cvar _glDoubleEyes;// = { "gl_doubleeys", "1" };
+        private static QCVar _glFinish;// = { "gl_finish", "0" };
+        private static QCVar _glClear;// = { "gl_clear", "0" };
+        private static QCVar _glCull;// = { "gl_cull", "1" };
+        private static QCVar _glTexSort;// = { "gl_texsort", "1" };
+        private static QCVar _glSmoothModels;// = { "gl_smoothmodels", "1" };
+        private static QCVar _glAffineModels;// = { "gl_affinemodels", "0" };
+        private static QCVar _glPolyBlend;// = { "gl_polyblend", "1" };
+        private static QCVar _glFlashBlend;// = { "gl_flashblend", "1" };
+        private static QCVar _glPlayerMip;// = { "gl_playermip", "0" };
+        private static QCVar _glNoColors;// = { "gl_nocolors", "0" };
+        private static QCVar _glKeepTJunctions;// = { "gl_keeptjunctions", "0" };
+        private static QCVar _glReportTJunctions;// = { "gl_reporttjunctions", "0" };
+        private static QCVar _glDoubleEyes;// = { "gl_doubleeys", "1" };
 
         private static int _PlayerTextures; // playertextures	// up to 16 color translated skins
         private static bool _CacheThrash; // r_cache_thrash	// compatability
@@ -169,41 +169,41 @@ namespace SharpQuake
 
             if( _NoRefresh == null )
             {
-                _NoRefresh = new cvar( "r_norefresh", "0" );
-                _DrawEntities = new cvar( "r_drawentities", "1" );
-                _DrawViewModel = new cvar( "r_drawviewmodel", "1" );
-                _Speeds = new cvar( "r_speeds", "0" );
-                _FullBright = new cvar( "r_fullbright", "0" );
-                _LightMap = new cvar( "r_lightmap", "0" );
-                _Shadows = new cvar( "r_shadows", "0" );
-                _MirrorAlpha = new cvar( "r_mirroralpha", "1" );
-                _WaterAlpha = new cvar( "r_wateralpha", "1" );
-                _Dynamic = new cvar( "r_dynamic", "1" );
-                _NoVis = new cvar( "r_novis", "0" );
+                _NoRefresh = new QCVar( "r_norefresh", "0" );
+                _DrawEntities = new QCVar( "r_drawentities", "1" );
+                _DrawViewModel = new QCVar( "r_drawviewmodel", "1" );
+                _Speeds = new QCVar( "r_speeds", "0" );
+                _FullBright = new QCVar( "r_fullbright", "0" );
+                _LightMap = new QCVar( "r_lightmap", "0" );
+                _Shadows = new QCVar( "r_shadows", "0" );
+                _MirrorAlpha = new QCVar( "r_mirroralpha", "1" );
+                _WaterAlpha = new QCVar( "r_wateralpha", "1" );
+                _Dynamic = new QCVar( "r_dynamic", "1" );
+                _NoVis = new QCVar( "r_novis", "0" );
 
-                _glFinish = new cvar( "gl_finish", "0" );
-                _glClear = new cvar( "gl_clear", "0" );
-                _glCull = new cvar( "gl_cull", "1" );
-                _glTexSort = new cvar( "gl_texsort", "1" );
-                _glSmoothModels = new cvar( "gl_smoothmodels", "1" );
-                _glAffineModels = new cvar( "gl_affinemodels", "0" );
-                _glPolyBlend = new cvar( "gl_polyblend", "1" );
-                _glFlashBlend = new cvar( "gl_flashblend", "1" );
-                _glPlayerMip = new cvar( "gl_playermip", "0" );
-                _glNoColors = new cvar( "gl_nocolors", "0" );
-                _glKeepTJunctions = new cvar( "gl_keeptjunctions", "0" );
-                _glReportTJunctions = new cvar( "gl_reporttjunctions", "0" );
-                _glDoubleEyes = new cvar( "gl_doubleeys", "1" );
+                _glFinish = new QCVar( "gl_finish", "0" );
+                _glClear = new QCVar( "gl_clear", "0" );
+                _glCull = new QCVar( "gl_cull", "1" );
+                _glTexSort = new QCVar( "gl_texsort", "1" );
+                _glSmoothModels = new QCVar( "gl_smoothmodels", "1" );
+                _glAffineModels = new QCVar( "gl_affinemodels", "0" );
+                _glPolyBlend = new QCVar( "gl_polyblend", "1" );
+                _glFlashBlend = new QCVar( "gl_flashblend", "1" );
+                _glPlayerMip = new QCVar( "gl_playermip", "0" );
+                _glNoColors = new QCVar( "gl_nocolors", "0" );
+                _glKeepTJunctions = new QCVar( "gl_keeptjunctions", "0" );
+                _glReportTJunctions = new QCVar( "gl_reporttjunctions", "0" );
+                _glDoubleEyes = new QCVar( "gl_doubleeys", "1" );
             }
 
             if( vid.glMTexable )
-                cvar.Set( "gl_texsort", 0.0f );
+                QCVar.Set( "gl_texsort", 0.0f );
 
             InitParticles();
             InitParticleTexture();
 
             // reserve 16 textures
-            _PlayerTextures = Drawer.GenerateTextureNumberRange( 16 );
+            _PlayerTextures = QGLDraw.GenerateTextureNumberRange( 16 );
         }
 
         // R_InitTextures
@@ -281,7 +281,7 @@ namespace SharpQuake
             if( _Speeds.Value != 0 )
             {
                 double time2 = sys.GetFloatTime();
-                Con.Print( "{0,3} ms  {1,4} wpoly {2,4} epoly\n", (int)( ( time2 - time1 ) * 1000 ), _BrushPolys, _AliasPolys );
+                QConsole.Print( "{0,3} ms  {1,4} wpoly {2,4} epoly\n", (int)( ( time2 - time1 ) * 1000 ), _BrushPolys, _AliasPolys );
             }
         }
 
@@ -368,7 +368,7 @@ namespace SharpQuake
             byte[] original;
             if( _CurrentEntity.skinnum < 0 || _CurrentEntity.skinnum >= paliashdr.numskins )
             {
-                Con.Print( "({0}): Invalid player skin #{1}\n", playernum, _CurrentEntity.skinnum );
+                QConsole.Print( "({0}): Invalid player skin #{1}\n", playernum, _CurrentEntity.skinnum );
                 original = (byte[])paliashdr.texels[0];// (byte *)paliashdr + paliashdr.texels[0];
             }
             else
@@ -379,10 +379,10 @@ namespace SharpQuake
 
             // because this happens during gameplay, do it fast
             // instead of sending it through gl_upload 8
-            Drawer.Bind( _PlayerTextures + playernum );
+            QGLDraw.Bind( _PlayerTextures + playernum );
 
-            int scaled_width = (int)( Drawer.glMaxSize < 512 ? Drawer.glMaxSize : 512 );
-            int scaled_height = (int)( Drawer.glMaxSize < 256 ? Drawer.glMaxSize : 256 );
+            int scaled_width = (int)( QGLDraw.glMaxSize < 512 ? QGLDraw.glMaxSize : 512 );
+            int scaled_height = (int)( QGLDraw.glMaxSize < 256 ? QGLDraw.glMaxSize : 256 );
 
             // allow users to crunch sizes down even more if they want
             scaled_width >>= (int)_glPlayerMip.Value;
@@ -417,7 +417,7 @@ namespace SharpQuake
             GCHandle handle = GCHandle.Alloc( dest, GCHandleType.Pinned );
             try
             {
-                GL.TexImage2D( TextureTarget.Texture2D, 0, Drawer.SolidFormat, scaled_width, scaled_height, 0,
+                GL.TexImage2D( TextureTarget.Texture2D, 0, QGLDraw.SolidFormat, scaled_width, scaled_height, 0,
                      PixelFormat.Rgba, PixelType.UnsignedByte, handle.AddrOfPinnedObject() );
             }
             finally
@@ -425,7 +425,7 @@ namespace SharpQuake
                 handle.Free();
             }
             GL.TexEnv( TextureEnvTarget.TextureEnv, TextureEnvParameter.TextureEnvMode, (int)TextureEnvMode.Modulate );
-            Drawer.SetTextureFilters( TextureMinFilter.Linear, TextureMagFilter.Linear );
+            QGLDraw.SetTextureFilters( TextureMinFilter.Linear, TextureMagFilter.Linear );
         }
 
         /// <summary>
@@ -436,7 +436,7 @@ namespace SharpQuake
             if( _MTexEnabled )
             {
                 GL.Disable( EnableCap.Texture2D );
-                Drawer.SelectTexture( MTexTarget.TEXTURE0_SGIS );
+                QGLDraw.SelectTexture( QMTexTarget.TEXTURE0_SGIS );
                 _MTexEnabled = false;
             }
         }
@@ -448,7 +448,7 @@ namespace SharpQuake
         {
             if( vid.glMTexable )
             {
-                Drawer.SelectTexture( MTexTarget.TEXTURE1_SGIS );
+                QGLDraw.SelectTexture( QMTexTarget.TEXTURE1_SGIS );
                 GL.Enable( EnableCap.Texture2D );
                 _MTexEnabled = true;
             }
@@ -744,7 +744,7 @@ namespace SharpQuake
 
             DisableMultitexture();
 
-            Drawer.Bind( frame.gl_texturenum );
+            QGLDraw.Bind( frame.gl_texturenum );
 
             GL.Enable( EnableCap.AlphaTest );
             GL.Begin( PrimitiveType.Quads );
@@ -779,7 +779,7 @@ namespace SharpQuake
 
             if( ( frame >= psprite.numframes ) || ( frame < 0 ) )
             {
-                Con.Print( "R_DrawSprite: no such frame {0}\n", frame );
+                QConsole.Print( "R_DrawSprite: no such frame {0}\n", frame );
                 frame = 0;
             }
 
@@ -906,13 +906,13 @@ namespace SharpQuake
             }
 
             int anim = (int)( QClient.cl.time * 10 ) & 3;
-            Drawer.Bind( paliashdr.gl_texturenum[_CurrentEntity.skinnum, anim] );
+            QGLDraw.Bind( paliashdr.gl_texturenum[_CurrentEntity.skinnum, anim] );
 
             // we can't dynamically colormap textures, so they are cached
             // seperately for the players.  Heads are just uncolored.
             if( _CurrentEntity.colormap != Scr.vid.colormap && _glNoColors.Value == 0 && playernum >= 1 )
             {
-                Drawer.Bind( _PlayerTextures - 1 + playernum );
+                QGLDraw.Bind( _PlayerTextures - 1 + playernum );
             }
 
             if( _glSmoothModels.Value != 0 )
@@ -1010,7 +1010,7 @@ namespace SharpQuake
         {
             if( ( frame >= paliashdr.numframes ) || ( frame < 0 ) )
             {
-                Con.DPrint( "R_AliasSetupFrame: no such frame {0}\n", frame );
+                QConsole.DPrint( "R_AliasSetupFrame: no such frame {0}\n", frame );
                 frame = 0;
             }
 
@@ -1223,7 +1223,7 @@ namespace SharpQuake
         {
             // don't allow cheats in multiplayer
             if( QClient.cl.maxclients > 1 )
-                cvar.Set( "r_fullbright", "0" );
+                QCVar.Set( "r_fullbright", "0" );
 
             AnimateLight();
 
@@ -1319,7 +1319,7 @@ namespace SharpQuake
             GL.Finish();
             double stop = sys.GetFloatTime();
             double time = stop - start;
-            Con.Print( "{0:F} seconds ({1:F1} fps)\n", time, 128 / time );
+            QConsole.Print( "{0:F} seconds ({1:F1} fps)\n", time, 128 / time );
 
             //GL.DrawBuffer(DrawBufferMode.Back);
             Scr.EndRendering();

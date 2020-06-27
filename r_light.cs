@@ -137,7 +137,7 @@ namespace SharpQuake
             int i = (int)( QClient.cl.time * 10 );
             for( int j = 0; j < QDef.MAX_LIGHTSTYLES; j++ )
             {
-                if( String.IsNullOrEmpty( QClient.LightStyle[j].map ) )
+                if( string.IsNullOrEmpty( QClient.LightStyle[j].map ) )
                 {
                     _LightStyleValue[j] = 256;
                     continue;

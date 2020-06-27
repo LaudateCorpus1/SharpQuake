@@ -130,7 +130,7 @@ namespace SDL2
 				ptr++;
 			}
 
-			/* TODO: This #ifdef is only here because the equivalent
+			/* This #ifdef is only here because the equivalent
 			 * .NET 2.0 constructor appears to be less efficient?
 			 * Here's the pretty version, maybe steal this instead:
 			 *
@@ -143,13 +143,14 @@ namespace SDL2
 			 * See the CoreCLR source for more info.
 			 * -flibit
 			 */
-#if NETSTANDARD2_0
+//#if NETSTANDARD2_0
 			/* Modern C# lets you just send the byte*, nice! */
 			string result = System.Text.Encoding.UTF8.GetString(
 				(byte*) s,
 				(int) (ptr - (byte*) s)
 			);
-#else
+#if false
+//#else
 			/* Old C# requires an extra memcpy, bleh! */
 			int len = (int) (ptr - (byte*) s);
 			if (len == 0)

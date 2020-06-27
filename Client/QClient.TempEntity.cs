@@ -115,7 +115,7 @@ namespace SharpQuake
                     ent.angles.Z = sys.Random() % 360;
 
                     org += dist * 30;
-                    // Uze: is this code bug (i is outer loop variable!!!) or what??????????????
+                    // Uze: is this code bugged (i is outer loop variable!!!) or what??????????????
                     //for (i=0 ; i<3 ; i++)
                     //    org[i] += dist[i]*30;
                     d -= 30;
@@ -312,7 +312,7 @@ namespace SharpQuake
                     return;
                 }
             }
-            Con.Print( "beam list overflow!\n" );
+            QConsole.Print( "beam list overflow!\n" );
         }
     }
 }

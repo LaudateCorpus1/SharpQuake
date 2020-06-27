@@ -1,37 +1,35 @@
-/// <copyright>
-///
-/// Rewritten in C# by Yury Kiselev, 2010.
-///
-/// Copyright (C) 1996-1997 Id Software, Inc.
-///
-/// This program is free software; you can redistribute it and/or
-/// modify it under the terms of the GNU General Public License
-/// as published by the Free Software Foundation; either version 2
-/// of the License, or (at your option) any later version.
-///
-/// This program is distributed in the hope that it will be useful,
-/// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-///
-/// See the GNU General Public License for more details.
-///
-/// You should have received a copy of the GNU General Public License
-/// along with this program; if not, write to the Free Software
-/// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-/// </copyright>
+/* Rewritten in C# by Yury Kiselev, 2010.
+ *
+ * Copyright (C) 1996-1997 Id Software, Inc.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 
 using System.Drawing;
 using OpenTK;
 using OpenTK.Input;
 
-// input.h -- external (non-keyboard) input devices
+// QInput.h -- external (non-keyboard) QInput devices
 
 namespace SharpQuake
 {
     /// <summary>
     /// In_functions
     /// </summary>
-    internal static class input
+    internal static class QInput
     {
         public static bool IsMouseActive => _IsMouseActive;
 
@@ -40,28 +38,28 @@ namespace SharpQuake
             get
             {
                 Rectangle bounds = mainwindow.Instance.Bounds;
-                Point p = bounds.Location;
+                Point     p      = bounds.Location;
                 p.Offset( bounds.Width / 2, bounds.Height / 2 );
                 return p;
             }
         }
 
-        private static cvar _MouseFilter;// = { "m_filter", "0" };
-        private static Vector2 _OldMouse; // old_mouse_x, old_mouse_y
-        private static Vector2 _Mouse; // mouse_x, mouse_y
-        private static Vector2 _MouseAccum; // mx_accum, my_accum
-        private static bool _IsMouseActive; // mouseactive
-        private static int _MouseButtons; // mouse_buttons
-        private static int _MouseOldButtonState; // mouse_oldbuttonstate
-        private static bool _MouseActivateToggle; // mouseactivatetoggle
-        private static bool _MouseShowToggle = true; // mouseshowtoggle
+        private static QCVar   _MouseFilter;            // = { "m_filter", "0" };
+        private static Vector2 _OldMouse;               // old_mouse_x, old_mouse_y
+        private static Vector2 _Mouse;                  // mouse_x, mouse_y
+        private static Vector2 _MouseAccum;             // mx_accum, my_accum
+        private static bool    _IsMouseActive;          // mouseactive
+        private static int     _MouseButtons;           // mouse_buttons
+        private static int     _MouseOldButtonState;    // mouse_oldbuttonstate
+        private static bool    _MouseActivateToggle;    // mouseactivatetoggle
+        private static bool    _MouseShowToggle = true; // mouseshowtoggle
 
         // IN_Init
         public static void Init()
         {
             if( _MouseFilter == null )
             {
-                _MouseFilter = new cvar( "m_filter", "0" );
+                _MouseFilter = new QCVar( "m_filter", "0" );
             }
 
             _IsMouseActive = ( Mouse.GetState( 0 ).IsConnected != false );
@@ -100,7 +98,7 @@ namespace SharpQuake
                 //    restore_spi = SystemParametersInfo (SPI_SETMOUSE, 0, newmouseparms, 0);
 
                 //Cursor.Position = Input.WindowCenter;
-                Mouse.SetPosition(input.WindowCenter.X, input.WindowCenter.Y);
+                Mouse.SetPosition( QInput.WindowCenter.X, QInput.WindowCenter.Y );
 
 
                 //SetCapture(mainwindow);
@@ -146,6 +144,7 @@ namespace SharpQuake
                 {
                     //Cursor.Show();
                 }
+
                 _MouseShowToggle = true;
             }
         }
@@ -169,7 +168,7 @@ namespace SharpQuake
         {
             if( _IsMouseActive )
             {
-                _MouseAccum = Vector2.Zero;
+                _MouseAccum          = Vector2.Zero;
                 _MouseOldButtonState = 0;
             }
         }
@@ -186,12 +185,12 @@ namespace SharpQuake
                 {
                     if( ( mstate & ( 1 << i ) ) != 0 && ( _MouseOldButtonState & ( 1 << i ) ) == 0 )
                     {
-                        Key.Event( Key.K_MOUSE1 + i, true );
+                        QKey.Event( QKey.K_MOUSE1 + i, true );
                     }
 
                     if( ( mstate & ( 1 << i ) ) == 0 && ( _MouseOldButtonState & ( 1 << i ) ) != 0 )
                     {
-                        Key.Event( Key.K_MOUSE1 + i, false );
+                        QKey.Event( QKey.K_MOUSE1 + i, false );
                     }
                 }
 
@@ -206,12 +205,12 @@ namespace SharpQuake
         {
             if( !_IsMouseActive )
                 return;
-           
-            Point current_pos = new Point(Mouse.GetCursorState().X, Mouse.GetCursorState().Y); //Cursor.Position;
-            Point window_center = input.WindowCenter;
 
-            int mx = (int)( current_pos.X - window_center.X + _MouseAccum.X );
-            int my = (int)( current_pos.Y - window_center.Y + _MouseAccum.Y );
+            Point current_pos   = new Point( Mouse.GetCursorState().X, Mouse.GetCursorState().Y ); //Cursor.Position;
+            Point window_center = QInput.WindowCenter;
+
+            int mx = (int) ( current_pos.X - window_center.X + _MouseAccum.X );
+            int my = (int) ( current_pos.Y - window_center.Y + _MouseAccum.Y );
             _MouseAccum.X = 0;
             _MouseAccum.Y = 0;
 
@@ -248,7 +247,7 @@ namespace SharpQuake
             if( mx != 0 || my != 0 )
             {
                 //Cursor.Position = window_center;
-                Mouse.SetPosition(window_center.X, window_center.Y);
+                Mouse.SetPosition( window_center.X, window_center.Y );
             }
         }
     }

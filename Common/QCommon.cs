@@ -47,15 +47,10 @@
 // allow different games to initialize startup parms differently.
 // This could be used to add a "-sspeed 22050" for the high quality sound edition.
 // Because they are added at the end, they will not override an explicit setting on the original command line.
-// $TODO: Split out code some, this file is pretty bloated as it is.
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
-using OpenTK;
 
 namespace SharpQuake
 {
@@ -105,8 +100,8 @@ namespace SharpQuake
         private static string[] safeargvs = new string[] { "-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly" };
 
         private static IByteOrderConverter  _Converter;
-        private static cvar                 _Registered;
-        private static cvar                 _CmdLine;
+        private static QCVar                 _Registered;
+        private static QCVar                 _CmdLine;
         private static string               _CacheDir;    // com_cachedir[MAX_OSPATH];
         private static string               _GameDir;     // com_gamedir[MAX_OSPATH];
         private static List<QPakSearchPath> _SearchPaths; // QPakSearchPath    *com_searchpaths;
@@ -137,8 +132,8 @@ namespace SharpQuake
         public static void Init( string path, string[] argv )
         {
             _Argv       = argv;
-            _Registered = new cvar( "registered", "0" );
-            _CmdLine    = new cvar( "cmdline",    "0", false, true );
+            _Registered = new QCVar( "registered", "0" );
+            _CmdLine    = new QCVar( "cmdline",    "0", false, true );
 
             QCommand.Add( "path", Path_f );
 
@@ -173,7 +168,7 @@ namespace SharpQuake
         // void COM_InitArgv (int argc, char **argv)
         public static void InitArgv( string[] argv )
         {
-            // reconstitute the command line for the cmdline externally visible cvar
+            // reconstitute the command line for the cmdline externally visible QCVar
             _Args = string.Join( " ", argv );
             _Argv = new string[argv.Length];
             argv.CopyTo( _Argv, 0 );
@@ -347,16 +342,16 @@ namespace SharpQuake
         // COM_Path_f
         private static void Path_f()
         {
-            Con.Print( "Current search path:\n" );
+            QConsole.Print( "Current search path:\n" );
             foreach( QPakSearchPath sp in _SearchPaths )
             {
                 if( sp.pack != null )
                 {
-                    Con.Print( "{0} ({1} files)\n", sp.pack.filename, sp.pack.files.Length );
+                    QConsole.Print( "{0} ({1} files)\n", sp.pack.filename, sp.pack.files.Length );
                 }
                 else
                 {
-                    Con.Print( "{0}\n", sp.filename );
+                    QConsole.Print( "{0}\n", sp.filename );
                 }
             }
         }
@@ -364,7 +359,7 @@ namespace SharpQuake
         // COM_CheckRegistered
         //
         // Looks for the pop.txt file and verifies it.
-        // Sets the "registered" cvar.
+        // Sets the "registered" QCVar.
         // Immediately exits out if an alternate game was attempted to be started without
         // being registered.
         private static void CheckRegistered()
@@ -374,7 +369,7 @@ namespace SharpQuake
             byte[] buf = LoadFile( "gfx/pop.lmp" );
             if( buf == null || buf.Length < 256 )
             {
-                Con.Print( "Playing shareware version.\n" );
+                QConsole.Print( "Playing shareware version.\n" );
                 if( _IsModified )
                     sys.Error( "You must have the registered version to use modified games" );
                 return;
@@ -388,10 +383,24 @@ namespace SharpQuake
                     sys.Error( "Corrupted data file." );
             }
 
-            cvar.Set( "cmdline",    _Args );
-            cvar.Set( "registered", "1" );
+            QCVar.Set( "cmdline",    _Args );
+            QCVar.Set( "registered", "1" );
             _StaticRegistered = true;
-            Con.Print( "Playing registered version.\n" );
+            QConsole.Print( "Playing registered version.\n" );
+        }
+
+        // replaces Array.IndexOf(). See https://stackoverflow.com/a/8266937/13224034
+        public static int IndexOf<T>( T[] array, T value )
+        {
+            for(int i = 0; i < array.Length; i++)
+            {
+                if( array[i].Equals( value ) )
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
     }
 }

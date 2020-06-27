@@ -159,7 +159,7 @@ namespace SharpQuake
 
             if( _FreeBuffers.Count == 0 )
             {
-                Con.DPrint( "UnlockBuffer: No free buffers!\n" );
+                QConsole.DPrint( "UnlockBuffer: No free buffers!\n" );
                 return;
             }
 
@@ -180,7 +180,7 @@ namespace SharpQuake
                 if( (ALSourceState)state != ALSourceState.Playing )
                 {
                     AL.SourcePlay( _Source );
-                    Con.DPrint( "Sound resumed from {0}, free {1} of {2} buffers\n",
+                    QConsole.DPrint( "Sound resumed from {0}, free {1} of {2} buffers\n",
                         ( (ALSourceState)state ).ToString( "F" ), _FreeBuffers.Count, _Buffers.Length );
                 }
             }

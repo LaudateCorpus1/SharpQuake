@@ -11,8 +11,7 @@
     <RootNamespace>Quake</RootNamespace>
     <AssemblyName>Quake</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
+    <TargetFrameworkProfile></TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
@@ -115,6 +114,7 @@
     <Compile Include="Command\QCommand.cs" />
     <Compile Include="Command\QCommandBuffer.cs" />
     <Compile Include="Command\QCommandSource.cs" />
+    <Compile Include="Common\QConsole.cs" />
     <Compile Include="Common\Exceptions\QEndGameException.cs" />
     <Compile Include="Common\Exceptions\QException.cs" />
     <Compile Include="Common\Exceptions\QSystemError.cs" />
@@ -139,15 +139,15 @@
     <Compile Include="Common\QGameType.cs" />
     <Compile Include="Common\QMessageReader.cs" />
     <Compile Include="Common\QMessageWriter.cs" />
-    <Compile Include="console.cs" />
-    <Compile Include="crc.cs" />
-    <Compile Include="cvar.cs" />
-    <Compile Include="draw.cs" />
-    <Compile Include="external.cs" />
-    <Compile Include="host.cs" />
-    <Compile Include="host_cmd.cs" />
-    <Compile Include="input.cs" />
-    <Compile Include="keys.cs" />
+    <Compile Include="Host\QHost.cs" />
+    <Compile Include="Host\QHost.Commands.cs" />
+    <Compile Include="Input\QKey.cs" />
+    <Compile Include="Input\QInput.cs" />
+    <Compile Include="Input\QKey.Name.cs" />
+    <Compile Include="Input\QKeyDest.cs" />
+    <Compile Include="QCRC.cs" />
+    <Compile Include="QCVar.cs" />
+    <Compile Include="QExternal.cs" />
     <Compile Include="mainwindow.cs" />
     <Compile Include="mathlib.cs" />
     <Compile Include="menu.cs" />
@@ -168,6 +168,11 @@
     <Compile Include="q_def.cs" />
     <Compile Include="render.cs" />
     <Compile Include="Rendering\Camera\QChase.cs" />
+    <Compile Include="Rendering\Client\OGL\QGLCachedUITexture.cs" />
+    <Compile Include="Rendering\Client\OGL\QGLDraw.cs" />
+    <Compile Include="Rendering\Client\OGL\QGLDraw.Texture.cs" />
+    <Compile Include="Rendering\Client\OGL\QGLUITexture.cs" />
+    <Compile Include="Rendering\Client\OGL\QMTexTarget.cs" />
     <Compile Include="Rendering\Client\VFX\QColorShift.cs" />
     <Compile Include="Rendering\Client\VFX\QViewFlashFlag.cs" />
     <Compile Include="Rendering\Geometry\AnormDots.cs" />
@@ -184,13 +189,16 @@
     <Compile Include="screen.cs" />
     <Compile Include="screen_draw.cs" />
     <Compile Include="server.cs" />
-    <Compile Include="Server\ServerType.cs" />
+    <Compile Include="QServerType.cs" />
     <Compile Include="sv_main.cs" />
     <Compile Include="sv_move.cs" />
     <Compile Include="sv_physics.cs" />
     <Compile Include="sv_user.cs" />
     <Compile Include="sv_world.cs" />
     <Compile Include="sys.cs" />
+    <Compile Include="Types\Memory\BSP\QSide.cs" />
+    <Compile Include="Types\Memory\BSP\QVertex.cs" />
+    <Compile Include="Types\QEntityEffects.cs" />
     <Compile Include="vid.cs" />
     <Compile Include="view.cs" />
     <Compile Include="wad.cs" />
@@ -206,7 +214,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -253,30 +260,31 @@
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
       <HintPath>packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
       <HintPath>packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
       <HintPath>packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="3rd Party" />
+    <Folder Include="Types\Disk" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

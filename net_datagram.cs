@@ -72,16 +72,16 @@ namespace SharpQuake
         {
             if( QCommand.Argc == 1 )
             {
-                Con.Print( "unreliable messages sent   = %i\n", net.UnreliableMessagesSent );
-                Con.Print( "unreliable messages recv   = %i\n", net.UnreliableMessagesReceived );
-                Con.Print( "reliable messages sent     = %i\n", net.MessagesSent );
-                Con.Print( "reliable messages received = %i\n", net.MessagesReceived );
-                Con.Print( "packetsSent                = %i\n", packetsSent );
-                Con.Print( "packetsReSent              = %i\n", packetsReSent );
-                Con.Print( "packetsReceived            = %i\n", packetsReceived );
-                Con.Print( "receivedDuplicateCount     = %i\n", receivedDuplicateCount );
-                Con.Print( "shortPacketCount           = %i\n", shortPacketCount );
-                Con.Print( "droppedDatagrams           = %i\n", droppedDatagrams );
+                QConsole.Print( "unreliable messages sent   = %i\n", net.UnreliableMessagesSent );
+                QConsole.Print( "unreliable messages recv   = %i\n", net.UnreliableMessagesReceived );
+                QConsole.Print( "reliable messages sent     = %i\n", net.MessagesSent );
+                QConsole.Print( "reliable messages received = %i\n", net.MessagesReceived );
+                QConsole.Print( "packetsSent                = %i\n", packetsSent );
+                QConsole.Print( "packetsReSent              = %i\n", packetsReSent );
+                QConsole.Print( "packetsReceived            = %i\n", packetsReceived );
+                QConsole.Print( "receivedDuplicateCount     = %i\n", receivedDuplicateCount );
+                QConsole.Print( "shortPacketCount           = %i\n", shortPacketCount );
+                QConsole.Print( "droppedDatagrams           = %i\n", droppedDatagrams );
             }
             else if( QCommand.Argv( 1 ) == "*" )
             {
@@ -119,10 +119,10 @@ namespace SharpQuake
         // PrintStats(qsocket_t* s)
         private void PrintStats( qsocket_t s )
         {
-            Con.Print( "canSend = {0:4}   \n", s.canSend );
-            Con.Print( "sendSeq = {0:4}   ", s.sendSequence );
-            Con.Print( "recvSeq = {0:4}   \n", s.receiveSequence );
-            Con.Print( "\n" );
+            QConsole.Print( "canSend = {0:4}   \n", s.canSend );
+            QConsole.Print( "sendSeq = {0:4}   ", s.sendSequence );
+            QConsole.Print( "recvSeq = {0:4}   \n", s.receiveSequence );
+            QConsole.Print( "\n" );
         }
 
         private net_datagram()
@@ -320,18 +320,18 @@ namespace SharpQuake
             {
                 // find the search start location
                 string prevCvarName = net.Reader.ReadString();
-                cvar var;
-                if( !String.IsNullOrEmpty( prevCvarName ) )
+                QCVar var;
+                if( !string.IsNullOrEmpty( prevCvarName ) )
                 {
-                    var = cvar.Find( prevCvarName );
+                    var = QCVar.Find( prevCvarName );
                     if( var == null )
                         return null;
                     var = var.Next;
                 }
                 else
-                    var = cvar.First;
+                    var = QCVar.First;
 
-                // search for the next server cvar
+                // search for the next server QCVar
                 while( var != null )
                 {
                     if( var.IsServer )
@@ -501,16 +501,16 @@ namespace SharpQuake
 
                 if( length == -1 )
                 {
-                    Con.Print( "Read error\n" );
+                    QConsole.Print( "Read error\n" );
                     return -1;
                 }
 
                 if( sock.LanDriver.AddrCompare( readaddr, sock.addr ) != 0 )
                 {
 #if DEBUG
-                    Con.DPrint("Forged packet received\n");
-                    Con.DPrint("Expected: {0}\n", StrAddr(sock.addr));
-                    Con.DPrint("Received: {0}\n", StrAddr(readaddr));
+                    QConsole.DPrint("Forged packet received\n");
+                    QConsole.DPrint("Expected: {0}\n", StrAddr(sock.addr));
+                    QConsole.DPrint("Received: {0}\n", StrAddr(readaddr));
 #endif
                     continue;
                 }
@@ -537,7 +537,7 @@ namespace SharpQuake
                 {
                     if( sequence < sock.unreliableReceiveSequence )
                     {
-                        Con.DPrint( "Got a stale datagram\n" );
+                        QConsole.DPrint( "Got a stale datagram\n" );
                         ret = 0;
                         break;
                     }
@@ -545,7 +545,7 @@ namespace SharpQuake
                     {
                         int count = (int)( sequence - sock.unreliableReceiveSequence );
                         droppedDatagrams += count;
-                        Con.DPrint( "Dropped {0} datagram(s)\n", count );
+                        QConsole.DPrint( "Dropped {0} datagram(s)\n", count );
                     }
                     sock.unreliableReceiveSequence = sequence + 1;
 
@@ -561,18 +561,18 @@ namespace SharpQuake
                 {
                     if( sequence != ( sock.sendSequence - 1 ) )
                     {
-                        Con.DPrint( "Stale ACK received\n" );
+                        QConsole.DPrint( "Stale ACK received\n" );
                         continue;
                     }
                     if( sequence == sock.ackSequence )
                     {
                         sock.ackSequence++;
                         if( sock.ackSequence != sock.sendSequence )
-                            Con.DPrint( "ack sequencing error\n" );
+                            QConsole.DPrint( "ack sequencing error\n" );
                     }
                     else
                     {
-                        Con.DPrint( "Duplicate ACK received\n" );
+                        QConsole.DPrint( "Duplicate ACK received\n" );
                         continue;
                     }
                     sock.sendMessageLength -= QDef.MAX_DATAGRAM;
@@ -863,7 +863,7 @@ namespace SharpQuake
         /// </summary>
         private qsocket_t InternalConnect( string host )
         {
-            // see if we can resolve the host name
+            // see if we can resolve the QHost name
             EndPoint sendaddr = net.LanDriver.GetAddrFromName( host );
             if( sendaddr == null )
                 return null;
@@ -878,13 +878,13 @@ namespace SharpQuake
             sock.socket = newsock;
             sock.landriver = net.LanDriverLevel;
 
-            // connect to the host
+            // connect to the QHost
             if( net.LanDriver.Connect( newsock, sendaddr ) == -1 )
                 goto ErrorReturn;
 
             // send the connection request
-            Con.Print( "Connecting to " + sendaddr + "\n" );
-            Con.Print( "trying...\n" );
+            QConsole.Print( "Connecting to " + sendaddr + "\n" );
+            QConsole.Print( "trying...\n" );
             Scr.UpdateScreen();
             double start_time = net.Time;
             int ret = 0;
@@ -912,9 +912,9 @@ namespace SharpQuake
                         if( sock.LanDriver.AddrCompare( readaddr, sendaddr ) != 0 )
                         {
 #if DEBUG
-                            Con.Print("wrong reply address\n");
-                            Con.Print("Expected: {0}\n", StrAddr(sendaddr));
-                            Con.Print("Received: {0}\n", StrAddr(readaddr));
+                            QConsole.Print("wrong reply address\n");
+                            QConsole.Print("Expected: {0}\n", StrAddr(sendaddr));
+                            QConsole.Print("Received: {0}\n", StrAddr(readaddr));
                             Scr.UpdateScreen();
 #endif
                             ret = 0;
@@ -951,16 +951,16 @@ namespace SharpQuake
                 while( ( ret == 0 ) && ( net.SetNetTime() - start_time ) < 2.5 );
                 if( ret > 0 )
                     break;
-                Con.Print( "still trying...\n" );
+                QConsole.Print( "still trying...\n" );
                 Scr.UpdateScreen();
                 start_time = net.SetNetTime();
             }
 
-            string reason = String.Empty;
+            string reason = string.Empty;
             if( ret == 0 )
             {
                 reason = "No Response";
-                Con.Print( "{0}\n", reason );
+                QConsole.Print( "{0}\n", reason );
                 menu.ReturnReason = reason;
                 goto ErrorReturn;
             }
@@ -968,7 +968,7 @@ namespace SharpQuake
             if( ret == -1 )
             {
                 reason = "Network Error";
-                Con.Print( "{0}\n", reason );
+                QConsole.Print( "{0}\n", reason );
                 menu.ReturnReason = reason;
                 goto ErrorReturn;
             }
@@ -977,7 +977,7 @@ namespace SharpQuake
             if( ret == CCRep.CCREP_REJECT )
             {
                 reason = net.Reader.ReadString();
-                Con.Print( reason );
+                QConsole.Print( reason );
                 menu.ReturnReason = reason;
                 goto ErrorReturn;
             }
@@ -991,21 +991,21 @@ namespace SharpQuake
             else
             {
                 reason = "Bad Response";
-                Con.Print( "{0}\n", reason );
+                QConsole.Print( "{0}\n", reason );
                 menu.ReturnReason = reason;
                 goto ErrorReturn;
             }
 
             sock.address = net.LanDriver.GetNameFromAddr( sendaddr );
 
-            Con.Print( "Connection accepted\n" );
+            QConsole.Print( "Connection accepted\n" );
             sock.lastMessageTime = net.SetNetTime();
 
             // switch the connection to the specified address
             if( net.LanDriver.Connect( newsock, sock.addr ) == -1 )
             {
                 reason = "Connect to Game failed";
-                Con.Print( "{0}\n", reason );
+                QConsole.Print( "{0}\n", reason );
                 menu.ReturnReason = reason;
                 goto ErrorReturn;
             }

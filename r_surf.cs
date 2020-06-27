@@ -40,7 +40,7 @@ namespace SharpQuake
 
         private static int _LightMapTextures; // lightmap_textures
         private static int _LightMapBytes; // lightmap_bytes		// 1, 2, or 4
-        private static mvertex_t[] _CurrentVertBase; // r_pcurrentvertbase
+        private static QVertex[] _CurrentVertBase; // r_pcurrentvertbase
         private static model_t _CurrentModel; // currentmodel
         private static bool[] _LightMapModified = new bool[MAX_LIGHTMAPS]; // lightmap_modified
         private static glpoly_t[] _LightMapPolys = new glpoly_t[MAX_LIGHTMAPS]; // lightmap_polys
@@ -67,30 +67,30 @@ namespace SharpQuake
             _FrameCount = 1;		// no dlightcache
 
             if( _LightMapTextures == 0 )
-                _LightMapTextures = Drawer.GenerateTextureNumberRange( MAX_LIGHTMAPS );
+                _LightMapTextures = QGLDraw.GenerateTextureNumberRange( MAX_LIGHTMAPS );
 
-            Drawer.LightMapFormat = PixelFormat.Luminance;// GL_LUMINANCE;
+            QGLDraw.LightMapFormat = PixelFormat.Luminance;// GL_LUMINANCE;
 
             // default differently on the Permedia
             if( Scr.IsPermedia )
-                Drawer.LightMapFormat = PixelFormat.Rgba;
+                QGLDraw.LightMapFormat = PixelFormat.Rgba;
 
             if( QCommon.HasParam( "-lm_1" ) )
-                Drawer.LightMapFormat = PixelFormat.Luminance;
+                QGLDraw.LightMapFormat = PixelFormat.Luminance;
 
             if( QCommon.HasParam( "-lm_a" ) )
-                Drawer.LightMapFormat = PixelFormat.Alpha;
+                QGLDraw.LightMapFormat = PixelFormat.Alpha;
 
             //if (Common.HasParam("-lm_i"))
-            //    Drawer.LightMapFormat = PixelFormat.Intensity;
+            //    QGLDraw.LightMapFormat = PixelFormat.Intensity;
 
             //if (Common.HasParam("-lm_2"))
-            //    Drawer.LightMapFormat = PixelFormat.Rgba4;
+            //    QGLDraw.LightMapFormat = PixelFormat.Rgba4;
 
             if( QCommon.HasParam( "-lm_4" ) )
-                Drawer.LightMapFormat = PixelFormat.Rgba;
+                QGLDraw.LightMapFormat = PixelFormat.Rgba;
 
-            switch( Drawer.LightMapFormat )
+            switch( QGLDraw.LightMapFormat )
             {
                 case PixelFormat.Rgba:
                     _LightMapBytes = 4;
@@ -132,7 +132,7 @@ namespace SharpQuake
             }
 
             if( _glTexSort.Value == 0 )
-                Drawer.SelectTexture( MTexTarget.TEXTURE1_SGIS );
+                QGLDraw.SelectTexture( QMTexTarget.TEXTURE1_SGIS );
 
             //
             // upload all lightmaps that were filled
@@ -153,12 +153,12 @@ namespace SharpQuake
                     _LightMapRectChange[i].t = BLOCK_HEIGHT;
                     _LightMapRectChange[i].w = 0;
                     _LightMapRectChange[i].h = 0;
-                    Drawer.Bind( _LightMapTextures + i );
-                    Drawer.SetTextureFilters( TextureMinFilter.Linear, TextureMagFilter.Linear );
+                    QGLDraw.Bind( _LightMapTextures + i );
+                    QGLDraw.SetTextureFilters( TextureMinFilter.Linear, TextureMagFilter.Linear );
 
                     long addr = lmAddr + i * BLOCK_WIDTH * BLOCK_HEIGHT * _LightMapBytes;
                     GL.TexImage2D( TextureTarget.Texture2D, 0, (PixelInternalFormat)_LightMapBytes,
-                        BLOCK_WIDTH, BLOCK_HEIGHT, 0, Drawer.LightMapFormat, PixelType.UnsignedByte, new IntPtr( addr ) );
+                        BLOCK_WIDTH, BLOCK_HEIGHT, 0, QGLDraw.LightMapFormat, PixelType.UnsignedByte, new IntPtr( addr ) );
                 }
             }
             finally
@@ -167,7 +167,7 @@ namespace SharpQuake
             }
 
             if( _glTexSort.Value == 0 )
-                Drawer.SelectTexture( MTexTarget.TEXTURE0_SGIS );
+                QGLDraw.SelectTexture( QMTexTarget.TEXTURE0_SGIS );
         }
 
         /// <summary>
@@ -378,7 +378,7 @@ namespace SharpQuake
             int blOffset = 0;
             int destOffset = dest.StartIndex;
             byte[] data = dest.Data;
-            switch( Drawer.LightMapFormat )
+            switch( QGLDraw.LightMapFormat )
             {
                 case PixelFormat.Rgba:
                     stride -= ( smax << 2 );
@@ -497,7 +497,7 @@ namespace SharpQuake
 
                 for( msurface_t s = _WaterChain; s != null; s = s.texturechain )
                 {
-                    Drawer.Bind( s.texinfo.texture.gl_texturenum );
+                    QGLDraw.Bind( s.texinfo.texture.gl_texturenum );
                     EmitWaterPolys( s );
                 }
                 _WaterChain = null;
@@ -519,7 +519,7 @@ namespace SharpQuake
 
                     // set modulate mode explicitly
 
-                    Drawer.Bind( t.gl_texturenum );
+                    QGLDraw.Bind( t.gl_texturenum );
 
                     for( ; s != null; s = s.texturechain )
                         EmitWaterPolys( s );
@@ -554,7 +554,7 @@ namespace SharpQuake
             if( _NoVis.Value != 0 )
             {
                 vis = new byte[4096];
-                QCommon.FillArray<Byte>( vis, 0xff ); // todo: add count parameter?
+                QCommon.FillArray<byte>( vis, 0xff ); // todo: add count parameter?
                 //memset(solid, 0xff, (cl.worldmodel->numleafs + 7) >> 3);
             }
             else
@@ -587,7 +587,7 @@ namespace SharpQuake
 
             _ModelOrg = _RefDef.vieworg;
             _CurrentEntity = _TempEnt;
-            Drawer.CurrentTexture = -1;
+            QGLDraw.CurrentTexture = -1;
 
             GL.Color3( 1f, 1, 1 );
 
@@ -612,7 +612,7 @@ namespace SharpQuake
 
             GL.DepthMask( false ); // don't bother writing Z
 
-            if( Drawer.LightMapFormat == PixelFormat.Luminance )
+            if( QGLDraw.LightMapFormat == PixelFormat.Luminance )
                 GL.BlendFunc( BlendingFactor.Zero, BlendingFactor.OneMinusSrcColor );
             //else if (gl_lightmap_format == GL_INTENSITY)
             //{
@@ -632,7 +632,7 @@ namespace SharpQuake
                 if( p == null )
                     continue;
 
-                Drawer.Bind( _LightMapTextures + i );
+                QGLDraw.Bind( _LightMapTextures + i );
                 if( _LightMapModified[i] )
                     CommitLightmap( i );
 
@@ -655,7 +655,7 @@ namespace SharpQuake
             }
 
             GL.Disable( EnableCap.Blend );
-            if( Drawer.LightMapFormat == PixelFormat.Luminance )
+            if( QGLDraw.LightMapFormat == PixelFormat.Luminance )
                 GL.BlendFunc( BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha );
             //else if (gl_lightmap_format == GL_INTENSITY)
             //{
@@ -723,7 +723,7 @@ namespace SharpQuake
             }
 
             texture_t t = TextureAnimation( fa.texinfo.texture );
-            Drawer.Bind( t.gl_texturenum );
+            QGLDraw.Bind( t.gl_texturenum );
 
             if( ( fa.flags & Surf.SURF_DRAWTURB ) != 0 )
             {	// warp texture, no lightmaps
@@ -949,13 +949,13 @@ namespace SharpQuake
                 if( vid.glMTexable )
                 {
                     // Binds world to texture env 0
-                    Drawer.SelectTexture( MTexTarget.TEXTURE0_SGIS );
-                    Drawer.Bind( t.gl_texturenum );
+                    QGLDraw.SelectTexture( QMTexTarget.TEXTURE0_SGIS );
+                    QGLDraw.Bind( t.gl_texturenum );
                     GL.TexEnv( TextureEnvTarget.TextureEnv, TextureEnvParameter.TextureEnvMode, (int)TextureEnvMode.Replace );
 
                     // Binds lightmap to texenv 1
                     EnableMultitexture(); // Same as SelectTexture (TEXTURE1)
-                    Drawer.Bind( _LightMapTextures + s.lightmaptexturenum );
+                    QGLDraw.Bind( _LightMapTextures + s.lightmaptexturenum );
                     int i = s.lightmaptexturenum;
                     if( _LightMapModified[i] )
                         CommitLightmap( i );
@@ -974,7 +974,7 @@ namespace SharpQuake
                 }
                 else
                 {
-                    Drawer.Bind( t.gl_texturenum );
+                    QGLDraw.Bind( t.gl_texturenum );
                     GL.Begin( PrimitiveType.Polygon );
                     for( int i = 0; i < p.numverts; i++ )
                     {
@@ -984,7 +984,7 @@ namespace SharpQuake
                     }
                     GL.End();
 
-                    Drawer.Bind( _LightMapTextures + s.lightmaptexturenum );
+                    QGLDraw.Bind( _LightMapTextures + s.lightmaptexturenum );
                     GL.Enable( EnableCap.Blend );
                     GL.Begin( PrimitiveType.Polygon );
                     for( int i = 0; i < p.numverts; i++ )
@@ -1008,7 +1008,7 @@ namespace SharpQuake
             if( ( s.flags & Surf.SURF_DRAWTURB ) != 0 )
             {
                 DisableMultitexture();
-                Drawer.Bind( s.texinfo.texture.gl_texturenum );
+                QGLDraw.Bind( s.texinfo.texture.gl_texturenum );
                 EmitWaterPolys( s );
                 return;
             }
@@ -1019,15 +1019,15 @@ namespace SharpQuake
             if( ( s.flags & Surf.SURF_DRAWSKY ) != 0 )
             {
                 DisableMultitexture();
-                Drawer.Bind( _SolidSkyTexture );
-                _SpeedScale = (float)host.RealTime * 8;
+                QGLDraw.Bind( _SolidSkyTexture );
+                _SpeedScale = (float)QHost.RealTime * 8;
                 _SpeedScale -= (int)_SpeedScale & ~127;
 
                 EmitSkyPolys( s );
 
                 GL.Enable( EnableCap.Blend );
-                Drawer.Bind( _AlphaSkyTexture );
-                _SpeedScale = (float)host.RealTime * 16;
+                QGLDraw.Bind( _AlphaSkyTexture );
+                _SpeedScale = (float)QHost.RealTime * 16;
                 _SpeedScale -= (int)_SpeedScale & ~127;
 
                 EmitSkyPolys( s );
@@ -1043,11 +1043,11 @@ namespace SharpQuake
             if( vid.glMTexable )
             {
                 texture_t t = TextureAnimation( s.texinfo.texture );
-                Drawer.SelectTexture( MTexTarget.TEXTURE0_SGIS );
-                Drawer.Bind( t.gl_texturenum );
+                QGLDraw.SelectTexture( QMTexTarget.TEXTURE0_SGIS );
+                QGLDraw.Bind( t.gl_texturenum );
                 GL.TexEnv( TextureEnvTarget.TextureEnv, TextureEnvParameter.TextureEnvMode, (int)TextureEnvMode.Replace );
                 EnableMultitexture();
-                Drawer.Bind( _LightMapTextures + s.lightmaptexturenum );
+                QGLDraw.Bind( _LightMapTextures + s.lightmaptexturenum );
                 int i = s.lightmaptexturenum;
                 if( _LightMapModified[i] )
                     CommitLightmap( i );
@@ -1062,8 +1062,8 @@ namespace SharpQuake
                     GL.MultiTexCoord2( TextureUnit.Texture0, v[3], v[4] );
                     GL.MultiTexCoord2( TextureUnit.Texture1, v[5], v[6] );
 
-                    nv[0] = (float)( v[0] + 8 * Math.Sin( v[1] * 0.05 + host.RealTime ) * Math.Sin( v[2] * 0.05 + host.RealTime ) );
-                    nv[1] = (float)( v[1] + 8 * Math.Sin( v[0] * 0.05 + host.RealTime ) * Math.Sin( v[2] * 0.05 + host.RealTime ) );
+                    nv[0] = (float)( v[0] + 8 * Math.Sin( v[1] * 0.05 + QHost.RealTime ) * Math.Sin( v[2] * 0.05 + QHost.RealTime ) );
+                    nv[1] = (float)( v[1] + 8 * Math.Sin( v[0] * 0.05 + QHost.RealTime ) * Math.Sin( v[2] * 0.05 + QHost.RealTime ) );
                     nv[2] = v[2];
 
                     GL.Vertex3( nv );
@@ -1075,10 +1075,10 @@ namespace SharpQuake
                 glpoly_t p = s.polys;
 
                 texture_t t = TextureAnimation( s.texinfo.texture );
-                Drawer.Bind( t.gl_texturenum );
+                QGLDraw.Bind( t.gl_texturenum );
                 DrawGLWaterPoly( p );
 
-                Drawer.Bind( _LightMapTextures + s.lightmaptexturenum );
+                QGLDraw.Bind( _LightMapTextures + s.lightmaptexturenum );
                 GL.Enable( EnableCap.Blend );
                 DrawGLWaterPolyLightmap( p );
                 GL.Disable( EnableCap.Blend );
@@ -1097,8 +1097,8 @@ namespace SharpQuake
                 float[] v = p.verts[i];
                 GL.TexCoord2( v[5], v[6] );
 
-                nv[0] = (float)( v[0] + 8 * Math.Sin( v[1] * 0.05 + host.RealTime ) * Math.Sin( v[2] * 0.05 + host.RealTime ) );
-                nv[1] = (float)( v[1] + 8 * Math.Sin( v[0] * 0.05 + host.RealTime ) * Math.Sin( v[2] * 0.05 + host.RealTime ) );
+                nv[0] = (float)( v[0] + 8 * Math.Sin( v[1] * 0.05 + QHost.RealTime ) * Math.Sin( v[2] * 0.05 + QHost.RealTime ) );
+                nv[1] = (float)( v[1] + 8 * Math.Sin( v[0] * 0.05 + QHost.RealTime ) * Math.Sin( v[2] * 0.05 + QHost.RealTime ) );
                 nv[2] = v[2];
 
                 GL.Vertex3( nv );
@@ -1118,8 +1118,8 @@ namespace SharpQuake
 
                 GL.TexCoord2( v[3], v[4] );
 
-                nv[0] = (float)( v[0] + 8 * Math.Sin( v[1] * 0.05 + host.RealTime ) * Math.Sin( v[2] * 0.05 + host.RealTime ) );
-                nv[1] = (float)( v[1] + 8 * Math.Sin( v[0] * 0.05 + host.RealTime ) * Math.Sin( v[2] * 0.05 + host.RealTime ) );
+                nv[0] = (float)( v[0] + 8 * Math.Sin( v[1] * 0.05 + QHost.RealTime ) * Math.Sin( v[2] * 0.05 + QHost.RealTime ) );
+                nv[1] = (float)( v[1] + 8 * Math.Sin( v[0] * 0.05 + QHost.RealTime ) * Math.Sin( v[2] * 0.05 + QHost.RealTime ) );
                 nv[2] = v[2];
 
                 GL.Vertex3( nv );
@@ -1137,7 +1137,7 @@ namespace SharpQuake
                 long addr = handle.AddrOfPinnedObject().ToInt64() +
                     ( i * BLOCK_HEIGHT + theRect.t ) * BLOCK_WIDTH * _LightMapBytes;
                 GL.TexSubImage2D( TextureTarget.Texture2D, 0, 0, theRect.t,
-                    BLOCK_WIDTH, theRect.h, Drawer.LightMapFormat,
+                    BLOCK_WIDTH, theRect.h, QGLDraw.LightMapFormat,
                     PixelType.UnsignedByte, new IntPtr( addr ) );
             }
             finally
@@ -1224,7 +1224,7 @@ namespace SharpQuake
         private static void DrawBrushModel( entity_t e )
         {
             _CurrentEntity = e;
-            Drawer.CurrentTexture = -1;
+            QGLDraw.CurrentTexture = -1;
 
             model_t clmodel = e.model;
             bool rotated = false;

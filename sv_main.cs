@@ -48,16 +48,16 @@ namespace SharpQuake
 
             if( _Friction == null )
             {
-                _Friction = new cvar( "sv_friction", "4", false, true );
-                _EdgeFriction = new cvar( "edgefriction", "2" );
-                _StopSpeed = new cvar( "sv_stopspeed", "100" );
-                _Gravity = new cvar( "sv_gravity", "800", false, true );
-                _MaxVelocity = new cvar( "sv_maxvelocity", "2000" );
-                _NoStep = new cvar( "sv_nostep", "0" );
-                _MaxSpeed = new cvar( "sv_maxspeed", "320", false, true );
-                _Accelerate = new cvar( "sv_accelerate", "10" );
-                _Aim = new cvar( "sv_aim", "0.93" );
-                _IdealPitchScale = new cvar( "sv_idealpitchscale", "0.8" );
+                _Friction = new QCVar( "sv_friction", "4", false, true );
+                _EdgeFriction = new QCVar( "edgefriction", "2" );
+                _StopSpeed = new QCVar( "sv_stopspeed", "100" );
+                _Gravity = new QCVar( "sv_gravity", "800", false, true );
+                _MaxVelocity = new QCVar( "sv_maxvelocity", "2000" );
+                _NoStep = new QCVar( "sv_nostep", "0" );
+                _MaxSpeed = new QCVar( "sv_maxspeed", "320", false, true );
+                _Accelerate = new QCVar( "sv_accelerate", "10" );
+                _Aim = new QCVar( "sv_aim", "0.93" );
+                _IdealPitchScale = new QCVar( "sv_idealpitchscale", "0.8" );
             }
 
             for( int i = 0; i < QDef.MAX_MODELS; i++ )
@@ -119,9 +119,9 @@ namespace SharpQuake
                 if( sample == sv.sound_precache[sound_num] )
                     break;
 
-            if( sound_num == QDef.MAX_SOUNDS || String.IsNullOrEmpty( sv.sound_precache[sound_num] ) )
+            if( sound_num == QDef.MAX_SOUNDS || string.IsNullOrEmpty( sv.sound_precache[sound_num] ) )
             {
-                Con.Print( "SV_StartSound: {0} not precacheed\n", sample );
+                QConsole.Print( "SV_StartSound: {0} not precacheed\n", sample );
                 return;
             }
 
@@ -154,12 +154,12 @@ namespace SharpQuake
 
         /// <summary>
         /// SV_DropClient
-        /// Called when the player is getting totally kicked off the host
+        /// Called when the player is getting totally kicked off the QHost
         /// if (crash = true), don't bother sending signofs
         /// </summary>
         public static void DropClient( bool crash )
         {
-            client_t client = host.HostClient;
+            client_t client = QHost.HostClient;
 
             if( !crash )
             {
@@ -181,7 +181,7 @@ namespace SharpQuake
                     progs.GlobalStruct.self = saveSelf;
                 }
 
-                Con.DPrint( "Client {0} removed\n", client.name );
+                QConsole.DPrint( "Client {0} removed\n", client.name );
             }
 
             // break the net connection
@@ -202,13 +202,13 @@ namespace SharpQuake
                     continue;
 
                 cl.message.WriteByte(protocol.svc_updatename );
-                cl.message.WriteByte(host.ClientNum );
+                cl.message.WriteByte(QHost.ClientNum );
                 cl.message.WriteString( "" );
                 cl.message.WriteByte(protocol.svc_updatefrags );
-                cl.message.WriteByte(host.ClientNum );
+                cl.message.WriteByte(QHost.ClientNum );
                 cl.message.WriteShort( 0 );
                 cl.message.WriteByte(protocol.svc_updatecolors );
-                cl.message.WriteByte(host.ClientNum );
+                cl.message.WriteByte(QHost.ClientNum );
                 cl.message.WriteByte( 0 );
             }
         }
@@ -224,14 +224,14 @@ namespace SharpQuake
             // build individual updates
             for( int i = 0; i < svs.maxclients; i++ )
             {
-                host.HostClient = svs.clients[i];
+                QHost.HostClient = svs.clients[i];
 
-                if( !host.HostClient.active )
+                if( !QHost.HostClient.active )
                     continue;
 
-                if( host.HostClient.spawned )
+                if( QHost.HostClient.spawned )
                 {
-                    if( !SendClientDatagram( host.HostClient ) )
+                    if( !SendClientDatagram( QHost.HostClient ) )
                         continue;
                 }
                 else
@@ -241,10 +241,10 @@ namespace SharpQuake
                     // send a full message when the next signon stage has been requested
                     // some other message data (name changes, etc) may accumulate
                     // between signon stages
-                    if( !host.HostClient.sendsignon )
+                    if( !QHost.HostClient.sendsignon )
                     {
-                        if( host.RealTime - host.HostClient.last_message > 5 )
-                            SendNop( host.HostClient );
+                        if( QHost.RealTime - QHost.HostClient.last_message > 5 )
+                            SendNop( QHost.HostClient );
                         continue;	// don't send out non-signon messages
                     }
                 }
@@ -252,27 +252,27 @@ namespace SharpQuake
                 // check for an overflowed message.  Should only happen
                 // on a very fucked up connection that backs up a lot, then
                 // changes level
-                if( host.HostClient.message.IsOveflowed )
+                if( QHost.HostClient.message.IsOveflowed )
                 {
                     DropClient( true );
-                    host.HostClient.message.IsOveflowed = false;
+                    QHost.HostClient.message.IsOveflowed = false;
                     continue;
                 }
 
-                if( host.HostClient.message.Length > 0 || host.HostClient.dropasap )
+                if( QHost.HostClient.message.Length > 0 || QHost.HostClient.dropasap )
                 {
-                    if( !net.CanSendMessage( host.HostClient.netconnection ) )
+                    if( !net.CanSendMessage( QHost.HostClient.netconnection ) )
                         continue;
 
-                    if( host.HostClient.dropasap )
+                    if( QHost.HostClient.dropasap )
                         DropClient( false );	// went to another level
                     else
                     {
-                        if( net.SendMessage( host.HostClient.netconnection, host.HostClient.message ) == -1 )
+                        if( net.SendMessage( QHost.HostClient.netconnection, QHost.HostClient.message ) == -1 )
                             DropClient( true );	// if the message couldn't send, kick off
-                        host.HostClient.message.Clear();
-                        host.HostClient.last_message = host.RealTime;
-                        host.HostClient.sendsignon = false;
+                        QHost.HostClient.message.Clear();
+                        QHost.HostClient.last_message = QHost.RealTime;
+                        QHost.HostClient.sendsignon = false;
                     }
                 }
             }
@@ -294,7 +294,7 @@ namespace SharpQuake
         /// </summary>
         public static int ModelIndex( string name )
         {
-            if( String.IsNullOrEmpty( name ) )
+            if( string.IsNullOrEmpty( name ) )
                 return 0;
 
             int i;
@@ -302,7 +302,7 @@ namespace SharpQuake
                 if( sv.model_precache[i] == name )
                     return i;
 
-            if( i == QDef.MAX_MODELS || String.IsNullOrEmpty( sv.model_precache[i] ) )
+            if( i == QDef.MAX_MODELS || string.IsNullOrEmpty( sv.model_precache[i] ) )
                 sys.Error( "SV_ModelIndex: model {0} not precached", name );
             return i;
         }
@@ -314,9 +314,9 @@ namespace SharpQuake
         /// </summary>
         public static void ClientPrint( string fmt, params object[] args )
         {
-            string tmp = String.Format( fmt, args );
-            host.HostClient.message.WriteByte( protocol.svc_print );
-            host.HostClient.message.WriteString( tmp );
+            string tmp = string.Format( fmt, args );
+            QHost.HostClient.message.WriteByte( protocol.svc_print );
+            QHost.HostClient.message.WriteString( tmp );
         }
 
         /// <summary>
@@ -324,7 +324,7 @@ namespace SharpQuake
         /// </summary>
         public static void BroadcastPrint( string fmt, params object[] args )
         {
-            string tmp = args.Length > 0 ? String.Format( fmt, args ) : fmt;
+            string tmp = args.Length > 0 ? string.Format( fmt, args ) : fmt;
             for( int i = 0; i < svs.maxclients; i++ )
                 if( svs.clients[i].active && svs.clients[i].spawned )
                 {
@@ -521,14 +521,14 @@ namespace SharpQuake
 
             for( int i = 0; i < svs.maxclients; i++ )
             {
-                host.HostClient = SharpQuake.server.svs.clients[i];
-                if( !host.HostClient.active )
+                QHost.HostClient = SharpQuake.server.svs.clients[i];
+                if( !QHost.HostClient.active )
                     continue;
 
                 // call the progs to get default spawn parms for the new QClient
-                progs.GlobalStruct.self = EdictToProg( host.HostClient.edict );
+                progs.GlobalStruct.self = EdictToProg( QHost.HostClient.edict );
                 progs.Execute( progs.GlobalStruct.SetChangeParms );
-                AssignGlobalSpawnparams( host.HostClient );
+                AssignGlobalSpawnparams( QHost.HostClient );
             }
         }
 
@@ -538,12 +538,12 @@ namespace SharpQuake
         public static void SpawnServer( string server )
         {
             // let's not have any servers with no name
-            if( String.IsNullOrEmpty( net.HostName ) )
-                cvar.Set( "hostname", "UNNAMED" );
+            if( string.IsNullOrEmpty( net.HostName ) )
+                QCVar.Set( "hostname", "UNNAMED" );
 
             Scr.CenterTimeOff = 0;
 
-            Con.DPrint( "SpawnServer: {0}\n", server );
+            QConsole.DPrint( "SpawnServer: {0}\n", server );
             svs.changelevel_issued = false;		// now safe to issue another
 
             //
@@ -557,21 +557,21 @@ namespace SharpQuake
             //
             // make cvars consistant
             //
-            if( host.IsCoop )
-                cvar.Set( "deathmatch", 0 );
+            if( QHost.IsCoop )
+                QCVar.Set( "deathmatch", 0 );
 
-            host.CurrentSkill = (int)( host.Skill + 0.5 );
-            if( host.CurrentSkill < 0 )
-                host.CurrentSkill = 0;
-            if( host.CurrentSkill > 3 )
-                host.CurrentSkill = 3;
+            QHost.CurrentSkill = (int)( QHost.Skill + 0.5 );
+            if( QHost.CurrentSkill < 0 )
+                QHost.CurrentSkill = 0;
+            if( QHost.CurrentSkill > 3 )
+                QHost.CurrentSkill = 3;
 
-            cvar.Set( "skill", (float)host.CurrentSkill );
+            QCVar.Set( "skill", (float)QHost.CurrentSkill );
 
             //
             // set up the new server
             //
-            host.ClearMemory();
+            QHost.ClearMemory();
 
             sv.Clear();
 
@@ -601,11 +601,11 @@ namespace SharpQuake
             sv.state = server_state_t.Loading;
             sv.paused = false;
             sv.time = 1.0;
-            sv.modelname = String.Format( "maps/{0}.bsp", server );
+            sv.modelname = string.Format( "maps/{0}.bsp", server );
             sv.worldmodel = Mod.ForName( sv.modelname, false );
             if( sv.worldmodel == null )
             {
-                Con.Print( "Couldn't spawn server {0}\n", sv.modelname );
+                QConsole.Print( "Couldn't spawn server {0}\n", sv.modelname );
                 sv.active = false;
                 return;
             }
@@ -616,8 +616,8 @@ namespace SharpQuake
             //
             ClearWorld();
 
-            sv.sound_precache[0] = String.Empty;
-            sv.model_precache[0] = String.Empty;
+            sv.sound_precache[0] = string.Empty;
+            sv.model_precache[0] = string.Empty;
 
             sv.model_precache[1] = sv.modelname;
             for( int i = 1; i < sv.worldmodel.numsubmodels; i++ )
@@ -640,10 +640,10 @@ namespace SharpQuake
             ent.v.solid = Solids.SOLID_BSP;
             ent.v.movetype = Movetypes.MOVETYPE_PUSH;
 
-            if( host.IsCoop )
+            if( QHost.IsCoop )
                 progs.GlobalStruct.coop = 1; //coop.value;
             else
-                progs.GlobalStruct.deathmatch = host.Deathmatch;
+                progs.GlobalStruct.deathmatch = QHost.Deathmatch;
 
             int offset = progs.NewString( sv.name );
             progs.GlobalStruct.mapname = offset;
@@ -659,7 +659,7 @@ namespace SharpQuake
             sv.state = server_state_t.Active;
 
             // run two frames to allow everything to settle
-            host.FrameTime = 0.1;
+            QHost.FrameTime = 0.1;
             Physics();
             Physics();
 
@@ -669,13 +669,13 @@ namespace SharpQuake
             // send serverinfo to all connected clients
             for( int i = 0; i < svs.maxclients; i++ )
             {
-                host.HostClient = svs.clients[i];
-                if( host.HostClient.active )
-                    SendServerInfo( host.HostClient );
+                QHost.HostClient = svs.clients[i];
+                if( QHost.HostClient.active )
+                    SendServerInfo( QHost.HostClient );
             }
 
             GC.Collect();
-            Con.DPrint( "Server spawned.\n" );
+            QConsole.DPrint( "Server spawned.\n" );
         }
 
         /// <summary>
@@ -686,7 +686,7 @@ namespace SharpQuake
             for( int i = 1; i < sv.num_edicts; i++ )
             {
                 edict_t ent = sv.edicts[i];
-                ent.v.effects = (int)ent.v.effects & ~EntityEffects.EF_MUZZLEFLASH;
+                ent.v.effects = (int)ent.v.effects & ~QEntityEffects.EF_MUZZLEFLASH;
             }
         }
 
@@ -702,7 +702,7 @@ namespace SharpQuake
 
             if( net.SendUnreliableMessage( client.netconnection, MessageWriter ) == -1 )
                 DropClient( true );	// if the message couldn't send, kick off
-            client.last_message = host.RealTime;
+            client.last_message = QHost.RealTime;
         }
 
         /// <summary>
@@ -710,7 +710,7 @@ namespace SharpQuake
         /// </summary>
         private static bool SendClientDatagram( client_t client )
         {
-            QMessageWriter MessageWriter = new QMessageWriter( QDef.MAX_DATAGRAM ); // Uze todo: make static?
+            QMessageWriter MessageWriter = new QMessageWriter( QDef.MAX_DATAGRAM );
 
             MessageWriter.WriteByte( protocol.svc_time );
             MessageWriter.WriteFloat( (float)sv.time );
@@ -752,7 +752,7 @@ namespace SharpQuake
                 {
                     // ignore ents without visible models
                     string mname = progs.GetString( ent.v.model );
-                    if( String.IsNullOrEmpty( mname ) )
+                    if( string.IsNullOrEmpty( mname ) )
                         continue;
 
                     int i;
@@ -766,7 +766,7 @@ namespace SharpQuake
 
                 if( MessageWriter.Capacity - MessageWriter.Length < 16 )
                 {
-                    Con.Print( "packet overflow\n" );
+                    QConsole.Print( "packet overflow\n" );
                     return;
                 }
 
@@ -910,8 +910,8 @@ namespace SharpQuake
             // check for changes to be sent over the reliable streams
             for( int i = 0; i < svs.maxclients; i++ )
             {
-                host.HostClient = svs.clients[i];
-                if( host.HostClient.old_frags != host.HostClient.edict.v.frags )
+                QHost.HostClient = svs.clients[i];
+                if( QHost.HostClient.old_frags != QHost.HostClient.edict.v.frags )
                 {
                     for( int j = 0; j < svs.maxclients; j++ )
                     {
@@ -921,10 +921,10 @@ namespace SharpQuake
 
                         client.message.WriteByte( protocol.svc_updatefrags );
                         client.message.WriteByte( i );
-                        client.message.WriteShort( (int)host.HostClient.edict.v.frags );
+                        client.message.WriteShort( (int)QHost.HostClient.edict.v.frags );
                     }
 
-                    host.HostClient.old_frags = (int)host.HostClient.edict.v.frags;
+                    QHost.HostClient.old_frags = (int)QHost.HostClient.edict.v.frags;
                 }
             }
 
@@ -948,7 +948,7 @@ namespace SharpQuake
         {
             client_t client = svs.clients[clientnum];
 
-            Con.DPrint( "Client {0} connected\n", client.netconnection.address );
+            QConsole.DPrint( "Client {0} connected\n", client.netconnection.address );
 
             int edictnum = clientnum + 1;
             edict_t ent = EdictNum( edictnum );
@@ -1019,13 +1019,13 @@ namespace SharpQuake
             QMessageWriter writer = client.message;
 
             writer.WriteByte( protocol.svc_print );
-            writer.WriteString( String.Format( "{0}\nVERSION {1,4:F2} SERVER ({2} CRC)", (char)2, QDef.VERSION, progs.Crc ) );
+            writer.WriteString( string.Format( "{0}\nVERSION {1,4:F2} SERVER ({2} CRC)", (char)2, QDef.VERSION, progs.Crc ) );
 
             writer.WriteByte( protocol.svc_serverinfo );
             writer.WriteLong( protocol.PROTOCOL_VERSION );
             writer.WriteByte( svs.maxclients );
 
-            if( !host.IsCoop && host.Deathmatch != 0 )
+            if( !QHost.IsCoop && QHost.Deathmatch != 0 )
                 writer.WriteByte( protocol.GAME_DEATHMATCH );
             else
                 writer.WriteByte( protocol.GAME_COOP );
@@ -1037,7 +1037,7 @@ namespace SharpQuake
             for( int i = 1; i < sv.model_precache.Length; i++ )
             {
                 string tmp = sv.model_precache[i];
-                if( String.IsNullOrEmpty( tmp ) )
+                if( string.IsNullOrEmpty( tmp ) )
                     break;
                 writer.WriteString( tmp );
             }
@@ -1080,7 +1080,7 @@ namespace SharpQuake
             MessageWriter.WriteString( "reconnect\n" );
             net.SendToAll( MessageWriter, 5 );
 
-            if( QClient.cls.state != ServerType.DEDICATED )
+            if( QClient.cls.state != QServerType.DEDICATED )
                 QCommand.ExecuteString( "reconnect\n", QCommandSource.src_command );
         }
 

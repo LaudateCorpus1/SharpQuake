@@ -48,7 +48,7 @@ namespace SharpQuake
         /// </summary>
         public static void Error( string fmt, params object[] args )
         {
-            throw new QSystemError( args.Length > 0 ? String.Format( fmt, args ) : fmt );
+            throw new QSystemError( args.Length > 0 ? string.Format( fmt, args ) : fmt );
         }
 
         // Sys_FileOpenRead
@@ -119,7 +119,7 @@ namespace SharpQuake
         // Sys_FileTime()
         public static DateTime GetFileTime( string path )
         {
-            if( String.IsNullOrEmpty( path ) || path.LastIndexOf( '*' ) != -1 )
+            if( string.IsNullOrEmpty( path ) || path.LastIndexOf( '*' ) != -1 )
                 return DateTime.MinValue;
             try
             {

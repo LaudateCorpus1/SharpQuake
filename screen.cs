@@ -44,7 +44,7 @@ namespace SharpQuake
             }
         }
 
-        public static cvar ViewSize
+        public static QCVar ViewSize
         {
             get
             {
@@ -107,9 +107,9 @@ namespace SharpQuake
         private static bool _IsInitialized;
 
         private static bool _InUpdate;
-        private static glpic_t _Ram;
-        private static glpic_t _Net;
-        private static glpic_t _Turtle;
+        private static QGLUITexture _Ram;
+        private static QGLUITexture _Net;
+        private static QGLUITexture _Turtle;
         private static int _TurtleCount; // static count from SCR_DrawTurtle()
         private static bool _CopyEverything;
 
@@ -129,18 +129,18 @@ namespace SharpQuake
         // scr_centertime_off
         private static string _CenterString; // char	scr_centerstring[1024]
 
-        private static cvar _ViewSize; // = { "viewsize", "100", true };
-        private static cvar _Fov;// = { "fov", "90" };	// 10 - 170
-        private static cvar _ConSpeed;// = { "scr_conspeed", "300" };
-        private static cvar _CenterTime;// = { "scr_centertime", "2" };
-        private static cvar _ShowRam;// = { "showram", "1" };
-        private static cvar _ShowTurtle;// = { "showturtle", "0" };
-        private static cvar _ShowPause;// = { "showpause", "1" };
-        private static cvar _PrintSpeed;// = { "scr_printspeed", "8" };
-        private static cvar _glTripleBuffer;// = { "gl_triplebuffer", "1", true };
+        private static QCVar _ViewSize; // = { "viewsize", "100", true };
+        private static QCVar _Fov;// = { "fov", "90" };	// 10 - 170
+        private static QCVar _ConSpeed;// = { "scr_conspeed", "300" };
+        private static QCVar _CenterTime;// = { "scr_centertime", "2" };
+        private static QCVar _ShowRam;// = { "showram", "1" };
+        private static QCVar _ShowTurtle;// = { "showturtle", "0" };
+        private static QCVar _ShowPause;// = { "showpause", "1" };
+        private static QCVar _PrintSpeed;// = { "scr_printspeed", "8" };
+        private static QCVar _glTripleBuffer;// = { "gl_triplebuffer", "1", true };
 
         private static string _NotifyString; // scr_notifystring
-        private static bool _IsMouseWindowed; // windowed_mouse (don't confuse with _windowed_mouse cvar)
+        private static bool _IsMouseWindowed; // windowed_mouse (don't confuse with _windowed_mouse QCVar)
                                               // scr_fullupdate    set to 0 to force full redraw
 
         // SCR_Init
@@ -148,15 +148,15 @@ namespace SharpQuake
         {
             if( _ViewSize == null )
             {
-                _ViewSize = new cvar( "viewsize", "100", true );
-                _Fov = new cvar( "fov", "90" );	// 10 - 170
-                _ConSpeed = new cvar( "scr_conspeed", "3000" );
-                _CenterTime = new cvar( "scr_centertime", "2" );
-                _ShowRam = new cvar( "showram", "1" );
-                _ShowTurtle = new cvar( "showturtle", "0" );
-                _ShowPause = new cvar( "showpause", "1" );
-                _PrintSpeed = new cvar( "scr_printspeed", "8" );
-                _glTripleBuffer = new cvar( "gl_triplebuffer", "1", true );
+                _ViewSize = new QCVar( "viewsize", "100", true );
+                _Fov = new QCVar( "fov", "90" );	// 10 - 170
+                _ConSpeed = new QCVar( "scr_conspeed", "3000" );
+                _CenterTime = new QCVar( "scr_centertime", "2" );
+                _ShowRam = new QCVar( "showram", "1" );
+                _ShowTurtle = new QCVar( "showturtle", "0" );
+                _ShowPause = new QCVar( "showpause", "1" );
+                _PrintSpeed = new QCVar( "scr_printspeed", "8" );
+                _glTripleBuffer = new QCVar( "gl_triplebuffer", "1", true );
             }
 
             //
@@ -166,9 +166,9 @@ namespace SharpQuake
             QCommand.Add( "sizeup", SizeUp_f );
             QCommand.Add( "sizedown", SizeDown_f );
 
-            _Ram = Drawer.PicFromWad( "ram" );
-            _Net = Drawer.PicFromWad( "net" );
-            _Turtle = Drawer.PicFromWad( "turtle" );
+            _Ram = QGLDraw.PicFromWad( "ram" );
+            _Net = QGLDraw.PicFromWad( "net" );
+            _Turtle = QGLDraw.PicFromWad( "turtle" );
 
             if( QCommon.HasParam( "-fullsbar" ) )
                 FullSbarDraw = true;
@@ -203,16 +203,16 @@ namespace SharpQuake
 
                 if( IsDisabledForLoading )
                 {
-                    if( ( host.RealTime - _DisabledTime ) > 60 )
+                    if( ( QHost.RealTime - _DisabledTime ) > 60 )
                     {
                         IsDisabledForLoading = false;
-                        Con.Print( "Load failed.\n" );
+                        QConsole.Print( "Load failed.\n" );
                     }
                     else
                         return;
                 }
 
-                if( !Con.IsInitialized )
+                if( !QConsole.IsInitialized )
                     return;	// not initialized yet
 
                 BeginRendering();
@@ -252,7 +252,7 @@ namespace SharpQuake
                 if( _DrawDialog )
                 {
                     sbar.Draw();
-                    Drawer.FadeScreen();
+                    QGLDraw.FadeScreen();
                     DrawNotifyString();
                     _CopyEverything = true;
                 }
@@ -261,11 +261,11 @@ namespace SharpQuake
                     DrawLoading();
                     sbar.Draw();
                 }
-                else if( QClient.cl.intermission == 1 && Key.Destination == keydest_t.key_game )
+                else if( QClient.cl.intermission == 1 && QKey.Destination == QKeyDest.Game )
                 {
                     sbar.IntermissionOverlay();
                 }
-                else if( QClient.cl.intermission == 2 && Key.Destination == keydest_t.key_game )
+                else if( QClient.cl.intermission == 2 && QKey.Destination == QKeyDest.Game )
                 {
                     sbar.FinaleOverlay();
                     CheckDrawCenterString();
@@ -273,7 +273,7 @@ namespace SharpQuake
                 else
                 {
                     if( view.Crosshair > 0 )
-                        Drawer.DrawCharacter( _VRect.x + _VRect.width / 2, _VRect.y + _VRect.height / 2, '+' );
+                        QGLDraw.DrawCharacter( _VRect.x + _VRect.width / 2, _VRect.y + _VRect.height / 2, '+' );
 
                     DrawRam();
                     DrawNet();
@@ -311,24 +311,24 @@ namespace SharpQuake
             {
                 if(_IsMouseWindowed)
                 {
-                    input.DeactivateMouse();
-                    input.ShowMouse();
+                    QInput.DeactivateMouse();
+                    QInput.ShowMouse();
                     _IsMouseWindowed = false;
                 }
             }
             else
             {
                 _IsMouseWindowed = true;
-                if(Key.Destination == keydest_t.key_game && !input.IsMouseActive &&
-                    QClient.cls.state != ServerType.DISCONNECTED )// && ActiveApp)
+                if(QKey.Destination == QKeyDest.Game && !QInput.IsMouseActive &&
+                    QClient.cls.state != QServerType.DISCONNECTED )// && ActiveApp)
                 {
-                    input.ActivateMouse();
-                    input.HideMouse();
+                    QInput.ActivateMouse();
+                    QInput.HideMouse();
                 }
-                else if(input.IsMouseActive && Key.Destination != keydest_t.key_game )
+                else if(QInput.IsMouseActive && QKey.Destination != QKeyDest.Game )
                 {
-                    input.DeactivateMouse();
-                    input.ShowMouse();
+                    QInput.DeactivateMouse();
+                    QInput.ShowMouse();
                 }
             }
 
@@ -362,7 +362,7 @@ namespace SharpQuake
         {
             Scr.IsDisabledForLoading = false;
             Scr.FullUpdate = 0;
-            Con.ClearNotify();
+            QConsole.ClearNotify();
         }
 
         /// <summary>
@@ -372,13 +372,13 @@ namespace SharpQuake
         {
             QSound.StopAllSounds( true );
 
-            if( QClient.cls.state != ServerType.CONNECTED )
+            if( QClient.cls.state != QServerType.CONNECTED )
                 return;
             if( QClient.cls.signon != QClient.SIGNONS )
                 return;
 
             // redraw with no console and the loading plaque
-            Con.ClearNotify();
+            QConsole.ClearNotify();
             CenterTimeOff = 0;
             _ConCurrent = 0;
 
@@ -389,7 +389,7 @@ namespace SharpQuake
             _DrawLoading = false;
 
             Scr.IsDisabledForLoading = true;
-            _DisabledTime = host.RealTime;
+            _DisabledTime = QHost.RealTime;
             Scr.FullUpdate = 0;
         }
 
@@ -399,7 +399,7 @@ namespace SharpQuake
         /// </summary>
         public static bool ModalMessage( string text )
         {
-            if( QClient.cls.state == ServerType.DEDICATED )
+            if( QClient.cls.state == QServerType.DEDICATED )
                 return true;
 
             _NotifyString = text;
@@ -414,14 +414,14 @@ namespace SharpQuake
 
             do
             {
-                Key.KeyCount = -1;		// wait for a key down and up
+                QKey.KeyCount = -1;		// wait for a key down and up
                 sys.SendKeyEvents();
-            } while( Key.LastPress != 'y' && Key.LastPress != 'n' && Key.LastPress != Key.K_ESCAPE );
+            } while( QKey.LastPress != 'y' && QKey.LastPress != 'n' && QKey.LastPress != QKey.K_ESCAPE );
 
             Scr.FullUpdate = 0;
             UpdateScreen();
 
-            return ( Key.LastPress == 'y' );
+            return ( QKey.LastPress == 'y' );
         }
 
         // SCR_SizeUp_f
@@ -429,7 +429,7 @@ namespace SharpQuake
         // Keybinding command
         private static void SizeUp_f()
         {
-            cvar.Set( "viewsize", _ViewSize.Value + 10 );
+            QCVar.Set( "viewsize", _ViewSize.Value + 10 );
             _VidDef.recalc_refdef = true;
         }
 
@@ -438,7 +438,7 @@ namespace SharpQuake
         // Keybinding command
         private static void SizeDown_f()
         {
-            cvar.Set( "viewsize", _ViewSize.Value - 10 );
+            QCVar.Set( "viewsize", _ViewSize.Value - 10 );
             _VidDef.recalc_refdef = true;
         }
 
@@ -452,20 +452,20 @@ namespace SharpQuake
             int i;
             for( i = 0; i <= 999; i++ )
             {
-                path = Path.Combine( QCommon.GameDir, String.Format( "quake{0:D3}.tga", i ) );
+                path = Path.Combine( QCommon.GameDir, string.Format( "quake{0:D3}.tga", i ) );
                 if( sys.GetFileTime( path ) == DateTime.MinValue )
                     break;	// file doesn't exist
             }
             if( i == 100 )
             {
-                Con.Print( "SCR_ScreenShot_f: Couldn't create a file\n" );
+                QConsole.Print( "SCR_ScreenShot_f: Couldn't create a file\n" );
                 return;
             }
 
             FileStream fs = sys.FileOpenWrite( path, true );
             if( fs == null )
             {
-                Con.Print( "SCR_ScreenShot_f: Couldn't create a file\n" );
+                QConsole.Print( "SCR_ScreenShot_f: Couldn't create a file\n" );
                 return;
             }
             using( BinaryWriter writer = new BinaryWriter( fs ) )
@@ -496,7 +496,7 @@ namespace SharpQuake
                 }
                 writer.Write( buffer, 0, buffer.Length );
             }
-            Con.Print( "Wrote {0}\n", Path.GetFileName( path ) );
+            QConsole.Print( "Wrote {0}\n", Path.GetFileName( path ) );
         }
 
         /// <summary>
@@ -532,15 +532,15 @@ namespace SharpQuake
 
             // bound viewsize
             if( _ViewSize.Value < 30 )
-                cvar.Set( "viewsize", "30" );
+                QCVar.Set( "viewsize", "30" );
             if( _ViewSize.Value > 120 )
-                cvar.Set( "viewsize", "120" );
+                QCVar.Set( "viewsize", "120" );
 
             // bound field of view
             if( _Fov.Value < 10 )
-                cvar.Set( "fov", "10" );
+                QCVar.Set( "fov", "10" );
             if( _Fov.Value > 170 )
-                cvar.Set( "fov", "170" );
+                QCVar.Set( "fov", "170" );
 
             // intermission is always full screen
             float size;
@@ -617,33 +617,33 @@ namespace SharpQuake
         /// </summary>
         private static void SetUpToDrawConsole()
         {
-            Con.CheckResize();
+            QConsole.CheckResize();
 
             if( _DrawLoading )
                 return;     // never a console with loading plaque
 
             // decide on the height of the console
-            Con.ForcedUp = ( QClient.cl.worldmodel == null ) || ( QClient.cls.signon != QClient.SIGNONS );
+            QConsole.ForcedUp = ( QClient.cl.worldmodel == null ) || ( QClient.cls.signon != QClient.SIGNONS );
 
-            if( Con.ForcedUp )
+            if( QConsole.ForcedUp )
             {
                 _ConLines = _VidDef.height; // full screen
                 _ConCurrent = _ConLines;
             }
-            else if( Key.Destination == keydest_t.key_console )
+            else if( QKey.Destination == QKeyDest.Console )
                 _ConLines = _VidDef.height / 2; // half screen
             else
                 _ConLines = 0; // none visible
 
             if( _ConLines < _ConCurrent )
             {
-                _ConCurrent -= (int)( _ConSpeed.Value * host.FrameTime );
+                _ConCurrent -= (int)( _ConSpeed.Value * QHost.FrameTime );
                 if( _ConLines > _ConCurrent )
                     _ConCurrent = _ConLines;
             }
             else if( _ConLines > _ConCurrent )
             {
-                _ConCurrent += (int)( _ConSpeed.Value * host.FrameTime );
+                _ConCurrent += (int)( _ConSpeed.Value * QHost.FrameTime );
                 if( _ConLines < _ConCurrent )
                     _ConCurrent = _ConLines;
             }
@@ -657,7 +657,7 @@ namespace SharpQuake
                 //????????????
             }
             else
-                Con.NotifyLines = 0;
+                QConsole.NotifyLines = 0;
         }
 
         // SCR_TileClear
@@ -667,18 +667,18 @@ namespace SharpQuake
             if( rdef.vrect.x > 0 )
             {
                 // left
-                Drawer.TileClear( 0, 0, rdef.vrect.x, _VidDef.height - sbar.Lines );
+                QGLDraw.TileClear( 0, 0, rdef.vrect.x, _VidDef.height - sbar.Lines );
                 // right
-                Drawer.TileClear( rdef.vrect.x + rdef.vrect.width, 0,
+                QGLDraw.TileClear( rdef.vrect.x + rdef.vrect.width, 0,
                     _VidDef.width - rdef.vrect.x + rdef.vrect.width,
                     _VidDef.height - sbar.Lines );
             }
             if( rdef.vrect.y > 0 )
             {
                 // top
-                Drawer.TileClear( rdef.vrect.x, 0, rdef.vrect.x + rdef.vrect.width, rdef.vrect.y );
+                QGLDraw.TileClear( rdef.vrect.x, 0, rdef.vrect.x + rdef.vrect.width, rdef.vrect.y );
                 // bottom
-                Drawer.TileClear( rdef.vrect.x, rdef.vrect.y + rdef.vrect.height,
+                QGLDraw.TileClear( rdef.vrect.x, rdef.vrect.y + rdef.vrect.height,
                     rdef.vrect.width, _VidDef.height - sbar.Lines - ( rdef.vrect.height + rdef.vrect.y ) );
             }
         }
@@ -704,7 +704,7 @@ namespace SharpQuake
                 {
                     int x = ( vid.width - length * 8 ) / 2;
                     for( int j = 0; j < length; j++, x += 8 )
-                        Drawer.DrawCharacter( x, y, _NotifyString[offset + j] );
+                        QGLDraw.DrawCharacter( x, y, _NotifyString[offset + j] );
 
                     y += 8;
                 }
@@ -720,8 +720,8 @@ namespace SharpQuake
             if( !_DrawLoading )
                 return;
 
-            glpic_t pic = Drawer.CachePic( "gfx/loading.lmp" );
-            Drawer.DrawPic( ( vid.width - pic.width ) / 2, ( vid.height - 48 - pic.height ) / 2, pic );
+            QGLUITexture pic = QGLDraw.CachePic( "gfx/loading.lmp" );
+            QGLDraw.DrawPic( ( vid.width - pic.width ) / 2, ( vid.height - 48 - pic.height ) / 2, pic );
         }
 
         // SCR_CheckDrawCenterString
@@ -731,11 +731,11 @@ namespace SharpQuake
             if( _CenterLines > _EraseLines )
                 _EraseLines = _CenterLines;
 
-            CenterTimeOff -= (float)host.FrameTime;
+            CenterTimeOff -= (float)QHost.FrameTime;
 
             if( CenterTimeOff <= 0 && QClient.cl.intermission == 0 )
                 return;
-            if( Key.Destination != keydest_t.key_game )
+            if( QKey.Destination != QKeyDest.Game )
                 return;
 
             DrawCenterString();
@@ -750,7 +750,7 @@ namespace SharpQuake
             if( !render.CacheTrash )
                 return;
 
-            Drawer.DrawPic( _VRect.x + 32, _VRect.y, _Ram );
+            QGLDraw.DrawPic( _VRect.x + 32, _VRect.y, _Ram );
         }
 
         // SCR_DrawTurtle
@@ -761,7 +761,7 @@ namespace SharpQuake
             if( _ShowTurtle.Value == 0 )
                 return;
 
-            if( host.FrameTime < 0.1 )
+            if( QHost.FrameTime < 0.1 )
             {
                 _TurtleCount = 0;
                 return;
@@ -771,18 +771,18 @@ namespace SharpQuake
             if( _TurtleCount < 3 )
                 return;
 
-            Drawer.DrawPic( _VRect.x, _VRect.y, _Turtle );
+            QGLDraw.DrawPic( _VRect.x, _VRect.y, _Turtle );
         }
 
         // SCR_DrawNet
         private static void DrawNet()
         {
-            if( host.RealTime - QClient.cl.last_received_message < 0.3 )
+            if( QHost.RealTime - QClient.cl.last_received_message < 0.3 )
                 return;
             if( QClient.cls.demoplayback )
                 return;
 
-            Drawer.DrawPic( _VRect.x + 64, _VRect.y, _Net );
+            QGLDraw.DrawPic( _VRect.x + 64, _VRect.y, _Net );
         }
 
         // DrawPause
@@ -794,8 +794,8 @@ namespace SharpQuake
             if( !QClient.cl.paused )
                 return;
 
-            glpic_t pic = Drawer.CachePic( "gfx/pause.lmp" );
-            Drawer.DrawPic( ( vid.width - pic.width ) / 2, ( vid.height - 48 - pic.height ) / 2, pic );
+            QGLUITexture pic = QGLDraw.CachePic( "gfx/pause.lmp" );
+            QGLDraw.DrawPic( ( vid.width - pic.width ) / 2, ( vid.height - 48 - pic.height ) / 2, pic );
         }
 
         // SCR_DrawConsole
@@ -804,13 +804,13 @@ namespace SharpQuake
             if( _ConCurrent > 0 )
             {
                 _CopyEverything = true;
-                Con.Draw( (int)_ConCurrent, true );
+                QConsole.Draw( (int)_ConCurrent, true );
                 _ClearConsole = 0;
             }
-            else if( Key.Destination == keydest_t.key_game ||
-                Key.Destination == keydest_t.key_message )
+            else if( QKey.Destination == QKeyDest.Game ||
+                QKey.Destination == QKeyDest.Message )
             {
-                Con.DrawNotify();	// only draw notify in game
+                QConsole.DrawNotify();	// only draw notify in game
             }
         }
 
@@ -837,7 +837,7 @@ namespace SharpQuake
 
                 for( int j = 0; j < line.Length; j++, x += 8 )
                 {
-                    Drawer.DrawCharacter( x, y, line[j] );
+                    QGLDraw.DrawCharacter( x, y, line[j] );
                     if( remaining-- <= 0 )
                         return;
                 }

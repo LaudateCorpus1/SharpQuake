@@ -41,7 +41,7 @@ namespace SharpQuake
             byte[] result = new byte[length];
             using( file )
             {
-                Drawer.BeginDisc();
+                QGLDraw.BeginDisc();
                 int left = length;
                 while( left > 0 )
                 {
@@ -51,7 +51,7 @@ namespace SharpQuake
                     left -= count;
                 }
 
-                Drawer.EndDisc();
+                QGLDraw.EndDisc();
             }
 
             return result;
@@ -117,12 +117,12 @@ namespace SharpQuake
                 handle.Free();
             }
 
-            // crc the directory to check for modifications
-            //ushort crc;
-            //CRC.Init(out crc);
+            // QCRC the directory to check for modifications
+            //ushort QCRC;
+            //CRC.Init(out QCRC);
             //for (int i = 0; i < buf.Length; i++)
-            //    CRC.ProcessByte(ref crc, buf[i]);
-            //if (crc != PAK0_CRC)
+            //    CRC.ProcessByte(ref QCRC, buf[i]);
+            //if (QCRC != PAK0_CRC)
             //    _IsModified = true;
 
             buf = null;
@@ -139,7 +139,7 @@ namespace SharpQuake
             }
 
             QPak pack = new QPak( packfile, new BinaryReader( file, Encoding.ASCII ), newfiles );
-            Con.Print( "Added packfile {0} ({1} files)\n", packfile, numpackfiles );
+            QConsole.Print( "Added packfile {0} ({1} files)\n", packfile, numpackfiles );
             return pack;
         }
 
@@ -207,7 +207,7 @@ namespace SharpQuake
                         if( pfile.name.Equals( filename ) )
                         {
                             // found it!
-                            Con.DPrint( "PackFile: {0} : {1}\n", sp.pack.filename, filename );
+                            QConsole.DPrint( "PackFile: {0} : {1}\n", sp.pack.filename, filename );
                             if( duplicateStream )
                             {
                                 FileStream pfs = (FileStream) pak.stream.BaseStream;
@@ -264,7 +264,7 @@ namespace SharpQuake
                         netpath = cachepath;
                     }
 
-                    Con.DPrint( "FindFile: {0}\n", netpath );
+                    QConsole.DPrint( "FindFile: {0}\n", netpath );
                     FileStream fs = sys.FileOpenRead( netpath );
                     if( fs == null )
                     {
@@ -277,7 +277,7 @@ namespace SharpQuake
                 }
             }
 
-            Con.DPrint( "FindFile: can't find {0}\n", filename );
+            QConsole.DPrint( "FindFile: can't find {0}\n", filename );
             return -1;
         }
 
@@ -305,7 +305,7 @@ namespace SharpQuake
             }
             else
             {
-                basedir              = host.Params.basedir;
+                basedir              = QHost.Params.basedir;
                 qparam.globalbasedir = basedir;
             }
 
@@ -327,9 +327,9 @@ namespace SharpQuake
                 else
                     _CacheDir = _Argv[i + 1];
             }
-            else if( !string.IsNullOrEmpty( host.Params.cachedir ) )
+            else if( !string.IsNullOrEmpty( QHost.Params.cachedir ) )
             {
-                _CacheDir = host.Params.cachedir;
+                _CacheDir = QHost.Params.cachedir;
             }
             else
             {

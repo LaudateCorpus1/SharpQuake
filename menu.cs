@@ -79,7 +79,7 @@ namespace SharpQuake
         /// </summary>
         public static void Draw()
         {
-            if( MenuBase.CurrentMenu == null || Key.Destination != keydest_t.key_menu )
+            if( MenuBase.CurrentMenu == null || QKey.Destination != QKeyDest.Menu )
                 return;
 
             if( !_RecursiveDraw )
@@ -88,11 +88,11 @@ namespace SharpQuake
 
                 if( Scr.ConCurrent > 0 )
                 {
-                    Drawer.DrawConsoleBackground( Scr.vid.height );
+                    QGLDraw.DrawConsoleBackground( Scr.vid.height );
                     QSound.ExtraUpdate();
                 }
                 else
-                    Drawer.FadeScreen();
+                    QGLDraw.FadeScreen();
 
                 Scr.FullUpdate = 0;
             }
@@ -120,7 +120,7 @@ namespace SharpQuake
         {
             EnterSound = true;
 
-            if( Key.Destination == keydest_t.key_menu )
+            if( QKey.Destination == QKeyDest.Menu )
             {
                 if( MenuBase.CurrentMenu != MenuBase.MainMenu )
                 {
@@ -130,9 +130,9 @@ namespace SharpQuake
                 MenuBase.Hide();
                 return;
             }
-            if( Key.Destination == keydest_t.key_console )
+            if( QKey.Destination == QKeyDest.Console )
             {
-                Con.ToggleConsole_f();
+                QConsole.ToggleConsole_f();
             }
             else
             {
@@ -140,22 +140,22 @@ namespace SharpQuake
             }
         }
 
-        public static void DrawPic( int x, int y, glpic_t pic )
+        public static void DrawPic( int x, int y, QGLUITexture pic )
         {
-            Drawer.DrawPic( x + ( ( Scr.vid.width - 320 ) >> 1 ), y, pic );
+            QGLDraw.DrawPic( x + ( ( Scr.vid.width - 320 ) >> 1 ), y, pic );
         }
 
-        public static void DrawTransPic( int x, int y, glpic_t pic )
+        public static void DrawTransPic( int x, int y, QGLUITexture pic )
         {
-            Drawer.DrawTransPic( x + ( ( Scr.vid.width - 320 ) >> 1 ), y, pic );
+            QGLDraw.DrawTransPic( x + ( ( Scr.vid.width - 320 ) >> 1 ), y, pic );
         }
 
         /// <summary>
         /// M_DrawTransPicTranslate
         /// </summary>
-        public static void DrawTransPicTranslate( int x, int y, glpic_t pic )
+        public static void DrawTransPicTranslate( int x, int y, QGLUITexture pic )
         {
-            Drawer.TransPicTranslate( x + ( ( Scr.vid.width - 320 ) >> 1 ), y, pic, _TranslationTable );
+            QGLDraw.TransPicTranslate( x + ( ( Scr.vid.width - 320 ) >> 1 ), y, pic, _TranslationTable );
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace SharpQuake
         /// </summary>
         public static void DrawCharacter( int cx, int line, int num )
         {
-            Drawer.DrawCharacter( cx + ( ( Scr.vid.width - 320 ) >> 1 ), line, num );
+            QGLDraw.DrawCharacter( cx + ( ( Scr.vid.width - 320 ) >> 1 ), line, num );
         }
 
         /// <summary>
@@ -198,15 +198,15 @@ namespace SharpQuake
             // draw left side
             int cx = x;
             int cy = y;
-            glpic_t p = Drawer.CachePic( "gfx/box_tl.lmp" );
+            QGLUITexture p = QGLDraw.CachePic( "gfx/box_tl.lmp" );
             DrawTransPic( cx, cy, p );
-            p = Drawer.CachePic( "gfx/box_ml.lmp" );
+            p = QGLDraw.CachePic( "gfx/box_ml.lmp" );
             for( int n = 0; n < lines; n++ )
             {
                 cy += 8;
                 DrawTransPic( cx, cy, p );
             }
-            p = Drawer.CachePic( "gfx/box_bl.lmp" );
+            p = QGLDraw.CachePic( "gfx/box_bl.lmp" );
             DrawTransPic( cx, cy + 8, p );
 
             // draw middle
@@ -214,17 +214,17 @@ namespace SharpQuake
             while( width > 0 )
             {
                 cy = y;
-                p = Drawer.CachePic( "gfx/box_tm.lmp" );
+                p = QGLDraw.CachePic( "gfx/box_tm.lmp" );
                 DrawTransPic( cx, cy, p );
-                p = Drawer.CachePic( "gfx/box_mm.lmp" );
+                p = QGLDraw.CachePic( "gfx/box_mm.lmp" );
                 for( int n = 0; n < lines; n++ )
                 {
                     cy += 8;
                     if( n == 1 )
-                        p = Drawer.CachePic( "gfx/box_mm2.lmp" );
+                        p = QGLDraw.CachePic( "gfx/box_mm2.lmp" );
                     DrawTransPic( cx, cy, p );
                 }
-                p = Drawer.CachePic( "gfx/box_bm.lmp" );
+                p = QGLDraw.CachePic( "gfx/box_bm.lmp" );
                 DrawTransPic( cx, cy + 8, p );
                 width -= 2;
                 cx += 16;
@@ -232,15 +232,15 @@ namespace SharpQuake
 
             // draw right side
             cy = y;
-            p = Drawer.CachePic( "gfx/box_tr.lmp" );
+            p = QGLDraw.CachePic( "gfx/box_tr.lmp" );
             DrawTransPic( cx, cy, p );
-            p = Drawer.CachePic( "gfx/box_mr.lmp" );
+            p = QGLDraw.CachePic( "gfx/box_mr.lmp" );
             for( int n = 0; n < lines; n++ )
             {
                 cy += 8;
                 DrawTransPic( cx, cy, p );
             }
-            p = Drawer.CachePic( "gfx/box_br.lmp" );
+            p = QGLDraw.CachePic( "gfx/box_br.lmp" );
             DrawTransPic( cx, cy + 8, p );
         }
 
@@ -417,14 +417,14 @@ namespace SharpQuake
 
         public static void Hide()
         {
-            Key.Destination = keydest_t.key_game;
+            QKey.Destination = QKeyDest.Game;
             _CurrentMenu = null;
         }
 
         public virtual void Show()
         {
             menu.EnterSound = true;
-            Key.Destination = keydest_t.key_menu;
+            QKey.Destination = QKeyDest.Menu;
             _CurrentMenu = this;
         }
 
@@ -443,7 +443,7 @@ namespace SharpQuake
 
         public override void Show()
         {
-            if( Key.Destination != keydest_t.key_menu )
+            if( QKey.Destination != QKeyDest.Menu )
             {
                 _SaveDemoNum = QClient.cls.demonum;
                 QClient.cls.demonum = -1;
@@ -459,27 +459,27 @@ namespace SharpQuake
         {
             switch( key )
             {
-                case Key.K_ESCAPE:
-                    //Key.Destination = keydest_t.key_game;
+                case QKey.K_ESCAPE:
+                    //QKey.Destination = QKeyDest.Game;
                     MenuBase.Hide();
                     QClient.cls.demonum = _SaveDemoNum;
-                    if( QClient.cls.demonum != -1 && !QClient.cls.demoplayback && QClient.cls.state != ServerType.CONNECTED )
+                    if( QClient.cls.demonum != -1 && !QClient.cls.demoplayback && QClient.cls.state != QServerType.CONNECTED )
                         QClient.NextDemo();
                     break;
 
-                case Key.K_DOWNARROW:
+                case QKey.K_DOWNARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     if( ++_Cursor >= MAIN_ITEMS )
                         _Cursor = 0;
                     break;
 
-                case Key.K_UPARROW:
+                case QKey.K_UPARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     if( --_Cursor < 0 )
                         _Cursor = MAIN_ITEMS - 1;
                     break;
 
-                case Key.K_ENTER:
+                case QKey.K_ENTER:
                     menu.EnterSound = true;
 
                     switch( _Cursor )
@@ -510,14 +510,14 @@ namespace SharpQuake
 
         public override void Draw()
         {
-            menu.DrawTransPic( 16, 4, Drawer.CachePic( "gfx/qplaque.lmp" ) );
-            glpic_t p = Drawer.CachePic( "gfx/ttl_main.lmp" );
+            menu.DrawTransPic( 16, 4, QGLDraw.CachePic( "gfx/qplaque.lmp" ) );
+            QGLUITexture p = QGLDraw.CachePic( "gfx/ttl_main.lmp" );
             menu.DrawPic( ( 320 - p.width ) / 2, 4, p );
-            menu.DrawTransPic( 72, 32, Drawer.CachePic( "gfx/mainmenu.lmp" ) );
+            menu.DrawTransPic( 72, 32, QGLDraw.CachePic( "gfx/mainmenu.lmp" ) );
 
-            int f = (int)( host.Time * 10 ) % 6;
+            int f = (int)( QHost.Time * 10 ) % 6;
 
-            menu.DrawTransPic( 54, 32 + _Cursor * 20, Drawer.CachePic( String.Format( "gfx/menudot{0}.lmp", f + 1 ) ) );
+            menu.DrawTransPic( 54, 32 + _Cursor * 20, QGLDraw.CachePic( string.Format( "gfx/menudot{0}.lmp", f + 1 ) ) );
         }
     }
 
@@ -532,23 +532,23 @@ namespace SharpQuake
         {
             switch( key )
             {
-                case Key.K_ESCAPE:
+                case QKey.K_ESCAPE:
                     MenuBase.MainMenu.Show();
                     break;
 
-                case Key.K_DOWNARROW:
+                case QKey.K_DOWNARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     if( ++_Cursor >= SINGLEPLAYER_ITEMS )
                         _Cursor = 0;
                     break;
 
-                case Key.K_UPARROW:
+                case QKey.K_UPARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     if( --_Cursor < 0 )
                         _Cursor = SINGLEPLAYER_ITEMS - 1;
                     break;
 
-                case Key.K_ENTER:
+                case QKey.K_ENTER:
                     menu.EnterSound = true;
 
                     switch( _Cursor )
@@ -557,7 +557,7 @@ namespace SharpQuake
                             if( server.sv.active )
                                 if( !Scr.ModalMessage( "Are you sure you want to\nstart a new game?\n" ) )
                                     break;
-                            Key.Destination = keydest_t.key_game;
+                            QKey.Destination = QKeyDest.Game;
                             if( server.sv.active )
                                 QCommandBuffer.AddText( "disconnect\n" );
                             QCommandBuffer.AddText( "maxplayers 1\n" );
@@ -581,14 +581,14 @@ namespace SharpQuake
         /// </summary>
         public override void Draw()
         {
-            menu.DrawTransPic( 16, 4, Drawer.CachePic( "gfx/qplaque.lmp" ) );
-            glpic_t p = Drawer.CachePic( "gfx/ttl_sgl.lmp" );
+            menu.DrawTransPic( 16, 4, QGLDraw.CachePic( "gfx/qplaque.lmp" ) );
+            QGLUITexture p = QGLDraw.CachePic( "gfx/ttl_sgl.lmp" );
             menu.DrawPic( ( 320 - p.width ) / 2, 4, p );
-            menu.DrawTransPic( 72, 32, Drawer.CachePic( "gfx/sp_menu.lmp" ) );
+            menu.DrawTransPic( 72, 32, QGLDraw.CachePic( "gfx/sp_menu.lmp" ) );
 
-            int f = (int)( host.Time * 10 ) % 6;
+            int f = (int)( QHost.Time * 10 ) % 6;
 
-            menu.DrawTransPic( 54, 32 + _Cursor * 20, Drawer.CachePic( String.Format( "gfx/menudot{0}.lmp", f + 1 ) ) );
+            menu.DrawTransPic( 54, 32 + _Cursor * 20, QGLDraw.CachePic( string.Format( "gfx/menudot{0}.lmp", f + 1 ) ) );
         }
     }
 
@@ -608,11 +608,11 @@ namespace SharpQuake
         {
             switch( key )
             {
-                case Key.K_ESCAPE:
+                case QKey.K_ESCAPE:
                     MenuBase.SinglePlayerMenu.Show();
                     break;
 
-                case Key.K_ENTER:
+                case QKey.K_ENTER:
                     QSound.LocalSound( "misc/menu2.wav" );
                     if( !_Loadable[_Cursor] )
                         return;
@@ -623,19 +623,19 @@ namespace SharpQuake
                     Scr.BeginLoadingPlaque();
 
                     // issue the load command
-                    QCommandBuffer.AddText( String.Format( "load s{0}\n", _Cursor ) );
+                    QCommandBuffer.AddText( string.Format( "load s{0}\n", _Cursor ) );
                     return;
 
-                case Key.K_UPARROW:
-                case Key.K_LEFTARROW:
+                case QKey.K_UPARROW:
+                case QKey.K_LEFTARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor--;
                     if( _Cursor < 0 )
                         _Cursor = MAX_SAVEGAMES - 1;
                     break;
 
-                case Key.K_DOWNARROW:
-                case Key.K_RIGHTARROW:
+                case QKey.K_DOWNARROW:
+                case QKey.K_RIGHTARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor++;
                     if( _Cursor >= MAX_SAVEGAMES )
@@ -646,14 +646,14 @@ namespace SharpQuake
 
         public override void Draw()
         {
-            glpic_t p = Drawer.CachePic( "gfx/p_load.lmp" );
+            QGLUITexture p = QGLDraw.CachePic( "gfx/p_load.lmp" );
             menu.DrawPic( ( 320 - p.width ) / 2, 4, p );
 
             for( int i = 0; i < MAX_SAVEGAMES; i++ )
                 menu.Print( 16, 32 + 8 * i, _FileNames[i] );
 
             // line cursor
-            menu.DrawCharacter( 8, 32 + _Cursor * 8, 12 + ( (int)( host.RealTime * 4 ) & 1 ) );
+            menu.DrawCharacter( 8, 32 + _Cursor * 8, 12 + ( (int)( QHost.RealTime * 4 ) & 1 ) );
         }
 
         /// <summary>
@@ -665,7 +665,7 @@ namespace SharpQuake
             {
                 _FileNames[i] = "--- UNUSED SLOT ---";
                 _Loadable[i] = false;
-                string name = String.Format( "{0}/s{1}.sav", QCommon.GameDir, i );
+                string name = string.Format( "{0}/s{1}.sav", QCommon.GameDir, i );
                 FileStream fs = sys.FileOpenRead( name );
                 if( fs == null )
                     continue;
@@ -679,7 +679,7 @@ namespace SharpQuake
                     if( info == null )
                         continue;
                     info = info.TrimEnd( '\0', '_' ).Replace( '_', ' ' );
-                    if( !String.IsNullOrEmpty( info ) )
+                    if( !string.IsNullOrEmpty( info ) )
                     {
                         _FileNames[i] = info;
                         _Loadable[i] = true;
@@ -713,25 +713,25 @@ namespace SharpQuake
         {
             switch( key )
             {
-                case Key.K_ESCAPE:
+                case QKey.K_ESCAPE:
                     MenuBase.SinglePlayerMenu.Show();
                     break;
 
-                case Key.K_ENTER:
+                case QKey.K_ENTER:
                     MenuBase.Hide();
-                    QCommandBuffer.AddText( String.Format( "save s{0}\n", _Cursor ) );
+                    QCommandBuffer.AddText( string.Format( "save s{0}\n", _Cursor ) );
                     return;
 
-                case Key.K_UPARROW:
-                case Key.K_LEFTARROW:
+                case QKey.K_UPARROW:
+                case QKey.K_LEFTARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor--;
                     if( _Cursor < 0 )
                         _Cursor = MAX_SAVEGAMES - 1;
                     break;
 
-                case Key.K_DOWNARROW:
-                case Key.K_RIGHTARROW:
+                case QKey.K_DOWNARROW:
+                case QKey.K_RIGHTARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor++;
                     if( _Cursor >= MAX_SAVEGAMES )
@@ -742,14 +742,14 @@ namespace SharpQuake
 
         public override void Draw()
         {
-            glpic_t p = Drawer.CachePic( "gfx/p_save.lmp" );
+            QGLUITexture p = QGLDraw.CachePic( "gfx/p_save.lmp" );
             menu.DrawPic( ( 320 - p.width ) / 2, 4, p );
 
             for( int i = 0; i < MAX_SAVEGAMES; i++ )
                 menu.Print( 16, 32 + 8 * i, _FileNames[i] );
 
             // line cursor
-            menu.DrawCharacter( 8, 32 + _Cursor * 8, 12 + ( (int)( host.RealTime * 4 ) & 1 ) );
+            menu.DrawCharacter( 8, 32 + _Cursor * 8, 12 + ( (int)( QHost.RealTime * 4 ) & 1 ) );
         }
     }
 
@@ -762,7 +762,7 @@ namespace SharpQuake
             if( CurrentMenu == this )
                 return;
 
-            Key.Destination = keydest_t.key_menu;
+            QKey.Destination = QKeyDest.Menu;
             _PrevMenu = CurrentMenu;
 
             base.Show();
@@ -772,7 +772,7 @@ namespace SharpQuake
         {
             switch( key )
             {
-                case Key.K_ESCAPE:
+                case QKey.K_ESCAPE:
                 case 'n':
                 case 'N':
                     if( _PrevMenu != null )
@@ -783,8 +783,8 @@ namespace SharpQuake
 
                 case 'Y':
                 case 'y':
-                    Key.Destination = keydest_t.key_console;
-                    host.Quit_f();
+                    QKey.Destination = QKeyDest.Console;
+                    QHost.Quit_f();
                     break;
 
                 default:
@@ -835,19 +835,19 @@ namespace SharpQuake
         {
             switch( key )
             {
-                case Key.K_ESCAPE:
+                case QKey.K_ESCAPE:
                     MenuBase.MainMenu.Show();
                     break;
 
-                case Key.K_UPARROW:
-                case Key.K_RIGHTARROW:
+                case QKey.K_UPARROW:
+                case QKey.K_RIGHTARROW:
                     menu.EnterSound = true;
                     if( ++_Page >= NUM_HELP_PAGES )
                         _Page = 0;
                     break;
 
-                case Key.K_DOWNARROW:
-                case Key.K_LEFTARROW:
+                case QKey.K_DOWNARROW:
+                case QKey.K_LEFTARROW:
                     menu.EnterSound = true;
                     if( --_Page < 0 )
                         _Page = NUM_HELP_PAGES - 1;
@@ -857,7 +857,7 @@ namespace SharpQuake
 
         public override void Draw()
         {
-            menu.DrawPic( 0, 0, Drawer.CachePic( String.Format( "gfx/help{0}.lmp", _Page ) ) );
+            menu.DrawPic( 0, 0, QGLDraw.CachePic( string.Format( "gfx/help{0}.lmp", _Page ) ) );
         }
     }
 
@@ -887,11 +887,11 @@ namespace SharpQuake
         {
             switch( key )
             {
-                case Key.K_ESCAPE:
+                case QKey.K_ESCAPE:
                     MenuBase.MainMenu.Show();
                     break;
 
-                case Key.K_ENTER:
+                case QKey.K_ENTER:
                     menu.EnterSound = true;
                     switch( _Cursor )
                     {
@@ -901,7 +901,7 @@ namespace SharpQuake
 
                         case 1:
                             MenuBase.Hide();
-                            Con.ToggleConsole_f();
+                            QConsole.ToggleConsole_f();
                             break;
 
                         case 2:
@@ -918,32 +918,32 @@ namespace SharpQuake
                     }
                     return;
 
-                case Key.K_UPARROW:
+                case QKey.K_UPARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor--;
                     if( _Cursor < 0 )
                         _Cursor = OPTIONS_ITEMS - 1;
                     break;
 
-                case Key.K_DOWNARROW:
+                case QKey.K_DOWNARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor++;
                     if( _Cursor >= OPTIONS_ITEMS )
                         _Cursor = 0;
                     break;
 
-                case Key.K_LEFTARROW:
+                case QKey.K_LEFTARROW:
                     AdjustSliders( -1 );
                     break;
 
-                case Key.K_RIGHTARROW:
+                case QKey.K_RIGHTARROW:
                     AdjustSliders( 1 );
                     break;
             }
 
             /*if( _Cursor == 12 && VideoMenu == null )
             {
-                if( key == Key.K_UPARROW )
+                if( key == QKey.K_UPARROW )
                     _Cursor = 11;
                 else
                     _Cursor = 0;
@@ -951,7 +951,7 @@ namespace SharpQuake
 
             if (_Cursor == 12)
             {
-                if (key == Key.K_UPARROW)
+                if (key == QKey.K_UPARROW)
                     _Cursor = 11;
                 else
                     _Cursor = 0;
@@ -970,8 +970,8 @@ namespace SharpQuake
 
         public override void Draw()
         {
-            menu.DrawTransPic( 16, 4, Drawer.CachePic( "gfx/qplaque.lmp" ) );
-            glpic_t p = Drawer.CachePic( "gfx/p_option.lmp" );
+            menu.DrawTransPic( 16, 4, QGLDraw.CachePic( "gfx/qplaque.lmp" ) );
+            QGLUITexture p = QGLDraw.CachePic( "gfx/p_option.lmp" );
             menu.DrawPic( ( 320 - p.width ) / 2, 4, p );
 
             menu.Print( 16, 32, "    Customize controls" );
@@ -1022,7 +1022,7 @@ namespace SharpQuake
 #endif
 
             // cursor
-            menu.DrawCharacter( 200, 32 + _Cursor * 8, 12 + ( (int)( host.RealTime * 4 ) & 1 ) );
+            menu.DrawCharacter( 200, 32 + _Cursor * 8, 12 + ( (int)( QHost.RealTime * 4 ) & 1 ) );
         }
 
         /// <summary>
@@ -1041,7 +1041,7 @@ namespace SharpQuake
                         value = 30;
                     if( value > 120 )
                         value = 120;
-                    cvar.Set( "viewsize", value );
+                    QCVar.Set( "viewsize", value );
                     break;
 
                 case 4:	// gamma
@@ -1050,7 +1050,7 @@ namespace SharpQuake
                         value = 0.5f;
                     if( value > 1 )
                         value = 1;
-                    cvar.Set( "gamma", value );
+                    QCVar.Set( "gamma", value );
                     break;
 
                 case 5:	// mouse speed
@@ -1059,7 +1059,7 @@ namespace SharpQuake
                         value = 1;
                     if( value > 11 )
                         value = 11;
-                    cvar.Set( "sensitivity", value );
+                    QCVar.Set( "sensitivity", value );
                     break;
 
                 case 6:	// music volume
@@ -1068,7 +1068,7 @@ namespace SharpQuake
                         value = 0;
                     if( value > 1 )
                         value = 1;
-                    cvar.Set( "bgmvolume", value );
+                    QCVar.Set( "bgmvolume", value );
                     break;
 
                 case 7:	// sfx volume
@@ -1077,32 +1077,32 @@ namespace SharpQuake
                         value = 0;
                     if( value > 1 )
                         value = 1;
-                    cvar.Set( "volume", value );
+                    QCVar.Set( "volume", value );
                     break;
 
                 case 8:	// allways run
                     if( QClient.ForwardSpeed > 200 )
                     {
-                        cvar.Set( "cl_forwardspeed", 200f );
-                        cvar.Set( "cl_backspeed", 200f );
+                        QCVar.Set( "cl_forwardspeed", 200f );
+                        QCVar.Set( "cl_backspeed", 200f );
                     }
                     else
                     {
-                        cvar.Set( "cl_forwardspeed", 400f );
-                        cvar.Set( "cl_backspeed", 400f );
+                        QCVar.Set( "cl_forwardspeed", 400f );
+                        QCVar.Set( "cl_backspeed", 400f );
                     }
                     break;
 
                 case 9:	// invert mouse
-                    cvar.Set( "m_pitch", -QClient.MPitch );
+                    QCVar.Set( "m_pitch", -QClient.MPitch );
                     break;
 
                 case 10:	// lookspring
-                    cvar.Set( "lookspring", !QClient.LookSpring ? 1f : 0f );
+                    QCVar.Set( "lookspring", !QClient.LookSpring ? 1f : 0f );
                     break;
 
                 case 11:	// lookstrafe
-                    cvar.Set( "lookstrafe", !QClient.LookStrafe ? 1f : 0f );
+                    QCVar.Set( "lookstrafe", !QClient.LookStrafe ? 1f : 0f );
                     break;
 
 #if _WIN32
@@ -1153,13 +1153,13 @@ namespace SharpQuake
             {
                 // defining a key
                 QSound.LocalSound( "misc/menu1.wav" );
-                if( key == Key.K_ESCAPE )
+                if( key == QKey.K_ESCAPE )
                 {
                     _BindGrab = false;
                 }
                 else if( key != '`' )
                 {
-                    string cmd = String.Format( "bind \"{0}\" \"{1}\"\n", Key.KeynumToString( key ), _BindNames[_Cursor][0] );
+                    string cmd = string.Format( "bind \"{0}\" \"{1}\"\n", QKey.KeynumToString( key ), _BindNames[_Cursor][0] );
                     QCommandBuffer.InsertText( cmd );
                 }
 
@@ -1169,27 +1169,27 @@ namespace SharpQuake
 
             switch( key )
             {
-                case Key.K_ESCAPE:
+                case QKey.K_ESCAPE:
                     MenuBase.OptionsMenu.Show();
                     break;
 
-                case Key.K_LEFTARROW:
-                case Key.K_UPARROW:
+                case QKey.K_LEFTARROW:
+                case QKey.K_UPARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor--;
                     if( _Cursor < 0 )
                         _Cursor = _BindNames.Length - 1;
                     break;
 
-                case Key.K_DOWNARROW:
-                case Key.K_RIGHTARROW:
+                case QKey.K_DOWNARROW:
+                case QKey.K_RIGHTARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor++;
                     if( _Cursor >= _BindNames.Length )
                         _Cursor = 0;
                     break;
 
-                case Key.K_ENTER:		// go into bind mode
+                case QKey.K_ENTER:		// go into bind mode
                     int[] keys = new int[2];
                     FindKeysForCommand( _BindNames[_Cursor][0], keys );
                     QSound.LocalSound( "misc/menu2.wav" );
@@ -1198,8 +1198,8 @@ namespace SharpQuake
                     _BindGrab = true;
                     break;
 
-                case Key.K_BACKSPACE:		// delete bindings
-                case Key.K_DEL:				// delete bindings
+                case QKey.K_BACKSPACE:		// delete bindings
+                case QKey.K_DEL:				// delete bindings
                     QSound.LocalSound( "misc/menu2.wav" );
                     UnbindCommand( _BindNames[_Cursor][0] );
                     break;
@@ -1208,7 +1208,7 @@ namespace SharpQuake
 
         public override void Draw()
         {
-            glpic_t p = Drawer.CachePic( "gfx/ttl_cstm.lmp" );
+            QGLUITexture p = QGLDraw.CachePic( "gfx/ttl_cstm.lmp" );
             menu.DrawPic( ( 320 - p.width ) / 2, 4, p );
 
             if( _BindGrab )
@@ -1233,13 +1233,13 @@ namespace SharpQuake
                 }
                 else
                 {
-                    string name = Key.KeynumToString( keys[0] );
+                    string name = QKey.KeynumToString( keys[0] );
                     menu.Print( 140, y, name );
                     int x = name.Length * 8;
                     if( keys[1] != -1 )
                     {
                         menu.Print( 140 + x + 8, y, "or" );
-                        menu.Print( 140 + x + 32, y, Key.KeynumToString( keys[1] ) );
+                        menu.Print( 140 + x + 32, y, QKey.KeynumToString( keys[1] ) );
                     }
                 }
             }
@@ -1247,7 +1247,7 @@ namespace SharpQuake
             if( _BindGrab )
                 menu.DrawCharacter( 130, 48 + _Cursor * 8, '=' );
             else
-                menu.DrawCharacter( 130, 48 + _Cursor * 8, 12 + ( (int)( host.RealTime * 4 ) & 1 ) );
+                menu.DrawCharacter( 130, 48 + _Cursor * 8, 12 + ( (int)( QHost.RealTime * 4 ) & 1 ) );
         }
 
         /// <summary>
@@ -1261,11 +1261,11 @@ namespace SharpQuake
 
             for( int j = 0; j < 256; j++ )
             {
-                string b = Key.Bindings[j];
-                if( String.IsNullOrEmpty( b ) )
+                string b = QKey.Bindings[j];
+                if( string.IsNullOrEmpty( b ) )
                     continue;
 
-                if( String.Compare( b, 0, command, 0, len ) == 0 )
+                if( string.Compare( b, 0, command, 0, len ) == 0 )
                 {
                     twokeys[count] = j;
                     count++;
@@ -1284,12 +1284,12 @@ namespace SharpQuake
 
             for( int j = 0; j < 256; j++ )
             {
-                string b = Key.Bindings[j];
-                if( String.IsNullOrEmpty( b ) )
+                string b = QKey.Bindings[j];
+                if( string.IsNullOrEmpty( b ) )
                     continue;
 
-                if( String.Compare( b, 0, command, 0, len ) == 0 )
-                    Key.SetBinding( j, String.Empty );
+                if( string.Compare( b, 0, command, 0, len ) == 0 )
+                    QKey.SetBinding( j, string.Empty );
             }
         }
     }
@@ -1302,23 +1302,23 @@ namespace SharpQuake
         {
             switch( key )
             {
-                case Key.K_ESCAPE:
+                case QKey.K_ESCAPE:
                     MenuBase.MainMenu.Show();
                     break;
 
-                case Key.K_DOWNARROW:
+                case QKey.K_DOWNARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     if( ++_Cursor >= MULTIPLAYER_ITEMS )
                         _Cursor = 0;
                     break;
 
-                case Key.K_UPARROW:
+                case QKey.K_UPARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     if( --_Cursor < 0 )
                         _Cursor = MULTIPLAYER_ITEMS - 1;
                     break;
 
-                case Key.K_ENTER:
+                case QKey.K_ENTER:
                     menu.EnterSound = true;
                     switch( _Cursor )
                     {
@@ -1342,14 +1342,14 @@ namespace SharpQuake
 
         public override void Draw()
         {
-            menu.DrawTransPic( 16, 4, Drawer.CachePic( "gfx/qplaque.lmp" ) );
-            glpic_t p = Drawer.CachePic( "gfx/p_multi.lmp" );
+            menu.DrawTransPic( 16, 4, QGLDraw.CachePic( "gfx/qplaque.lmp" ) );
+            QGLUITexture p = QGLDraw.CachePic( "gfx/p_multi.lmp" );
             menu.DrawPic( ( 320 - p.width ) / 2, 4, p );
-            menu.DrawTransPic( 72, 32, Drawer.CachePic( "gfx/mp_menu.lmp" ) );
+            menu.DrawTransPic( 72, 32, QGLDraw.CachePic( "gfx/mp_menu.lmp" ) );
 
-            float f = (int)( host.Time * 10 ) % 6;
+            float f = (int)( QHost.Time * 10 ) % 6;
 
-            menu.DrawTransPic( 54, 32 + _Cursor * 20, Drawer.CachePic( String.Format( "gfx/menudot{0}.lmp", f + 1 ) ) );
+            menu.DrawTransPic( 54, 32 + _Cursor * 20, QGLDraw.CachePic( string.Format( "gfx/menudot{0}.lmp", f + 1 ) ) );
 
             if( net.TcpIpAvailable )
                 return;
@@ -1403,32 +1403,32 @@ namespace SharpQuake
             _PortName = _Port.ToString();
 
             menu.ReturnOnError = false;
-            menu.ReturnReason = String.Empty;
+            menu.ReturnReason = string.Empty;
         }
 
         public override void KeyEvent( int key )
         {
             switch( key )
             {
-                case Key.K_ESCAPE:
+                case QKey.K_ESCAPE:
                     MenuBase.MultiPlayerMenu.Show();
                     break;
 
-                case Key.K_UPARROW:
+                case QKey.K_UPARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor--;
                     if( _Cursor < 0 )
                         _Cursor = NUM_LANCONFIG_CMDS - 1;
                     break;
 
-                case Key.K_DOWNARROW:
+                case QKey.K_DOWNARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor++;
                     if( _Cursor >= NUM_LANCONFIG_CMDS )
                         _Cursor = 0;
                     break;
 
-                case Key.K_ENTER:
+                case QKey.K_ENTER:
                     if( _Cursor == 0 )
                         break;
 
@@ -1453,21 +1453,21 @@ namespace SharpQuake
                         menu.ReturnMenu = this;
                         menu.ReturnOnError = true;
                         MenuBase.Hide();
-                        QCommandBuffer.AddText( String.Format( "connect \"{0}\"\n", _JoinName ) );
+                        QCommandBuffer.AddText( string.Format( "connect \"{0}\"\n", _JoinName ) );
                         break;
                     }
                     break;
 
-                case Key.K_BACKSPACE:
+                case QKey.K_BACKSPACE:
                     if( _Cursor == 0 )
                     {
-                        if( !String.IsNullOrEmpty( _PortName ) )
+                        if( !string.IsNullOrEmpty( _PortName ) )
                             _PortName = _PortName.Substring( 0, _PortName.Length - 1 );
                     }
 
                     if( _Cursor == 2 )
                     {
-                        if( !String.IsNullOrEmpty( _JoinName ) )
+                        if( !string.IsNullOrEmpty( _JoinName ) )
                             _JoinName = _JoinName.Substring( 0, _JoinName.Length - 1 );
                     }
                     break;
@@ -1494,7 +1494,7 @@ namespace SharpQuake
             }
 
             if( StartingGame && _Cursor == 2 )
-                if( key == Key.K_UPARROW )
+                if( key == QKey.K_UPARROW )
                     _Cursor = 1;
                 else
                     _Cursor = 0;
@@ -1509,8 +1509,8 @@ namespace SharpQuake
 
         public override void Draw()
         {
-            menu.DrawTransPic( 16, 4, Drawer.CachePic( "gfx/qplaque.lmp" ) );
-            glpic_t p = Drawer.CachePic( "gfx/p_multi.lmp" );
+            menu.DrawTransPic( 16, 4, QGLDraw.CachePic( "gfx/qplaque.lmp" ) );
+            QGLUITexture p = QGLDraw.CachePic( "gfx/p_multi.lmp" );
             int basex = ( 320 - p.width ) / 2;
             menu.DrawPic( basex, 4, p );
 
@@ -1543,24 +1543,24 @@ namespace SharpQuake
                 menu.Print( basex + 8, _CursorTable[1], "OK" );
             }
 
-            menu.DrawCharacter( basex - 8, _CursorTable[_Cursor], 12 + ( (int)( host.RealTime * 4 ) & 1 ) );
+            menu.DrawCharacter( basex - 8, _CursorTable[_Cursor], 12 + ( (int)( QHost.RealTime * 4 ) & 1 ) );
 
             if( _Cursor == 0 )
                 menu.DrawCharacter( basex + 9 * 8 + 8 * _PortName.Length,
-                    _CursorTable[0], 10 + ( (int)( host.RealTime * 4 ) & 1 ) );
+                    _CursorTable[0], 10 + ( (int)( QHost.RealTime * 4 ) & 1 ) );
 
             if( _Cursor == 2 )
                 menu.DrawCharacter( basex + 16 + 8 * _JoinName.Length, _CursorTable[2],
-                    10 + ( (int)( host.RealTime * 4 ) & 1 ) );
+                    10 + ( (int)( QHost.RealTime * 4 ) & 1 ) );
 
-            if( !String.IsNullOrEmpty( menu.ReturnReason ) )
+            if( !string.IsNullOrEmpty( menu.ReturnReason ) )
                 menu.PrintWhite( basex, 148, menu.ReturnReason );
         }
 
         public LanConfigMenu()
         {
             _Cursor = -1;
-            _JoinName = String.Empty;
+            _JoinName = string.Empty;
         }
     }
 
@@ -1597,25 +1597,25 @@ namespace SharpQuake
         {
             switch( key )
             {
-                case Key.K_ESCAPE:
+                case QKey.K_ESCAPE:
                     MenuBase.MultiPlayerMenu.Show();
                     break;
 
-                case Key.K_UPARROW:
+                case QKey.K_UPARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor--;
                     if( _Cursor < 0 )
                         _Cursor = NUM_SETUP_CMDS - 1;
                     break;
 
-                case Key.K_DOWNARROW:
+                case QKey.K_DOWNARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor++;
                     if( _Cursor >= NUM_SETUP_CMDS )
                         _Cursor = 0;
                     break;
 
-                case Key.K_LEFTARROW:
+                case QKey.K_LEFTARROW:
                     if( _Cursor < 2 )
                         return;
                     QSound.LocalSound( "misc/menu3.wav" );
@@ -1625,7 +1625,7 @@ namespace SharpQuake
                         _Bottom = _Bottom - 1;
                     break;
 
-                case Key.K_RIGHTARROW:
+                case QKey.K_RIGHTARROW:
                     if( _Cursor < 2 )
                         return;
 forward:
@@ -1636,7 +1636,7 @@ forward:
                         _Bottom = _Bottom + 1;
                     break;
 
-                case Key.K_ENTER:
+                case QKey.K_ENTER:
                     if( _Cursor == 0 || _Cursor == 1 )
                         return;
 
@@ -1645,25 +1645,25 @@ forward:
 
                     // _Cursor == 4 (OK)
                     if( _MyName != QClient.Name )
-                        QCommandBuffer.AddText( String.Format( "name \"{0}\"\n", _MyName ) );
+                        QCommandBuffer.AddText( string.Format( "name \"{0}\"\n", _MyName ) );
                     if( net.HostName != _HostName )
-                        cvar.Set( "hostname", _HostName );
+                        QCVar.Set( "hostname", _HostName );
                     if( _Top != _OldTop || _Bottom != _OldBottom )
-                        QCommandBuffer.AddText( String.Format( "color {0} {1}\n", _Top, _Bottom ) );
+                        QCommandBuffer.AddText( string.Format( "color {0} {1}\n", _Top, _Bottom ) );
                     menu.EnterSound = true;
                     MenuBase.MultiPlayerMenu.Show();
                     break;
 
-                case Key.K_BACKSPACE:
+                case QKey.K_BACKSPACE:
                     if( _Cursor == 0 )
                     {
-                        if( !String.IsNullOrEmpty( _HostName ) )
+                        if( !string.IsNullOrEmpty( _HostName ) )
                             _HostName = _HostName.Substring( 0, _HostName.Length - 1 );// setup_hostname[strlen(setup_hostname) - 1] = 0;
                     }
 
                     if( _Cursor == 1 )
                     {
-                        if( !String.IsNullOrEmpty( _MyName ) )
+                        if( !string.IsNullOrEmpty( _MyName ) )
                             _MyName = _MyName.Substring( 0, _MyName.Length - 1 );
                     }
                     break;
@@ -1702,8 +1702,8 @@ forward:
 
         public override void Draw()
         {
-            menu.DrawTransPic( 16, 4, Drawer.CachePic( "gfx/qplaque.lmp" ) );
-            glpic_t p = Drawer.CachePic( "gfx/p_multi.lmp" );
+            menu.DrawTransPic( 16, 4, QGLDraw.CachePic( "gfx/qplaque.lmp" ) );
+            QGLUITexture p = QGLDraw.CachePic( "gfx/p_multi.lmp" );
             menu.DrawPic( ( 320 - p.width ) / 2, 4, p );
 
             menu.Print( 64, 40, "Hostname" );
@@ -1720,19 +1720,19 @@ forward:
             menu.DrawTextBox( 64, 140 - 8, 14, 1 );
             menu.Print( 72, 140, "Accept Changes" );
 
-            p = Drawer.CachePic( "gfx/bigbox.lmp" );
+            p = QGLDraw.CachePic( "gfx/bigbox.lmp" );
             menu.DrawTransPic( 160, 64, p );
-            p = Drawer.CachePic( "gfx/menuplyr.lmp" );
+            p = QGLDraw.CachePic( "gfx/menuplyr.lmp" );
             menu.BuildTranslationTable( _Top * 16, _Bottom * 16 );
             menu.DrawTransPicTranslate( 172, 72, p );
 
-            menu.DrawCharacter( 56, _CursorTable[_Cursor], 12 + ( (int)( host.RealTime * 4 ) & 1 ) );
+            menu.DrawCharacter( 56, _CursorTable[_Cursor], 12 + ( (int)( QHost.RealTime * 4 ) & 1 ) );
 
             if( _Cursor == 0 )
-                menu.DrawCharacter( 168 + 8 * _HostName.Length, _CursorTable[_Cursor], 10 + ( (int)( host.RealTime * 4 ) & 1 ) );
+                menu.DrawCharacter( 168 + 8 * _HostName.Length, _CursorTable[_Cursor], 10 + ( (int)( QHost.RealTime * 4 ) & 1 ) );
 
             if( _Cursor == 1 )
-                menu.DrawCharacter( 168 + 8 * _MyName.Length, _CursorTable[_Cursor], 10 + ( (int)( host.RealTime * 4 ) & 1 ) );
+                menu.DrawCharacter( 168 + 8 * _MyName.Length, _CursorTable[_Cursor], 10 + ( (int)( QHost.RealTime * 4 ) & 1 ) );
         }
     }
 
@@ -1903,56 +1903,56 @@ forward:
         {
             switch( key )
             {
-                case Key.K_ESCAPE:
+                case QKey.K_ESCAPE:
                     MenuBase.LanConfigMenu.Show();
                     break;
 
-                case Key.K_UPARROW:
+                case QKey.K_UPARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor--;
                     if( _Cursor < 0 )
                         _Cursor = NUM_GAMEOPTIONS - 1;
                     break;
 
-                case Key.K_DOWNARROW:
+                case QKey.K_DOWNARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor++;
                     if( _Cursor >= NUM_GAMEOPTIONS )
                         _Cursor = 0;
                     break;
 
-                case Key.K_LEFTARROW:
+                case QKey.K_LEFTARROW:
                     if( _Cursor == 0 )
                         break;
                     QSound.LocalSound( "misc/menu3.wav" );
                     Change( -1 );
                     break;
 
-                case Key.K_RIGHTARROW:
+                case QKey.K_RIGHTARROW:
                     if( _Cursor == 0 )
                         break;
                     QSound.LocalSound( "misc/menu3.wav" );
                     Change( 1 );
                     break;
 
-                case Key.K_ENTER:
+                case QKey.K_ENTER:
                     QSound.LocalSound( "misc/menu2.wav" );
                     if( _Cursor == 0 )
                     {
                         if( server.IsActive )
                             QCommandBuffer.AddText( "disconnect\n" );
                         QCommandBuffer.AddText( "listen 0\n" );	// so host_netport will be re-examined
-                        QCommandBuffer.AddText( String.Format( "maxplayers {0}\n", _MaxPlayers ) );
+                        QCommandBuffer.AddText( string.Format( "maxplayers {0}\n", _MaxPlayers ) );
                         Scr.BeginLoadingPlaque();
 
                         if( QCommon.GameType == QGameType.Hipnotic )
-                            QCommandBuffer.AddText( String.Format( "map {0}\n",
+                            QCommandBuffer.AddText( string.Format( "map {0}\n",
                                 HipnoticLevels[HipnoticEpisodes[_StartEpisode].firstLevel + _StartLevel].name ) );
                         else if( QCommon.GameType == QGameType.Rogue )
-                            QCommandBuffer.AddText( String.Format( "map {0}\n",
+                            QCommandBuffer.AddText( string.Format( "map {0}\n",
                                 RogueLevels[RogueEpisodes[_StartEpisode].firstLevel + _StartLevel].name ) );
                         else
-                            QCommandBuffer.AddText( String.Format( "map {0}\n", Levels[Episodes[_StartEpisode].firstLevel + _StartLevel].name ) );
+                            QCommandBuffer.AddText( string.Format( "map {0}\n", Levels[Episodes[_StartEpisode].firstLevel + _StartLevel].name ) );
 
                         return;
                     }
@@ -1964,8 +1964,8 @@ forward:
 
         public override void Draw()
         {
-            menu.DrawTransPic( 16, 4, Drawer.CachePic( "gfx/qplaque.lmp" ) );
-            glpic_t p = Drawer.CachePic( "gfx/p_multi.lmp" );
+            menu.DrawTransPic( 16, 4, QGLDraw.CachePic( "gfx/qplaque.lmp" ) );
+            QGLUITexture p = QGLDraw.CachePic( "gfx/p_multi.lmp" );
             menu.DrawPic( ( 320 - p.width ) / 2, 4, p );
 
             menu.DrawTextBox( 152, 32, 10, 1 );
@@ -1975,7 +1975,7 @@ forward:
             menu.Print( 160, 56, _MaxPlayers.ToString() );
 
             menu.Print( 0, 64, "        Game Type" );
-            if( host.IsCoop )
+            if( QHost.IsCoop )
                 menu.Print( 160, 64, "Cooperative" );
             else
                 menu.Print( 160, 64, "Deathmatch" );
@@ -1984,7 +1984,7 @@ forward:
             if( QCommon.GameType == QGameType.Rogue )
             {
                 string msg;
-                switch( (int)host.TeamPlay )
+                switch( (int)QHost.TeamPlay )
                 {
                     case 1:
                         msg = "No Friendly Fire";
@@ -2019,7 +2019,7 @@ forward:
             else
             {
                 string msg;
-                switch( (int)host.TeamPlay )
+                switch( (int)QHost.TeamPlay )
                 {
                     case 1:
                         msg = "No Friendly Fire";
@@ -2037,26 +2037,26 @@ forward:
             }
 
             menu.Print( 0, 80, "            Skill" );
-            if( host.Skill == 0 )
+            if( QHost.Skill == 0 )
                 menu.Print( 160, 80, "Easy difficulty" );
-            else if( host.Skill == 1 )
+            else if( QHost.Skill == 1 )
                 menu.Print( 160, 80, "Normal difficulty" );
-            else if( host.Skill == 2 )
+            else if( QHost.Skill == 2 )
                 menu.Print( 160, 80, "Hard difficulty" );
             else
                 menu.Print( 160, 80, "Nightmare difficulty" );
 
             menu.Print( 0, 88, "       Frag Limit" );
-            if( host.FragLimit == 0 )
+            if( QHost.FragLimit == 0 )
                 menu.Print( 160, 88, "none" );
             else
-                menu.Print( 160, 88, String.Format( "{0} frags", (int)host.FragLimit ) );
+                menu.Print( 160, 88, string.Format( "{0} frags", (int)QHost.FragLimit ) );
 
             menu.Print( 0, 96, "       Time Limit" );
-            if( host.TimeLimit == 0 )
+            if( QHost.TimeLimit == 0 )
                 menu.Print( 160, 96, "none" );
             else
-                menu.Print( 160, 96, String.Format( "{0} minutes", (int)host.TimeLimit ) );
+                menu.Print( 160, 96, string.Format( "{0} minutes", (int)QHost.TimeLimit ) );
 
             menu.Print( 0, 112, "         Episode" );
             //MED 01/06/97 added hipnotic episodes
@@ -2088,11 +2088,11 @@ forward:
             }
 
             // line cursor
-            menu.DrawCharacter( 144, _CursorTable[_Cursor], 12 + ( (int)( host.RealTime * 4 ) & 1 ) );
+            menu.DrawCharacter( 144, _CursorTable[_Cursor], 12 + ( (int)( QHost.RealTime * 4 ) & 1 ) );
 
             if( _ServerInfoMessage )
             {
-                if( ( host.RealTime - _ServerInfoMessageTime ) < 5.0 )
+                if( ( QHost.RealTime - _ServerInfoMessageTime ) < 5.0 )
                 {
                     int x = ( 320 - 26 * 8 ) / 2;
                     menu.DrawTextBox( x, 138, 24, 4 );
@@ -2150,14 +2150,14 @@ forward:
                     {
                         _MaxPlayers = server.svs.maxclientslimit;
                         _ServerInfoMessage = true;
-                        _ServerInfoMessageTime = host.RealTime;
+                        _ServerInfoMessageTime = QHost.RealTime;
                     }
                     if( _MaxPlayers < 2 )
                         _MaxPlayers = 2;
                     break;
 
                 case 2:
-                    cvar.Set( "coop", host.IsCoop ? 0 : 1 );
+                    QCVar.Set( "coop", QHost.IsCoop ? 0 : 1 );
                     break;
 
                 case 3:
@@ -2166,40 +2166,40 @@ forward:
                     else
                         count = 2;
 
-                    float tp = host.TeamPlay + dir;
+                    float tp = QHost.TeamPlay + dir;
                     if( tp > count )
                         tp = 0;
                     else if( tp < 0 )
                         tp = count;
 
-                    cvar.Set( "teamplay", tp );
+                    QCVar.Set( "teamplay", tp );
                     break;
 
                 case 4:
-                    float skill = host.Skill + dir;
+                    float skill = QHost.Skill + dir;
                     if( skill > 3 )
                         skill = 0;
                     if( skill < 0 )
                         skill = 3;
-                    cvar.Set( "skill", skill );
+                    QCVar.Set( "skill", skill );
                     break;
 
                 case 5:
-                    float fraglimit = host.FragLimit + dir * 10;
+                    float fraglimit = QHost.FragLimit + dir * 10;
                     if( fraglimit > 100 )
                         fraglimit = 0;
                     if( fraglimit < 0 )
                         fraglimit = 100;
-                    cvar.Set( "fraglimit", fraglimit );
+                    QCVar.Set( "fraglimit", fraglimit );
                     break;
 
                 case 6:
-                    float timelimit = host.TimeLimit + dir * 5;
+                    float timelimit = QHost.TimeLimit + dir * 5;
                     if( timelimit > 60 )
                         timelimit = 0;
                     if( timelimit < 0 )
                         timelimit = 60;
-                    cvar.Set( "timelimit", timelimit );
+                    QCVar.Set( "timelimit", timelimit );
                     break;
 
                 case 7:
@@ -2267,7 +2267,7 @@ forward:
 
         public override void Draw()
         {
-            glpic_t p = Drawer.CachePic( "gfx/p_multi.lmp" );
+            QGLUITexture p = QGLDraw.CachePic( "gfx/p_multi.lmp" );
             menu.DrawPic( ( 320 - p.width ) / 2, 4, p );
             int x = ( 320 / 2 ) - ( ( 12 * 8 ) / 2 ) + 4;
             menu.DrawTextBox( x - 8, 32, 12, 1 );
@@ -2282,7 +2282,7 @@ forward:
             if( !_SearchComplete )
             {
                 _SearchComplete = true;
-                _SearchCompleteTime = host.RealTime;
+                _SearchCompleteTime = QHost.RealTime;
             }
 
             if( net.HostCacheCount > 0 )
@@ -2292,7 +2292,7 @@ forward:
             }
 
             menu.PrintWhite( ( 320 / 2 ) - ( ( 22 * 8 ) / 2 ), 64, "No Quake servers found" );
-            if( ( host.RealTime - _SearchCompleteTime ) < 3.0 )
+            if( ( QHost.RealTime - _SearchCompleteTime ) < 3.0 )
                 return;
 
             MenuBase.LanConfigMenu.Show();
@@ -2308,7 +2308,7 @@ forward:
             base.Show();
             _Cursor = 0;
             menu.ReturnOnError = false;
-            menu.ReturnReason = String.Empty;
+            menu.ReturnReason = string.Empty;
             _Sorted = false;
         }
 
@@ -2316,37 +2316,37 @@ forward:
         {
             switch( key )
             {
-                case Key.K_ESCAPE:
+                case QKey.K_ESCAPE:
                     MenuBase.LanConfigMenu.Show();
                     break;
 
-                case Key.K_SPACE:
+                case QKey.K_SPACE:
                     MenuBase.SearchMenu.Show();
                     break;
 
-                case Key.K_UPARROW:
-                case Key.K_LEFTARROW:
+                case QKey.K_UPARROW:
+                case QKey.K_LEFTARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor--;
                     if( _Cursor < 0 )
                         _Cursor = net.HostCacheCount - 1;
                     break;
 
-                case Key.K_DOWNARROW:
-                case Key.K_RIGHTARROW:
+                case QKey.K_DOWNARROW:
+                case QKey.K_RIGHTARROW:
                     QSound.LocalSound( "misc/menu1.wav" );
                     _Cursor++;
                     if( _Cursor >= net.HostCacheCount )
                         _Cursor = 0;
                     break;
 
-                case Key.K_ENTER:
+                case QKey.K_ENTER:
                     QSound.LocalSound( "misc/menu2.wav" );
                     menu.ReturnMenu = this;
                     menu.ReturnOnError = true;
                     _Sorted = false;
                     MenuBase.Hide();
-                    QCommandBuffer.AddText( String.Format( "connect \"{0}\"\n", net.HostCache[_Cursor].cname ) );
+                    QCommandBuffer.AddText( string.Format( "connect \"{0}\"\n", net.HostCache[_Cursor].cname ) );
                     break;
 
                 default:
@@ -2362,7 +2362,7 @@ forward:
                 {
                     Comparison<hostcache_t> cmp = delegate ( hostcache_t a, hostcache_t b )
                     {
-                        return String.Compare( a.cname, b.cname );
+                        return string.Compare( a.cname, b.cname );
                     };
 
                     Array.Sort( net.HostCache, cmp );
@@ -2370,21 +2370,21 @@ forward:
                 _Sorted = true;
             }
 
-            glpic_t p = Drawer.CachePic( "gfx/p_multi.lmp" );
+            QGLUITexture p = QGLDraw.CachePic( "gfx/p_multi.lmp" );
             menu.DrawPic( ( 320 - p.width ) / 2, 4, p );
             for( int n = 0; n < net.HostCacheCount; n++ )
             {
                 hostcache_t hc = net.HostCache[n];
                 string tmp;
                 if( hc.maxusers > 0 )
-                    tmp = String.Format( "{0,-15} {1,-15} {2:D2}/{3:D2}\n", hc.name, hc.map, hc.users, hc.maxusers );
+                    tmp = string.Format( "{0,-15} {1,-15} {2:D2}/{3:D2}\n", hc.name, hc.map, hc.users, hc.maxusers );
                 else
-                    tmp = String.Format( "{0,-15} {1,-15}\n", hc.name, hc.map );
+                    tmp = string.Format( "{0,-15} {1,-15}\n", hc.name, hc.map );
                 menu.Print( 16, 32 + 8 * n, tmp );
             }
-            menu.DrawCharacter( 0, 32 + _Cursor * 8, 12 + ( (int)( host.RealTime * 4 ) & 1 ) );
+            menu.DrawCharacter( 0, 32 + _Cursor * 8, 12 + ( (int)( QHost.RealTime * 4 ) & 1 ) );
 
-            if( !String.IsNullOrEmpty( menu.ReturnReason ) )
+            if( !string.IsNullOrEmpty( menu.ReturnReason ) )
                 menu.PrintWhite( 16, 148, menu.ReturnReason );
         }
     }
@@ -2409,7 +2409,7 @@ forward:
         {
             switch( key )
             {
-                case Key.K_ESCAPE:
+                case QKey.K_ESCAPE:
                     QSound.LocalSound( "misc/menu1.wav" );
                     MenuBase.OptionsMenu.Show();
                     break;
@@ -2421,7 +2421,7 @@ forward:
 
         public override void Draw()
         {
-            glpic_t p = Drawer.CachePic( "gfx/vidmodes.lmp" );
+            QGLUITexture p = QGLDraw.CachePic( "gfx/vidmodes.lmp" );
             menu.DrawPic( ( 320 - p.width ) / 2, 4, p );
 
             _WModes = 0;
@@ -2434,7 +2434,7 @@ forward:
                 int k = _WModes;
 
                 _ModeDescs[k].modenum = i;
-                _ModeDescs[k].desc = String.Format( "{0}x{1}x{2}", m.width, m.height, m.bpp );
+                _ModeDescs[k].desc = string.Format( "{0}x{1}x{2}", m.width, m.height, m.bpp );
                 _ModeDescs[k].iscur = false;
 
                 if( i == vid.ModeNum )

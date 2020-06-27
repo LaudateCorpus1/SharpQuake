@@ -23,7 +23,7 @@ using System.Text;
 namespace SharpQuake
 {
     //Any number of commands can be added in a frame, from several different sources.
-    //Most commands come from either keybindings or console line input, but remote
+    //Most commands come from either keybindings or console line QInput, but remote
     //servers can also send across commands and entire text files can be execed.
 
     //The + command line options are also added to the command buffer.
@@ -39,7 +39,7 @@ namespace SharpQuake
         // allocates an initial text buffer that will grow as needed
         public static void Init()
         {
-            // nothing to do
+            QCommand.Add( "wait", Cmd_Wait_f );
         }
 
         // Cbuf_AddText()
@@ -53,7 +53,7 @@ namespace SharpQuake
             int len = text.Length;
             if( _Buf.Length + len > _Buf.Capacity )
             {
-                Con.Print( "QCommandBuffer.AddText: overflow!\n" );
+                QConsole.Print( "QCommandBuffer.AddText: overflow!\n" );
             }
             else
             {

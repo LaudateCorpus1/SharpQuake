@@ -429,8 +429,8 @@ namespace SharpQuake
         // R_InitParticleTexture
         private static void InitParticleTexture()
         {
-            _ParticleTexture = Drawer.GenerateTextureNumber();// texture_extension_number++;
-            Drawer.Bind( _ParticleTexture );
+            _ParticleTexture = QGLDraw.GenerateTextureNumber();// texture_extension_number++;
+            QGLDraw.Bind( _ParticleTexture );
 
             byte[,,] data = new byte[8, 8, 4];
             for( int x = 0; x < 8; x++ )
@@ -443,9 +443,9 @@ namespace SharpQuake
                     data[y, x, 3] = (byte)( _DotTexture[x, y] * 255 );
                 }
             }
-            GL.TexImage2D( TextureTarget.Texture2D, 0, Drawer.AlphaFormat, 8, 8, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data );
+            GL.TexImage2D( TextureTarget.Texture2D, 0, QGLDraw.AlphaFormat, 8, 8, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data );
             GL.TexEnv( TextureEnvTarget.TextureEnv, TextureEnvParameter.TextureEnvMode, (int)TextureEnvMode.Modulate );
-            Drawer.SetTextureFilters( TextureMinFilter.Linear, TextureMagFilter.Linear );
+            QGLDraw.SetTextureFilters( TextureMinFilter.Linear, TextureMagFilter.Linear );
         }
 
         // particletexture	// little dot for particles
@@ -467,7 +467,7 @@ namespace SharpQuake
         /// </summary>
         private static void DrawParticles()
         {
-            Drawer.Bind( _ParticleTexture );
+            QGLDraw.Bind( _ParticleTexture );
             GL.Enable( EnableCap.Blend );
             GL.TexEnv( TextureEnvTarget.TextureEnv, TextureEnvParameter.TextureEnvMode, (int)TextureEnvMode.Modulate );
             GL.Begin( PrimitiveType.Triangles );

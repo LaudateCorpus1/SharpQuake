@@ -34,7 +34,7 @@ namespace SharpQuake
         /// </summary>
         public static bool Init()
         {
-            if( QClient.cls.state == ServerType.DEDICATED )
+            if( QClient.cls.state == QServerType.DEDICATED )
                 return false;
 
             if( QCommon.HasParam( "-nocdaudio" ) )
@@ -45,7 +45,7 @@ namespace SharpQuake
             if( _Controller.IsInitialized )
             {
                 QCommand.Add( "cd", CD_f );
-                Con.Print( "CD Audio (Fallback) Initialized\n" );
+                QConsole.Print( "CD Audio (Fallback) Initialized\n" );
             }
 
             return _Controller.IsInitialized;
@@ -129,7 +129,7 @@ namespace SharpQuake
                 {
                     for( int n = 1; n < 100; n++ )
                         if( remap[n] != n )
-                            Con.Print( "  {0} -> {1}\n", n, remap[n] );
+                            QConsole.Print( "  {0} -> {1}\n", n, remap[n] );
                     return;
                 }
 
@@ -149,7 +149,7 @@ namespace SharpQuake
                 _Controller.ReloadDiskInfo();
                 if( !_Controller.IsValidCD )
                 {
-                    Con.Print( "No CD in player.\n" );
+                    QConsole.Print( "No CD in player.\n" );
                     return;
                 }
             }
@@ -194,12 +194,12 @@ namespace SharpQuake
 
             if( QCommon.SameText( command, "info" ) )
             {
-                Con.Print( "%u tracks\n", _Controller.MaxTrack );
+                QConsole.Print( "%u tracks\n", _Controller.MaxTrack );
                 if( _Controller.IsPlaying )
-                    Con.Print( "Currently {0} track {1}\n", _Controller.IsLooping ? "looping" : "playing", _Controller.CurrentTrack );
+                    QConsole.Print( "Currently {0} track {1}\n", _Controller.IsLooping ? "looping" : "playing", _Controller.CurrentTrack );
                 else if( _Controller.IsPaused )
-                    Con.Print( "Paused {0} track {1}\n", _Controller.IsLooping ? "looping" : "playing", _Controller.CurrentTrack );
-                Con.Print( "Volume is {0}\n", _Controller.Volume );
+                    QConsole.Print( "Paused {0} track {1}\n", _Controller.IsLooping ? "looping" : "playing", _Controller.CurrentTrack );
+                QConsole.Print( "Volume is {0}\n", _Controller.Volume );
                 return;
             }
         }

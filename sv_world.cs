@@ -316,7 +316,7 @@ namespace SharpQuake
                 {
                     trace.fraction = midf;
                     trace.endpos = mid;
-                    Con.DPrint( "backup past 0\n" );
+                    QConsole.DPrint( "backup past 0\n" );
                     return false;
                 }
                 midf = p1f + ( p2f - p1f ) * frac;

@@ -1,24 +1,22 @@
-/// <copyright>
-///
-/// Rewritten in C# by Yury Kiselev, 2010.
-///
-/// Copyright (C) 1996-1997 Id Software, Inc.
-///
-/// This program is free software; you can redistribute it and/or
-/// modify it under the terms of the GNU General Public License
-/// as published by the Free Software Foundation; either version 2
-/// of the License, or (at your option) any later version.
-///
-/// This program is distributed in the hope that it will be useful,
-/// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-///
-/// See the GNU General Public License for more details.
-///
-/// You should have received a copy of the GNU General Public License
-/// along with this program; if not, write to the Free Software
-/// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-/// </copyright>
+/* Rewritten in C# by Yury Kiselev, 2010.
+ *
+ * Copyright (C) 1996-1997 Id Software, Inc.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 
 using System;
 using System.Globalization;
@@ -29,20 +27,20 @@ using System.Text;
 
 namespace SharpQuake
 {
-    partial class host
+    internal static partial class QHost
     {
         /// <summary>
         /// Host_Quit_f
         /// </summary>
         public static void Quit_f()
         {
-            if( Key.Destination != keydest_t.key_console && QClient.cls.state != ServerType.DEDICATED )
+            if( QKey.Destination != QKeyDest.Console && QClient.cls.state != QServerType.DEDICATED )
             {
                 MenuBase.QuitMenu.Show();
                 return;
             }
             QClient.Disconnect();
-            host.ShutdownServer( false );
+            QHost.ShutdownServer( false );
             sys.Quit();
         }
 
@@ -107,7 +105,7 @@ namespace SharpQuake
                 flag = false;
 
             StringBuilder sb = new StringBuilder( 256 );
-            sb.Append( $"host:    {cvar.GetString( "hostname" )}\n" );
+            sb.Append( $"QHost:    {QCVar.GetString( "hostname" )}\n" );
             sb.Append( $"version: {QDef.VERSION:F2}\n" );
             if( net.TcpIpAvailable )
             {
@@ -145,7 +143,7 @@ namespace SharpQuake
             }
 
             if( flag )
-                Con.Print( sb.ToString() );
+                QConsole.Print( sb.ToString() );
             else
                 server.ClientPrint( sb.ToString() );
         }
@@ -162,7 +160,7 @@ namespace SharpQuake
                 return;
             }
 
-            if( progs.GlobalStruct.deathmatch != 0 && !host.HostClient.privileged )
+            if( progs.GlobalStruct.deathmatch != 0 && !QHost.HostClient.privileged )
                 return;
 
             server.Player.v.flags = (int)server.Player.v.flags ^ EdictFlags.FL_GODMODE;
@@ -183,7 +181,7 @@ namespace SharpQuake
                 return;
             }
 
-            if( progs.GlobalStruct.deathmatch != 0 && !host.HostClient.privileged )
+            if( progs.GlobalStruct.deathmatch != 0 && !QHost.HostClient.privileged )
                 return;
 
             server.Player.v.flags = (int)server.Player.v.flags ^ EdictFlags.FL_NOTARGET;
@@ -204,18 +202,18 @@ namespace SharpQuake
                 return;
             }
 
-            if( progs.GlobalStruct.deathmatch > 0 && !host.HostClient.privileged )
+            if( progs.GlobalStruct.deathmatch > 0 && !QHost.HostClient.privileged )
                 return;
 
             if( server.Player.v.movetype != Movetypes.MOVETYPE_NOCLIP )
             {
-                host.NoClipAngleHack = true;
+                QHost.NoClipAngleHack = true;
                 server.Player.v.movetype = Movetypes.MOVETYPE_NOCLIP;
                 server.ClientPrint( "noclip ON\n" );
             }
             else
             {
-                host.NoClipAngleHack = false;
+                QHost.NoClipAngleHack = false;
                 server.Player.v.movetype = Movetypes.MOVETYPE_WALK;
                 server.ClientPrint( "noclip OFF\n" );
             }
@@ -233,7 +231,7 @@ namespace SharpQuake
                 return;
             }
 
-            if( progs.GlobalStruct.deathmatch > 0 && !host.HostClient.privileged )
+            if( progs.GlobalStruct.deathmatch > 0 && !QHost.HostClient.privileged )
                 return;
 
             if( server.Player.v.movetype != Movetypes.MOVETYPE_FLY )
@@ -288,7 +286,7 @@ namespace SharpQuake
             QClient.Disconnect();
             ShutdownServer( false );
 
-            Key.Destination = keydest_t.key_game;			// remove console or menu
+            QKey.Destination = QKeyDest.Game;			// remove console or menu
             Scr.BeginLoadingPlaque();
 
             QClient.cls.mapstring = QCommand.JoinArgv() + "\n";
@@ -300,7 +298,7 @@ namespace SharpQuake
             if( !server.IsActive )
                 return;
 
-            if( QClient.cls.state != ServerType.DEDICATED )
+            if( QClient.cls.state != QServerType.DEDICATED )
             {
                 QClient.cls.spawnparms = QCommand.JoinArgv();
                 QCommand.ExecuteString( "connect local", QCommandSource.src_command );
@@ -315,12 +313,12 @@ namespace SharpQuake
         {
             if( QCommand.Argc != 2 )
             {
-                Con.Print( "changelevel <levelname> : continue game on a new level\n" );
+                QConsole.Print( "changelevel <levelname> : continue game on a new level\n" );
                 return;
             }
             if( !server.sv.active || QClient.cls.demoplayback )
             {
-                Con.Print( "Only the server may changelevel\n" );
+                QConsole.Print( "Only the server may changelevel\n" );
                 return;
             }
             server.SaveSpawnparms();
@@ -402,31 +400,31 @@ namespace SharpQuake
 
             if( !server.sv.active )
             {
-                Con.Print( "Not playing a local game.\n" );
+                QConsole.Print( "Not playing a local game.\n" );
                 return;
             }
 
             if( QClient.cl.intermission != 0 )
             {
-                Con.Print( "Can't save in intermission.\n" );
+                QConsole.Print( "Can't save in intermission.\n" );
                 return;
             }
 
             if( server.svs.maxclients != 1 )
             {
-                Con.Print( "Can't save multiplayer games.\n" );
+                QConsole.Print( "Can't save multiplayer games.\n" );
                 return;
             }
 
             if( QCommand.Argc != 2 )
             {
-                Con.Print( "save <savename> : save a game\n" );
+                QConsole.Print( "save <savename> : save a game\n" );
                 return;
             }
 
             if( QCommand.Argv( 1 ).Contains( ".." ) )
             {
-                Con.Print( "Relative pathnames are not allowed.\n" );
+                QConsole.Print( "Relative pathnames are not allowed.\n" );
                 return;
             }
 
@@ -434,18 +432,18 @@ namespace SharpQuake
             {
                 if( server.svs.clients[i].active && ( server.svs.clients[i].edict.v.health <= 0 ) )
                 {
-                    Con.Print( "Can't savegame with a dead player\n" );
+                    QConsole.Print( "Can't savegame with a dead player\n" );
                     return;
                 }
             }
 
             string name = Path.ChangeExtension( Path.Combine( QCommon.GameDir, QCommand.Argv( 1 ) ), ".sav" );
 
-            Con.Print( "Saving game to {0}...\n", name );
+            QConsole.Print( "Saving game to {0}...\n", name );
             FileStream fs = sys.FileOpenWrite( name, true );
             if( fs == null )
             {
-                Con.Print( "ERROR: couldn't open.\n" );
+                QConsole.Print( "ERROR: couldn't open.\n" );
                 return;
             }
             using( StreamWriter writer = new StreamWriter( fs, Encoding.ASCII ) )
@@ -457,7 +455,7 @@ namespace SharpQuake
                     writer.WriteLine( server.svs.clients[0].spawn_parms[i].ToString( "F6",
                         CultureInfo.InvariantCulture.NumberFormat ) );
 
-                writer.WriteLine( host.CurrentSkill );
+                writer.WriteLine( QHost.CurrentSkill );
                 writer.WriteLine( server.sv.name );
                 writer.WriteLine( server.sv.time.ToString( "F6",
                     CultureInfo.InvariantCulture.NumberFormat ) );
@@ -479,7 +477,7 @@ namespace SharpQuake
                     writer.Flush();
                 }
             }
-            Con.Print( "done.\n" );
+            QConsole.Print( "done.\n" );
         }
 
         /// <summary>
@@ -492,7 +490,7 @@ namespace SharpQuake
 
             if( QCommand.Argc != 2 )
             {
-                Con.Print( "load <savename> : load a game\n" );
+                QConsole.Print( "load <savename> : load a game\n" );
                 return;
             }
 
@@ -504,11 +502,11 @@ namespace SharpQuake
             // been used.  The menu calls it before stuffing loadgame command
             //	SCR_BeginLoadingPlaque ();
 
-            Con.Print( "Loading game from {0}...\n", name );
+            QConsole.Print( "Loading game from {0}...\n", name );
             FileStream fs = sys.FileOpenRead( name );
             if( fs == null )
             {
-                Con.Print( "ERROR: couldn't open.\n" );
+                QConsole.Print( "ERROR: couldn't open.\n" );
                 return;
             }
 
@@ -518,7 +516,7 @@ namespace SharpQuake
                 int version = QCommon.atoi( line );
                 if( version != SAVEGAME_VERSION )
                 {
-                    Con.Print( "Savegame is version {0}, not {1}\n", version, SAVEGAME_VERSION );
+                    QConsole.Print( "Savegame is version {0}, not {1}\n", version, SAVEGAME_VERSION );
                     return;
                 }
                 line = reader.ReadLine();
@@ -532,8 +530,8 @@ namespace SharpQuake
                 // this silliness is so we can load 1.06 save files, which have float skill values
                 line = reader.ReadLine();
                 float tfloat = QCommon.atof( line );
-                host.CurrentSkill = (int)( tfloat + 0.1 );
-                cvar.Set( "skill", (float)host.CurrentSkill );
+                QHost.CurrentSkill = (int)( tfloat + 0.1 );
+                QCVar.Set( "skill", (float)QHost.CurrentSkill );
 
                 string mapname = reader.ReadLine();
                 line = reader.ReadLine();
@@ -544,7 +542,7 @@ namespace SharpQuake
 
                 if( !server.sv.active )
                 {
-                    Con.Print( "Couldn't load map\n" );
+                    QConsole.Print( "Couldn't load map\n" );
                     return;
                 }
                 server.sv.paused = true;		// pause until all clients connect
@@ -607,7 +605,7 @@ namespace SharpQuake
                     server.svs.clients[0].spawn_parms[i] = spawn_parms[i];
             }
 
-            if( QClient.cls.state != ServerType.DEDICATED )
+            if( QClient.cls.state != QServerType.DEDICATED )
             {
                 QClient.EstablishConnection( "local" );
                 Reconnect_f();
@@ -619,7 +617,7 @@ namespace SharpQuake
         {
             if( QCommand.Argc == 1 )
             {
-                Con.Print( "\"name\" is \"{0}\"\n", QClient.Name );
+                QConsole.Print( "\"name\" is \"{0}\"\n", QClient.Name );
                 return;
             }
 
@@ -636,31 +634,31 @@ namespace SharpQuake
             {
                 if( QClient.Name == newName )
                     return;
-                cvar.Set( "_cl_name", newName );
-                if( QClient.cls.state == ServerType.CONNECTED )
+                QCVar.Set( "_cl_name", newName );
+                if( QClient.cls.state == QServerType.CONNECTED )
                     QCommand.ForwardToServer();
                 return;
             }
 
-            if( !string.IsNullOrEmpty( host.HostClient.name ) && host.HostClient.name != "unconnected" )
-                if( host.HostClient.name != newName )
-                    Con.Print( "{0} renamed to {1}\n", host.HostClient.name, newName );
+            if( !string.IsNullOrEmpty( QHost.HostClient.name ) && QHost.HostClient.name != "unconnected" )
+                if( QHost.HostClient.name != newName )
+                    QConsole.Print( "{0} renamed to {1}\n", QHost.HostClient.name, newName );
 
-            host.HostClient.name = newName;
-            host.HostClient.edict.v.netname = progs.NewString( newName );
+            QHost.HostClient.name = newName;
+            QHost.HostClient.edict.v.netname = progs.NewString( newName );
 
             // send notification to all clients
             QMessageWriter MessageWriter = server.sv.reliable_datagram;
             MessageWriter.WriteByte( protocol.svc_updatename );
-            MessageWriter.WriteByte( host.ClientNum );
+            MessageWriter.WriteByte( QHost.ClientNum );
             MessageWriter.WriteString( newName );
         }
 
         // Host_Version_f
         private static void Version_f()
         {
-            Con.Print( "Version {0}\n", QDef.VERSION );
-            Con.Print( "Exe hash code: {0}\n", System.Reflection.Assembly.GetExecutingAssembly().GetHashCode() );
+            QConsole.Print( "Version {0}\n", QDef.VERSION );
+            QConsole.Print( "Exe hash code: {0}\n", System.Reflection.Assembly.GetExecutingAssembly().GetHashCode() );
         }
 
         /// <summary>
@@ -671,7 +669,7 @@ namespace SharpQuake
             bool fromServer = false;
             if( QCommand.Source == QCommandSource.src_command )
             {
-                if( QClient.cls.state == ServerType.DEDICATED )
+                if( QClient.cls.state == QServerType.DEDICATED )
                 {
                     fromServer = true;
                     teamonly = false;
@@ -686,7 +684,7 @@ namespace SharpQuake
             if( QCommand.Argc < 2 )
                 return;
 
-            client_t save = host.HostClient;
+            client_t save = QHost.HostClient;
 
             string p = QCommand.Args;
             // remove quotes if present
@@ -709,12 +707,12 @@ namespace SharpQuake
                 client_t client = server.svs.clients[j];
                 if( client == null || !client.active || !client.spawned )
                     continue;
-                if( host.TeamPlay != 0 && teamonly && client.edict.v.team != save.edict.v.team )
+                if( QHost.TeamPlay != 0 && teamonly && client.edict.v.team != save.edict.v.team )
                     continue;
-                host.HostClient = client;
+                QHost.HostClient = client;
                 server.ClientPrint( text );
             }
-            host.HostClient = save;
+            QHost.HostClient = save;
         }
 
         // Host_Say_f
@@ -741,7 +739,7 @@ namespace SharpQuake
             if( QCommand.Argc < 3 )
                 return;
 
-            string text = host.HostClient.name + ": ";
+            string text = QHost.HostClient.name + ": ";
             string p = QCommand.Args;
 
             // remove quotes if present
@@ -752,7 +750,7 @@ namespace SharpQuake
 
             text += p + "\n";
 
-            client_t save = host.HostClient;
+            client_t save = QHost.HostClient;
             for( int j = 0; j < server.svs.maxclients; j++ )
             {
                 client_t client = server.svs.clients[j];
@@ -760,11 +758,11 @@ namespace SharpQuake
                     continue;
                 if( client.name == QCommand.Argv( 1 ) )
                     continue;
-                host.HostClient = client;
+                QHost.HostClient = client;
                 server.ClientPrint( text );
                 break;
             }
-            host.HostClient = save;
+            QHost.HostClient = save;
         }
 
         // Host_Color_f
@@ -772,8 +770,8 @@ namespace SharpQuake
         {
             if( QCommand.Argc == 1 )
             {
-                Con.Print( "\"color\" is \"{0} {1}\"\n", ( (int)QClient.Color ) >> 4, ( (int)QClient.Color ) & 0x0f );
-                Con.Print( "color <0-13> [0-13]\n" );
+                QConsole.Print( "\"color\" is \"{0} {1}\"\n", ( (int)QClient.Color ) >> 4, ( (int)QClient.Color ) & 0x0f );
+                QConsole.Print( "color <0-13> [0-13]\n" );
                 return;
             }
 
@@ -797,20 +795,20 @@ namespace SharpQuake
 
             if( QCommand.Source == QCommandSource.src_command )
             {
-                cvar.Set( "_cl_color", playercolor );
-                if( QClient.cls.state == ServerType.CONNECTED )
+                QCVar.Set( "_cl_color", playercolor );
+                if( QClient.cls.state == QServerType.CONNECTED )
                     QCommand.ForwardToServer();
                 return;
             }
 
-            host.HostClient.colors = playercolor;
-            host.HostClient.edict.v.team = bottom + 1;
+            QHost.HostClient.colors = playercolor;
+            QHost.HostClient.edict.v.team = bottom + 1;
 
             // send notification to all clients
             QMessageWriter MessageWriter = server.sv.reliable_datagram;
             MessageWriter.WriteByte( protocol.svc_updatecolors );
-            MessageWriter.WriteByte( host.ClientNum );
-            MessageWriter.WriteByte( host.HostClient.colors );
+            MessageWriter.WriteByte( QHost.ClientNum );
+            MessageWriter.WriteByte( QHost.HostClient.colors );
         }
 
         /// <summary>
@@ -873,21 +871,21 @@ namespace SharpQuake
         {
             if( QCommand.Source == QCommandSource.src_command )
             {
-                Con.Print( "prespawn is not valid from the console\n" );
+                QConsole.Print( "prespawn is not valid from the console\n" );
                 return;
             }
 
-            if( host.HostClient.spawned )
+            if( QHost.HostClient.spawned )
             {
-                Con.Print( "prespawn not valid -- allready spawned\n" );
+                QConsole.Print( "prespawn not valid -- allready spawned\n" );
                 return;
             }
 
-            QMessageWriter MessageWriter = host.HostClient.message;
+            QMessageWriter MessageWriter = QHost.HostClient.message;
             MessageWriter.Write( server.sv.signon.Data, 0, server.sv.signon.Length );
             MessageWriter.WriteByte( protocol.svc_signonnum );
             MessageWriter.WriteByte( 2 );
-            host.HostClient.sendsignon = true;
+            QHost.HostClient.sendsignon = true;
         }
 
         /// <summary>
@@ -897,13 +895,13 @@ namespace SharpQuake
         {
             if( QCommand.Source == QCommandSource.src_command )
             {
-                Con.Print( "spawn is not valid from the console\n" );
+                QConsole.Print( "spawn is not valid from the console\n" );
                 return;
             }
 
-            if( host.HostClient.spawned )
+            if( QHost.HostClient.spawned )
             {
-                Con.Print( "Spawn not valid -- allready spawned\n" );
+                QConsole.Print( "Spawn not valid -- allready spawned\n" );
                 return;
             }
 
@@ -919,15 +917,15 @@ namespace SharpQuake
             else
             {
                 // set up the edict
-                ent = host.HostClient.edict;
+                ent = QHost.HostClient.edict;
 
                 ent.Clear(); //memset(&ent.v, 0, progs.entityfields * 4);
                 ent.v.colormap = server.NumForEdict( ent );
-                ent.v.team = ( host.HostClient.colors & 15 ) + 1;
-                ent.v.netname = progs.NewString( host.HostClient.name );
+                ent.v.team = ( QHost.HostClient.colors & 15 ) + 1;
+                ent.v.netname = progs.NewString( QHost.HostClient.name );
 
                 // copy spawn parms out of the client_t
-                progs.GlobalStruct.SetParams( host.HostClient.spawn_parms );
+                progs.GlobalStruct.SetParams( QHost.HostClient.spawn_parms );
 
                 // call the spawn function
 
@@ -935,14 +933,14 @@ namespace SharpQuake
                 progs.GlobalStruct.self = server.EdictToProg( server.Player );
                 progs.Execute( progs.GlobalStruct.ClientConnect );
 
-                if( ( sys.GetFloatTime() - host.HostClient.netconnection.connecttime ) <= server.sv.time )
-                    Con.DPrint( "{0} entered the game\n", host.HostClient.name );
+                if( ( sys.GetFloatTime() - QHost.HostClient.netconnection.connecttime ) <= server.sv.time )
+                    QConsole.DPrint( "{0} entered the game\n", QHost.HostClient.name );
 
                 progs.Execute( progs.GlobalStruct.PutClientInServer );
             }
 
             // send all current names, colors, and frag counts
-            QMessageWriter MessageWriter = host.HostClient.message;
+            QMessageWriter MessageWriter = QHost.HostClient.message;
             MessageWriter.Clear();
 
             // send time of update
@@ -996,17 +994,17 @@ namespace SharpQuake
             // in a state where it is expecting the QClient to correct the angle
             // and it won't happen if the game was just loaded, so you wind up
             // with a permanent head tilt
-            ent = server.EdictNum( 1 + host.ClientNum );
+            ent = server.EdictNum( 1 + QHost.ClientNum );
             MessageWriter.WriteByte( protocol.svc_setangle );
             MessageWriter.WriteAngle( ent.v.angles.x );
             MessageWriter.WriteAngle( ent.v.angles.y );
             MessageWriter.WriteAngle( 0 );
 
-            server.WriteClientDataToMessage( server.Player, host.HostClient.message );
+            server.WriteClientDataToMessage( server.Player, QHost.HostClient.message );
 
             MessageWriter.WriteByte( protocol.svc_signonnum );
             MessageWriter.WriteByte( 3 );
-            host.HostClient.sendsignon = true;
+            QHost.HostClient.sendsignon = true;
         }
 
         // Host_Begin_f
@@ -1014,11 +1012,11 @@ namespace SharpQuake
         {
             if( QCommand.Source == QCommandSource.src_command )
             {
-                Con.Print( "begin is not valid from the console\n" );
+                QConsole.Print( "begin is not valid from the console\n" );
                 return;
             }
 
-            host.HostClient.spawned = true;
+            QHost.HostClient.spawned = true;
         }
 
         /// <summary>
@@ -1035,10 +1033,10 @@ namespace SharpQuake
                     return;
                 }
             }
-            else if( progs.GlobalStruct.deathmatch != 0 && !host.HostClient.privileged )
+            else if( progs.GlobalStruct.deathmatch != 0 && !QHost.HostClient.privileged )
                 return;
 
-            client_t save = host.HostClient;
+            client_t save = QHost.HostClient;
             bool byNumber = false;
             int i;
             if( QCommand.Argc > 2 && QCommand.Argv( 1 ) == "#" )
@@ -1049,17 +1047,17 @@ namespace SharpQuake
                 if( !server.svs.clients[i].active )
                     return;
 
-                host.HostClient = server.svs.clients[i];
+                QHost.HostClient = server.svs.clients[i];
                 byNumber = true;
             }
             else
             {
                 for( i = 0; i < server.svs.maxclients; i++ )
                 {
-                    host.HostClient = server.svs.clients[i];
-                    if( !host.HostClient.active )
+                    QHost.HostClient = server.svs.clients[i];
+                    if( !QHost.HostClient.active )
                         continue;
-                    if( QCommon.SameText( host.HostClient.name, QCommand.Argv( 1 ) ) )
+                    if( QCommon.SameText( QHost.HostClient.name, QCommand.Argv( 1 ) ) )
                         break;
                 }
             }
@@ -1068,7 +1066,7 @@ namespace SharpQuake
             {
                 string who;
                 if( QCommand.Source == QCommandSource.src_command )
-                    if( QClient.cls.state == ServerType.DEDICATED )
+                    if( QClient.cls.state == QServerType.DEDICATED )
                         who = "Console";
                     else
                         who = QClient.Name;
@@ -1076,7 +1074,7 @@ namespace SharpQuake
                     who = save.name;
 
                 // can't kick yourself!
-                if( host.HostClient == save )
+                if( QHost.HostClient == save )
                     return;
 
                 string message = null;
@@ -1098,7 +1096,7 @@ namespace SharpQuake
                 server.DropClient( false );
             }
 
-            host.HostClient = save;
+            QHost.HostClient = save;
         }
 
         /// <summary>
@@ -1112,7 +1110,7 @@ namespace SharpQuake
                 return;
             }
 
-            if( progs.GlobalStruct.deathmatch != 0 && !host.HostClient.privileged )
+            if( progs.GlobalStruct.deathmatch != 0 && !QHost.HostClient.privileged )
                 return;
 
             string t = QCommand.Argv( 1 );
@@ -1242,7 +1240,7 @@ namespace SharpQuake
                 if( progs.GetString( e.v.classname ) == "viewthing" )
                     return e;
             }
-            Con.Print( "No viewthing on map\n" );
+            QConsole.Print( "No viewthing on map\n" );
             return null;
         }
 
@@ -1256,7 +1254,7 @@ namespace SharpQuake
             model_t m = Mod.ForName( QCommand.Argv( 1 ), false );
             if( m == null )
             {
-                Con.Print( "Can't load {0}\n", QCommand.Argv( 1 ) );
+                QConsole.Print( "Can't load {0}\n", QCommand.Argv( 1 ) );
                 return;
             }
 
@@ -1288,7 +1286,7 @@ namespace SharpQuake
             if( hdr == null )
                 return;
 
-            Con.Print( "frame {0}: {1}\n", frame, hdr.frames[frame].name );
+            QConsole.Print( "frame {0}: {1}\n", frame, hdr.frames[frame].name );
         }
 
         /// <summary>
@@ -1330,7 +1328,7 @@ namespace SharpQuake
         // Host_Startdemos_f
         private static void Startdemos_f()
         {
-            if( QClient.cls.state == ServerType.DEDICATED )
+            if( QClient.cls.state == QServerType.DEDICATED )
             {
                 if( !server.sv.active )
                     QCommandBuffer.AddText( "map start\n" );
@@ -1340,10 +1338,10 @@ namespace SharpQuake
             int c = QCommand.Argc - 1;
             if( c > QClient.MAX_DEMOS )
             {
-                Con.Print( "Max {0} demos in demoloop\n", QClient.MAX_DEMOS );
+                QConsole.Print( "Max {0} demos in demoloop\n", QClient.MAX_DEMOS );
                 c = QClient.MAX_DEMOS;
             }
-            Con.Print( "{0} demo(s) in loop\n", c );
+            QConsole.Print( "{0} demo(s) in loop\n", c );
 
             for( int i = 1; i < c + 1; i++ )
                 QClient.cls.demos[i - 1] = QCommon.Copy( QCommand.Argv( i ), QClient.MAX_DEMONAME );
@@ -1363,7 +1361,7 @@ namespace SharpQuake
         /// </summary>
         private static void Demos_f()
         {
-            if( QClient.cls.state == ServerType.DEDICATED )
+            if( QClient.cls.state == QServerType.DEDICATED )
                 return;
             if( QClient.cls.demonum == -1 )
                 QClient.cls.demonum = 1;
@@ -1377,7 +1375,7 @@ namespace SharpQuake
         /// </summary>
         private static void Stopdemo_f()
         {
-            if( QClient.cls.state == ServerType.DEDICATED )
+            if( QClient.cls.state == QServerType.DEDICATED )
                 return;
             if( !QClient.cls.demoplayback )
                 return;

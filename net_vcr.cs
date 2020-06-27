@@ -62,7 +62,7 @@ namespace SharpQuake
 
         public void Init()
         {
-            _Next = sys.ReadStructure<VcrRecord>( host.VcrReader.BaseStream );
+            _Next = sys.ReadStructure<VcrRecord>( QHost.VcrReader.BaseStream );
             _IsInitialized = true;
         }
 
@@ -83,7 +83,7 @@ namespace SharpQuake
 
         public qsocket_t CheckNewConnections()
         {
-            if( host.Time != _Next.time || _Next.op != VcrOp.VCR_OP_CONNECT )
+            if( QHost.Time != _Next.time || _Next.op != VcrOp.VCR_OP_CONNECT )
                 sys.Error( "VCR missmatch" );
 
             if( _Next.session == 0 )
@@ -96,7 +96,7 @@ namespace SharpQuake
             sock.driverdata = _Next.session;
 
             byte[] buf = new byte[net.NET_NAMELEN];
-            host.VcrReader.Read( buf, 0, buf.Length );
+            QHost.VcrReader.Read( buf, 0, buf.Length );
             sock.address = Encoding.ASCII.GetString( buf );
 
             ReadNext();
@@ -106,18 +106,18 @@ namespace SharpQuake
 
         public int GetMessage( qsocket_t sock )
         {
-            if( host.Time != _Next.time || _Next.op != VcrOp.VCR_OP_GETMESSAGE || _Next.session != SocketToSession( sock ) )
+            if( QHost.Time != _Next.time || _Next.op != VcrOp.VCR_OP_GETMESSAGE || _Next.session != SocketToSession( sock ) )
                 sys.Error( "VCR missmatch" );
 
-            int ret = host.VcrReader.ReadInt32();
+            int ret = QHost.VcrReader.ReadInt32();
             if( ret != 1 )
             {
                 ReadNext();
                 return ret;
             }
 
-            int length = host.VcrReader.ReadInt32();
-            net.Message.FillFrom( host.VcrReader.BaseStream, length );
+            int length = QHost.VcrReader.ReadInt32();
+            net.Message.FillFrom( QHost.VcrReader.BaseStream, length );
 
             ReadNext();
 
@@ -126,10 +126,10 @@ namespace SharpQuake
 
         public int SendMessage( qsocket_t sock, QMessageWriter data )
         {
-            if( host.Time != _Next.time || _Next.op != VcrOp.VCR_OP_SENDMESSAGE || _Next.session != SocketToSession( sock ) )
+            if( QHost.Time != _Next.time || _Next.op != VcrOp.VCR_OP_SENDMESSAGE || _Next.session != SocketToSession( sock ) )
                 sys.Error( "VCR missmatch" );
 
-            int ret = host.VcrReader.ReadInt32();
+            int ret = QHost.VcrReader.ReadInt32();
 
             ReadNext();
 
@@ -143,10 +143,10 @@ namespace SharpQuake
 
         public bool CanSendMessage( qsocket_t sock )
         {
-            if( host.Time != _Next.time || _Next.op != VcrOp.VCR_OP_CANSENDMESSAGE || _Next.session != SocketToSession( sock ) )
+            if( QHost.Time != _Next.time || _Next.op != VcrOp.VCR_OP_CANSENDMESSAGE || _Next.session != SocketToSession( sock ) )
                 sys.Error( "VCR missmatch" );
 
-            int ret = host.VcrReader.ReadInt32();
+            int ret = QHost.VcrReader.ReadInt32();
 
             ReadNext();
 
@@ -175,7 +175,7 @@ namespace SharpQuake
         {
             try
             {
-                _Next = sys.ReadStructure<VcrRecord>( host.VcrReader.BaseStream );
+                _Next = sys.ReadStructure<VcrRecord>( QHost.VcrReader.BaseStream );
             }
             catch( IOException )
             {

@@ -100,7 +100,7 @@ namespace SharpQuake
         /// </summary>
         public static void Report()
         {
-            Con.DPrint( "{0,4:F1} megabyte data cache, used {1,4:F1} megabyte\n",
+            QConsole.DPrint( "{0,4:F1} megabyte data cache, used {1,4:F1} megabyte\n",
                 _Capacity / (float)( 1024 * 1024 ), _BytesAllocated / (float)( 1024 * 1024 ) );
         }
 

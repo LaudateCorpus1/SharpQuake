@@ -96,7 +96,7 @@ namespace SharpQuake
             }
             catch( SocketException se )
             {
-                Con.DPrint( "Cannot get host name: {0}\n", se.Message );
+                QConsole.DPrint( "Cannot get QHost name: {0}\n", se.Message );
                 return false;
             }
 
@@ -112,7 +112,7 @@ namespace SharpQuake
                         hostName = hostName.Substring( 0, i );
                     }
                 }
-                cvar.Set( "hostname", hostName );
+                QCVar.Set( "hostname", hostName );
             }
 
             int i2 = QCommon.CheckParm( "-ip" );
@@ -139,14 +139,14 @@ namespace SharpQuake
             _ControlSocket = OpenSocket( 0 );
             if( _ControlSocket == null )
             {
-                Con.Print( "TCP/IP: Unable to open control socket\n" );
+                QConsole.Print( "TCP/IP: Unable to open control socket\n" );
                 return false;
             }
 
             _BroadcastAddress = new IPEndPoint( IPAddress.Broadcast, net.HostPort );
 
             _IsInitialized = true;
-            Con.Print( "TCP/IP Initialized\n" );
+            QConsole.Print( "TCP/IP Initialized\n" );
             return true;
         }
 
@@ -199,7 +199,7 @@ namespace SharpQuake
                     result.Close();
                     result = null;
                 }
-                Con.Print( "Unable to create socket: " + ex.Message );
+                QConsole.Print( "Unable to create socket: " + ex.Message );
             }
 
             return result;
@@ -229,7 +229,7 @@ namespace SharpQuake
             catch( SocketException )
             {
             }
-            return String.Empty;
+            return string.Empty;
         }
 
         public EndPoint GetAddrFromName( string name )
@@ -354,7 +354,7 @@ namespace SharpQuake
                 }
                 catch( SocketException se )
                 {
-                    Con.Print( "Unable to make socket broadcast capable: {0}\n", se.Message );
+                    QConsole.Print( "Unable to make socket broadcast capable: {0}\n", se.Message );
                     return -1;
                 }
             }

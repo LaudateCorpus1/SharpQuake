@@ -90,7 +90,7 @@ namespace SharpQuake
                 //
                 // build it from scratch
                 //
-                Con.Print( "meshing {0}...\n", m.name );
+                QConsole.Print( "meshing {0}...\n", m.name );
 
                 BuildTris();		// trifans or lists
 
@@ -211,7 +211,7 @@ namespace SharpQuake
 
             _Commands[_NumCommands++] = 0;		// end of list marker
 
-            Con.DPrint( "{0,3} tri {1,3} vert {2,3} QCommand\n", _AliasHdr.numtris, _NumOrder, _NumCommands );
+            QConsole.DPrint( "{0,3} tri {1,3} vert {2,3} QCommand\n", _AliasHdr.numtris, _NumOrder, _NumCommands );
 
             _AllVerts += _NumOrder;
             _AllTris += _AliasHdr.numtris;

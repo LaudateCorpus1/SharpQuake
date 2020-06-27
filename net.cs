@@ -253,10 +253,10 @@ namespace SharpQuake
 
         private static int _UnreliableMessagesReceived = 0;
 
-        private static cvar _MessageTimeout;
+        private static QCVar _MessageTimeout;
 
         // = { "net_messagetimeout", "300" };
-        private static cvar _HostName;
+        private static QCVar _HostName;
 
         private static PollProcedure _PollProcedureList;
 
@@ -333,10 +333,10 @@ namespace SharpQuake
             }
             HostPort = _DefHostPort;
 
-            if( QCommon.HasParam( "-listen" ) || QClient.cls.state == ServerType.DEDICATED )
+            if( QCommon.HasParam( "-listen" ) || QClient.cls.state == QServerType.DEDICATED )
                 _IsListening = true;
             int numsockets = server.svs.maxclientslimit;
-            if( QClient.cls.state != ServerType.DEDICATED )
+            if( QClient.cls.state != QServerType.DEDICATED )
                 numsockets++;
 
             _FreeSockets = new List<qsocket_t>( numsockets );
@@ -353,8 +353,8 @@ namespace SharpQuake
 
             if( _MessageTimeout == null )
             {
-                _MessageTimeout = new cvar( "net_messagetimeout", "300" );
-                _HostName = new cvar( "hostname", "UNNAMED" );
+                _MessageTimeout = new QCVar( "net_messagetimeout", "300" );
+                _HostName = new QCVar( "hostname", "UNNAMED" );
             }
 
             QCommand.Add( "slist", Slist_f );
@@ -376,8 +376,8 @@ namespace SharpQuake
 
             //if (*my_ipx_address)
             //    Con_DPrintf("IPX address %s\n", my_ipx_address);
-            if( !String.IsNullOrEmpty( _MyTcpIpAddress ) )
-                Con.DPrint( "TCP/IP address {0}\n", _MyTcpIpAddress );
+            if( !string.IsNullOrEmpty( _MyTcpIpAddress ) )
+                QConsole.DPrint( "TCP/IP address {0}\n", _MyTcpIpAddress );
         }
 
         // net_driverlevel
@@ -431,17 +431,17 @@ namespace SharpQuake
                 {
                     if( _IsRecording )
                     {
-                        _VcrConnect.time = host.Time;
+                        _VcrConnect.time = QHost.Time;
                         _VcrConnect.op = VcrOp.VCR_OP_CONNECT;
                         _VcrConnect.session = 1; // (long)ret; // Uze: todo: make it work on 64bit systems
                         byte[] buf = sys.StructureToBytes( ref _VcrConnect );
-                        host.VcrWriter.Write( buf, 0, buf.Length );
+                        QHost.VcrWriter.Write( buf, 0, buf.Length );
                         buf = Encoding.ASCII.GetBytes( ret.address );
                         int count = Math.Min( buf.Length, NET_NAMELEN );
                         int extra = NET_NAMELEN - count;
-                        host.VcrWriter.Write( buf, 0, count );
+                        QHost.VcrWriter.Write( buf, 0, count );
                         for( int i = 0; i < extra; i++ )
-                            host.VcrWriter.Write( (byte)0 );
+                            QHost.VcrWriter.Write( (byte)0 );
                     }
                     return ret;
                 }
@@ -449,11 +449,11 @@ namespace SharpQuake
 
             if( _IsRecording )
             {
-                _VcrConnect.time = host.Time;
+                _VcrConnect.time = QHost.Time;
                 _VcrConnect.op = VcrOp.VCR_OP_CONNECT;
                 _VcrConnect.session = 0;
                 byte[] buf = sys.StructureToBytes( ref _VcrConnect );
-                host.VcrWriter.Write( buf, 0, buf.Length );
+                QHost.VcrWriter.Write( buf, 0, buf.Length );
             }
 
             return null;
@@ -463,7 +463,7 @@ namespace SharpQuake
         // hostCacheCount
         /// <summary>
         /// NET_Connect
-        /// called by QClient to connect to a host.  Returns -1 if not able to connect
+        /// called by QClient to connect to a QHost.  Returns -1 if not able to connect
         /// </summary>
         public static qsocket_t Connect( string host )
         {
@@ -471,7 +471,7 @@ namespace SharpQuake
 
             SetNetTime();
 
-            if( String.IsNullOrEmpty( host ) )
+            if( string.IsNullOrEmpty( host ) )
                 host = null;
 
             if( host != null )
@@ -506,7 +506,7 @@ namespace SharpQuake
                 if( HostCacheCount != 1 )
                     return null;
                 host = _HostCache[0].cname;
-                Con.Print( "Connecting to...\n{0} @ {1}\n\n", _HostCache[0].name, host );
+                QConsole.Print( "Connecting to...\n{0} @ {1}\n\n", _HostCache[0].name, host );
             }
 
             _DriverLevel = 0;
@@ -534,7 +534,7 @@ JustDoIt:
 
             if( host != null )
             {
-                Con.Print( "\n" );
+                QConsole.Print( "\n" );
                 PrintSlistHeader();
                 PrintSlist();
                 PrintSlistTrailer();
@@ -562,12 +562,12 @@ JustDoIt:
 
             if( _IsRecording )
             {
-                _VcrSendMessage.time = host.Time;
+                _VcrSendMessage.time = QHost.Time;
                 _VcrSendMessage.op = VcrOp.VCR_OP_CANSENDMESSAGE;
                 _VcrSendMessage.session = 1; // (long)sock; Uze: todo: do something?
                 _VcrSendMessage.ret = r ? 1 : 0;
                 byte[] buf = sys.StructureToBytes( ref _VcrSendMessage );
-                host.VcrWriter.Write( buf, 0, buf.Length );
+                QHost.VcrWriter.Write( buf, 0, buf.Length );
             }
 
             return r;
@@ -590,7 +590,7 @@ JustDoIt:
 
             if( sock.disconnected )
             {
-                Con.Print( "NET_GetMessage: disconnected socket\n" );
+                QConsole.Print( "NET_GetMessage: disconnected socket\n" );
                 return -1;
             }
 
@@ -621,26 +621,26 @@ JustDoIt:
 
                 if( _IsRecording )
                 {
-                    _VcrGetMessage.time = host.Time;
+                    _VcrGetMessage.time = QHost.Time;
                     _VcrGetMessage.op = VcrOp.VCR_OP_GETMESSAGE;
                     _VcrGetMessage.session = 1;// (long)sock; Uze todo: write somethisng meaningful
                     _VcrGetMessage.ret = ret;
                     byte[] buf = sys.StructureToBytes( ref _VcrGetMessage );
-                    host.VcrWriter.Write( buf, 0, buf.Length );
-                    host.VcrWriter.Write( net.Message.Length );
-                    host.VcrWriter.Write( net.Message.Data, 0, net.Message.Length );
+                    QHost.VcrWriter.Write( buf, 0, buf.Length );
+                    QHost.VcrWriter.Write( net.Message.Length );
+                    QHost.VcrWriter.Write( net.Message.Data, 0, net.Message.Length );
                 }
             }
             else
             {
                 if( _IsRecording )
                 {
-                    _VcrGetMessage.time = host.Time;
+                    _VcrGetMessage.time = QHost.Time;
                     _VcrGetMessage.op = VcrOp.VCR_OP_GETMESSAGE;
                     _VcrGetMessage.session = 1; // (long)sock; Uze todo: fix this
                     _VcrGetMessage.ret = ret;
                     byte[] buf = sys.StructureToBytes( ref _VcrGetMessage );
-                    host.VcrWriter.Write( buf, 0, buf.Length );
+                    QHost.VcrWriter.Write( buf, 0, buf.Length );
                 }
             }
 
@@ -662,7 +662,7 @@ JustDoIt:
 
             if( sock.disconnected )
             {
-                Con.Print( "NET_SendMessage: disconnected socket\n" );
+                QConsole.Print( "NET_SendMessage: disconnected socket\n" );
                 return -1;
             }
 
@@ -674,12 +674,12 @@ JustDoIt:
 
             if( _IsRecording )
             {
-                _VcrSendMessage.time = host.Time;
+                _VcrSendMessage.time = QHost.Time;
                 _VcrSendMessage.op = VcrOp.VCR_OP_SENDMESSAGE;
                 _VcrSendMessage.session = 1; // (long)sock; Uze: todo: do something?
                 _VcrSendMessage.ret = r;
                 byte[] buf = sys.StructureToBytes( ref _VcrSendMessage );
-                host.VcrWriter.Write( buf, 0, buf.Length );
+                QHost.VcrWriter.Write( buf, 0, buf.Length );
             }
 
             return r;
@@ -699,7 +699,7 @@ JustDoIt:
 
             if( sock.disconnected )
             {
-                Con.Print( "NET_SendMessage: disconnected socket\n" );
+                QConsole.Print( "NET_SendMessage: disconnected socket\n" );
                 return -1;
             }
 
@@ -711,12 +711,12 @@ JustDoIt:
 
             if( _IsRecording )
             {
-                _VcrSendMessage.time = host.Time;
+                _VcrSendMessage.time = QHost.Time;
                 _VcrSendMessage.op = VcrOp.VCR_OP_SENDMESSAGE;
                 _VcrSendMessage.session = 1;// (long)sock; Uze todo: ???????
                 _VcrSendMessage.ret = r;
                 byte[] buf = sys.StructureToBytes( ref _VcrSendMessage );
-                host.VcrWriter.Write( buf );
+                QHost.VcrWriter.Write( buf );
             }
 
             return r;
@@ -734,15 +734,15 @@ JustDoIt:
             int count = 0;
             for( int i = 0; i < server.svs.maxclients; i++ )
             {
-                host.HostClient = server.svs.clients[i];
-                if( host.HostClient.netconnection == null )
+                QHost.HostClient = server.svs.clients[i];
+                if( QHost.HostClient.netconnection == null )
                     continue;
 
-                if( host.HostClient.active )
+                if( QHost.HostClient.active )
                 {
-                    if( host.HostClient.netconnection.driver == 0 )
+                    if( QHost.HostClient.netconnection.driver == 0 )
                     {
-                        SendMessage( host.HostClient.netconnection, data );
+                        SendMessage( QHost.HostClient.netconnection, data );
                         state1[i] = true;
                         state2[i] = true;
                         continue;
@@ -764,17 +764,17 @@ JustDoIt:
                 count = 0;
                 for( int i = 0; i < server.svs.maxclients; i++ )
                 {
-                    host.HostClient = server.svs.clients[i];
+                    QHost.HostClient = server.svs.clients[i];
                     if( !state1[i] )
                     {
-                        if( CanSendMessage( host.HostClient.netconnection ) )
+                        if( CanSendMessage( QHost.HostClient.netconnection ) )
                         {
                             state1[i] = true;
-                            SendMessage( host.HostClient.netconnection, data );
+                            SendMessage( QHost.HostClient.netconnection, data );
                         }
                         else
                         {
-                            GetMessage( host.HostClient.netconnection );
+                            GetMessage( QHost.HostClient.netconnection );
                         }
                         count++;
                         continue;
@@ -782,13 +782,13 @@ JustDoIt:
 
                     if( !state2[i] )
                     {
-                        if( CanSendMessage( host.HostClient.netconnection ) )
+                        if( CanSendMessage( QHost.HostClient.netconnection ) )
                         {
                             state2[i] = true;
                         }
                         else
                         {
-                            GetMessage( host.HostClient.netconnection );
+                            GetMessage( QHost.HostClient.netconnection );
                         }
                         count++;
                         continue;
@@ -867,7 +867,7 @@ JustDoIt:
 
             if( !net.SlistSilent )
             {
-                Con.Print( "Looking for Quake servers...\n" );
+                QConsole.Print( "Looking for Quake servers...\n" );
                 PrintSlistHeader();
             }
 
@@ -924,8 +924,8 @@ JustDoIt:
         // pollProcedureList
         private static void PrintSlistHeader()
         {
-            Con.Print( "Server          Map             Users\n" );
-            Con.Print( "--------------- --------------- -----\n" );
+            QConsole.Print( "Server          Map             Users\n" );
+            QConsole.Print( "--------------- --------------- -----\n" );
             _SlistLastShown = 0;
         }
 
@@ -937,9 +937,9 @@ JustDoIt:
             {
                 hostcache_t hc = _HostCache[i];
                 if( hc.maxusers != 0 )
-                    Con.Print( "{0,-15} {1,-15}\n {2,2}/{3,2}\n", QCommon.Copy( hc.name, 15 ), QCommon.Copy( hc.map, 15 ), hc.users, hc.maxusers );
+                    QConsole.Print( "{0,-15} {1,-15}\n {2,2}/{3,2}\n", QCommon.Copy( hc.name, 15 ), QCommon.Copy( hc.map, 15 ), hc.users, hc.maxusers );
                 else
-                    Con.Print( "{0,-15} {1,-15}\n", QCommon.Copy( hc.name, 15 ), QCommon.Copy( hc.map, 15 ) );
+                    QConsole.Print( "{0,-15} {1,-15}\n", QCommon.Copy( hc.name, 15 ), QCommon.Copy( hc.map, 15 ) );
             }
             _SlistLastShown = i;
         }
@@ -947,9 +947,9 @@ JustDoIt:
         private static void PrintSlistTrailer()
         {
             if( HostCacheCount != 0 )
-                Con.Print( "== end list ==\n\n" );
+                QConsole.Print( "== end list ==\n\n" );
             else
-                Con.Print( "No Quake servers found.\n\n" );
+                QConsole.Print( "No Quake servers found.\n\n" );
         }
 
         /// <summary>
@@ -982,7 +982,7 @@ JustDoIt:
         {
             if( QCommand.Argc != 2 )
             {
-                Con.Print( "\"listen\" is \"{0}\"\n", _IsListening ? 1 : 0 );
+                QConsole.Print( "\"listen\" is \"{0}\"\n", _IsListening ? 1 : 0 );
                 return;
             }
 
@@ -1002,13 +1002,13 @@ JustDoIt:
         {
             if( QCommand.Argc != 2 )
             {
-                Con.Print( "\"maxplayers\" is \"%u\"\n", server.svs.maxclients );
+                QConsole.Print( "\"maxplayers\" is \"%u\"\n", server.svs.maxclients );
                 return;
             }
 
             if( server.sv.active )
             {
-                Con.Print( "maxplayers can not be changed while a server is running.\n" );
+                QConsole.Print( "maxplayers can not be changed while a server is running.\n" );
                 return;
             }
 
@@ -1018,7 +1018,7 @@ JustDoIt:
             if( n > server.svs.maxclientslimit )
             {
                 n = server.svs.maxclientslimit;
-                Con.Print( "\"maxplayers\" set to \"{0}\"\n", n );
+                QConsole.Print( "\"maxplayers\" set to \"{0}\"\n", n );
             }
 
             if( n == 1 && _IsListening )
@@ -1029,9 +1029,9 @@ JustDoIt:
 
             server.svs.maxclients = n;
             if( n == 1 )
-                cvar.Set( "deathmatch", "0" );
+                QCVar.Set( "deathmatch", "0" );
             else
-                cvar.Set( "deathmatch", "1" );
+                QCVar.Set( "deathmatch", "1" );
         }
 
         // NET_Port_f
@@ -1039,14 +1039,14 @@ JustDoIt:
         {
             if( QCommand.Argc != 2 )
             {
-                Con.Print( "\"port\" is \"{0}\"\n", HostPort );
+                QConsole.Print( "\"port\" is \"{0}\"\n", HostPort );
                 return;
             }
 
             int n = QCommon.atoi( QCommand.Argv( 1 ) );
             if( n < 1 || n > 65534 )
             {
-                Con.Print( "Bad value, must be between 1 and 65534\n" );
+                QConsole.Print( "Bad value, must be between 1 and 65534\n" );
                 return;
             }
 
@@ -1146,8 +1146,8 @@ JustDoIt:
     //		There are two address forms used above.  The short form is just a
     //		port number.  The address that goes along with the port is defined as
     //		"whatever address you receive this reponse from".  This lets us use
-    //		the host OS to solve the problem of multiple host addresses (possibly
-    //		with no routing between them); the host will use the right address
+    //		the QHost OS to solve the problem of multiple QHost addresses (possibly
+    //		with no routing between them); the QHost will use the right address
     //		when we reply to the inbound connection request.  The long from is
     //		a full address and port in a string.  It is used for returning the
     //		address of a server that is not running locally.

@@ -63,7 +63,6 @@ namespace SharpQuake
             Add( "echo",      Echo_f );
             Add( "alias",     Alias_f );
             Add( "QCommand",  ForwardToServer );
-            Add( "wait",      QCommandBuffer.Cmd_Wait_f ); // todo: move to QCommandBuffer class?
         }
 
         // called by the init functions of other parts of the program to
@@ -71,20 +70,20 @@ namespace SharpQuake
         public static void Add( string name, QCommandDelegate function )
         {
             // ??? because hunk allocation would get stomped
-            if( host.IsInitialized )
-                sys.Error( "Cmd.Add after host initialized!" );
+            if( QHost.IsInitialized )
+                sys.Error( "Cmd.Add after QHost initialized!" );
 
             // fail if the command is a variable name
-            if( cvar.Exists( name ) )
+            if( QCVar.Exists( name ) )
             {
-                Con.Print( "Cmd.Add: {0} already defined as a var!\n", name );
+                QConsole.Print( "Cmd.Add: {0} already defined as a var!\n", name );
                 return;
             }
 
             // fail if the command already exists
             if( Exists( name ) )
             {
-                Con.Print( "Cmd.Add: {0} already defined!\n", name );
+                QConsole.Print( "Cmd.Add: {0} already defined!\n", name );
                 return;
             }
 
@@ -187,8 +186,8 @@ namespace SharpQuake
                 else
                 {
                     // check cvars
-                    if( !cvar.Command() )
-                        Con.Print( "Unknown command \"{0}\"\n", _Argv[0] );
+                    if( !QCVar.Command() )
+                        QConsole.Print( "Unknown command \"{0}\"\n", _Argv[0] );
                 }
             }
         }
@@ -200,9 +199,9 @@ namespace SharpQuake
         // Sends the entire command line over to the server
         public static void ForwardToServer()
         {
-            if( QClient.cls.state != ServerType.CONNECTED )
+            if( QClient.cls.state != QServerType.CONNECTED )
             {
-                Con.Print( "Can't \"{0}\", not connected\n", QCommand.Argv( 0 ) );
+                QConsole.Print( "Can't \"{0}\", not connected\n", QCommand.Argv( 0 ) );
                 return;
             }
 
@@ -253,7 +252,7 @@ namespace SharpQuake
         {
             if( _Argc != 1 )
             {
-                Con.Print( "stuffcmds : execute command line parameters\n" );
+                QConsole.Print( "stuffcmds : execute command line parameters\n" );
                 return;
             }
 
@@ -301,19 +300,19 @@ namespace SharpQuake
         {
             if( _Argc != 2 )
             {
-                Con.Print( "exec <filename> : execute a script file\n" );
+                QConsole.Print( "exec <filename> : execute a script file\n" );
                 return;
             }
 
             byte[] bytes = QCommon.LoadFile( _Argv[1] );
             if( bytes == null )
             {
-                Con.Print( "couldn't exec {0}\n", _Argv[1] );
+                QConsole.Print( "couldn't exec {0}\n", _Argv[1] );
                 return;
             }
 
             string script = Encoding.ASCII.GetString( bytes );
-            Con.Print( "execing {0}\n", _Argv[1] );
+            QConsole.Print( "execing {0}\n", _Argv[1] );
             QCommandBuffer.InsertText( script );
         }
 
@@ -322,10 +321,10 @@ namespace SharpQuake
         {
             for( int i = 1; i < _Argc; i++ )
             {
-                Con.Print( "{0} ", _Argv[i] );
+                QConsole.Print( "{0} ", _Argv[i] );
             }
 
-            Con.Print( "\n" );
+            QConsole.Print( "\n" );
         }
 
         // Creates a new command that executes a command string (possibly ; seperated)
@@ -333,10 +332,10 @@ namespace SharpQuake
         {
             if( _Argc == 1 )
             {
-                Con.Print( "Current alias commands:\n" );
+                QConsole.Print( "Current alias commands:\n" );
                 foreach( KeyValuePair<string, string> alias in _Aliases )
                 {
-                    Con.Print( "{0} : {1}\n", alias.Key, alias.Value );
+                    QConsole.Print( "{0} : {1}\n", alias.Key, alias.Value );
                 }
 
                 return;
@@ -345,7 +344,7 @@ namespace SharpQuake
             string name = _Argv[1];
             if( name.Length >= MAX_ALIAS_NAME )
             {
-                Con.Print( "Alias name is too long\n" );
+                QConsole.Print( "Alias name is too long\n" );
                 return;
             }
 

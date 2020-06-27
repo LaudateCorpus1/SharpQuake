@@ -107,7 +107,7 @@ namespace SharpQuake
 
         private static float ALIAS_BASE_SIZE_RATIO = ( 1.0f / 11.0f );
 
-        private static cvar _glSubDivideSize; // = { "gl_subdivide_size", "128", true };
+        private static QCVar _glSubDivideSize; // = { "gl_subdivide_size", "128", true };
         private static byte[] _Novis = new byte[QBSPFile.MAX_MAP_LEAFS / 8]; // byte mod_novis[MAX_MAP_LEAFS/8]
 
         private static model_t[] _Known = new model_t[MAX_MOD_KNOWN]; // mod_known
@@ -130,7 +130,7 @@ namespace SharpQuake
         {
             if( _glSubDivideSize == null )
             {
-                _glSubDivideSize = new cvar( "gl_subdivide_size", "128", true );
+                _glSubDivideSize = new QCVar( "gl_subdivide_size", "128", true );
             }
 
             for( int i = 0; i < _Known.Length; i++ )
@@ -239,11 +239,11 @@ namespace SharpQuake
         // Mod_Print
         public static void Print()
         {
-            Con.Print( "Cached models:\n" );
+            QConsole.Print( "Cached models:\n" );
             for( int i = 0; i < _NumKnown; i++ )
             {
                 model_t mod = _Known[i];
-                Con.Print( "{0}\n", mod.name );
+                QConsole.Print( "{0}\n", mod.name );
             }
         }
 
@@ -252,7 +252,7 @@ namespace SharpQuake
         /// </summary>
         public static model_t FindName( string name )
         {
-            if( String.IsNullOrEmpty( name ) )
+            if( string.IsNullOrEmpty( name ) )
                 sys.Error( "Mod_ForName: NULL name" );
 
             //
@@ -689,7 +689,7 @@ namespace SharpQuake
                     _Header.gl_texturenum[i, 1] =
                     _Header.gl_texturenum[i, 2] =
                     _Header.gl_texturenum[i, 3] =
-                        Drawer.LoadTexture( name, _Header.skinwidth,
+                        QGLDraw.LoadTexture( name, _Header.skinwidth,
                         _Header.skinheight, new QByteArraySegment( data.Data, offset ), true, false ); // (byte*)(pskintype + 1)
 
                     // set offset to next daliasskintype_t block...
@@ -719,9 +719,9 @@ namespace SharpQuake
                             Buffer.BlockCopy( data.Data, offset, texels, 0, s );
                         }
 
-                        string name = String.Format( "{0}_{1}_{2}", _LoadModel.name, i, j );
+                        string name = string.Format( "{0}_{1}_{2}", _LoadModel.name, i, j );
                         _Header.gl_texturenum[i, j & 3] =
-                            Drawer.LoadTexture( name, _Header.skinwidth,
+                            QGLDraw.LoadTexture( name, _Header.skinwidth,
                             _Header.skinheight, new QByteArraySegment( data.Data, offset ), true, false ); //  (byte*)(pskintype)
 
                         offset += s;
@@ -843,7 +843,7 @@ namespace SharpQuake
             pspriteframe.right = width + orgx;// origin[0];
 
             string name = _LoadModel.name + "_" + framenum.ToString();
-            pspriteframe.gl_texturenum = Drawer.LoadTexture( name, width, height,
+            pspriteframe.gl_texturenum = QGLDraw.LoadTexture( name, width, height,
                 new QByteArraySegment( pin.Data, pin.StartIndex + dspriteframe_t.SizeInBytes ), true, true ); //   (byte *)(pinframe + 1)
 
             return pin.StartIndex + dspriteframe_t.SizeInBytes + size;
@@ -892,7 +892,7 @@ namespace SharpQuake
                 sys.Error( "MOD_LoadBmodel: funny lump size in {0}", _LoadModel.name );
 
             int count = l.filelen / QBSPVertex.SizeInBytes;
-            mvertex_t[] verts = new mvertex_t[count];
+            QVertex[] verts = new QVertex[count];
 
             _LoadModel.vertexes = verts;
             _LoadModel.numvertexes = count;
@@ -1005,14 +1005,14 @@ namespace SharpQuake
                 else
                 {
                     Buffer.BlockCopy(_ModBase, mtOffset, tx.pixels, 0, pixels);
-                    Con.Print("Texture info of {0} truncated to fit in bounds of _ModBase\n", _LoadModel.name);
+                    QConsole.Print("Texture info of {0} truncated to fit in bounds of _ModBase\n", _LoadModel.name);
                 }
 
                 if( tx.name != null && tx.name.StartsWith( "sky" ) )// !Q_strncmp(mt->name,"sky",3))
                     render.InitSky( tx );
                 else
                 {
-                    tx.gl_texturenum = Drawer.LoadTexture( tx.name, (int)tx.width, (int)tx.height,
+                    tx.gl_texturenum = QGLDraw.LoadTexture( tx.name, (int)tx.width, (int)tx.height,
                         new QByteArraySegment( tx.pixels ), true, false, _LoadModel.name );
                 }
             }
@@ -1061,7 +1061,7 @@ namespace SharpQuake
                     texture_t tx2 = _LoadModel.textures[j];
                     if( tx2 == null || !tx2.name.StartsWith( "+" ) )// tx2->name[0] != '+')
                         continue;
-                    if( String.Compare( tx2.name, 2, tx.name, 2, Math.Min( tx.name.Length, tx2.name.Length ) ) != 0 )// strcmp (tx2->name+2, tx->name+2))
+                    if( string.Compare( tx2.name, 2, tx.name, 2, Math.Min( tx.name.Length, tx2.name.Length ) ) != 0 )// strcmp (tx2->name+2, tx->name+2))
                         continue;
 
                     int num = tx2.name[1];
@@ -1559,15 +1559,15 @@ namespace SharpQuake
 
             for( int i = 0; i < count; i++ )
             {
-                dest[i].planenum = Array.IndexOf( _LoadModel.planes, src[i].plane ); // todo: optimize this
+                dest[i].planenum = QCommon.IndexOf( _LoadModel.planes, src[i].plane ); //Array.IndexOf( _LoadModel.planes, src[i].plane );
                 dest[i].children = new short[2];
                 for( int j = 0; j < 2; j++ )
                 {
                     mnodebase_t child = src[i].children[j];
                     if( child.contents < 0 )
-                        dest[i].children[j] = (short)child.contents;
+                        dest[i].children[j] = (short) child.contents;
                     else
-                        dest[i].children[j] = (short)Array.IndexOf( _LoadModel.nodes, (mnode_t)child ); // todo: optimize this
+                        dest[i].children[j] = (short)QCommon.IndexOf( _LoadModel.nodes, (mnode_t)child ); //Array.IndexOf( _LoadModel.nodes, (mnode_t)child );
                 }
             }
         }
@@ -1593,7 +1593,7 @@ namespace SharpQuake
             float[] maxs = new float[] { -99999, -99999 };
 
             mtexinfo_t tex = s.texinfo;
-            mvertex_t[] v = _LoadModel.vertexes;
+            QVertex[] v = _LoadModel.vertexes;
 
             for( int i = 0; i < s.numedges; i++ )
             {

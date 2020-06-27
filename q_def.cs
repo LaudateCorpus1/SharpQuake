@@ -195,7 +195,7 @@ namespace SharpQuake
 
     // entity_state_t;
 
-    // the host system specifies the base of the directory tree, the
+    // the QHost system specifies the base of the directory tree, the
     // command line parms passed to the program, and the amount of memory
     // available for the program to use
     internal class quakeparms_t
@@ -206,8 +206,8 @@ namespace SharpQuake
 
         public quakeparms_t()
         {
-            this.basedir = String.Empty;
-            this.cachedir = String.Empty;
+            this.basedir = string.Empty;
+            this.cachedir = string.Empty;
         }
     }// quakeparms_t;
 }

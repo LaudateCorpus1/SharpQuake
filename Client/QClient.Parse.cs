@@ -75,9 +75,9 @@ namespace SharpQuake
             // if recording demos, copy the message out
             //
             if( _ShowNet.Value == 1 )
-                Con.Print( "{0} ", net.Message.Length );
+                QConsole.Print( "{0} ", net.Message.Length );
             else if( _ShowNet.Value == 2 )
-                Con.Print( "------------------\n" );
+                QConsole.Print( "------------------\n" );
 
             cl.onground = false; // unless the server says otherwise
 
@@ -88,7 +88,7 @@ namespace SharpQuake
             while( true )
             {
                 if( net.Reader.IsBadRead )
-                    host.Error( "CL_ParseServerMessage: Bad server message" );
+                    QHost.Error( "CL_ParseServerMessage: Bad server message" );
 
                 int cmd = net.Reader.ReadByte();
                 if( cmd == -1 )
@@ -112,7 +112,7 @@ namespace SharpQuake
                 switch( cmd )
                 {
                     default:
-                        host.Error( "CL_ParseServerMessage: Illegible server message\n" );
+                        QHost.Error( "CL_ParseServerMessage: Illegible server message\n" );
                         break;
 
                     case protocol.svc_nop:
@@ -131,15 +131,15 @@ namespace SharpQuake
                     case protocol.svc_version:
                         i = net.Reader.ReadLong();
                         if( i != protocol.PROTOCOL_VERSION )
-                            host.Error( "CL_ParseServerMessage: Server is protocol {0} instead of {1}\n", i, protocol.PROTOCOL_VERSION );
+                            QHost.Error( "CL_ParseServerMessage: Server is protocol {0} instead of {1}\n", i, protocol.PROTOCOL_VERSION );
                         break;
 
                     case protocol.svc_disconnect:
-                        host.EndGame( "Server disconnected\n" );
+                        QHost.EndGame( "Server disconnected\n" );
                         break;
 
                     case protocol.svc_print:
-                        Con.Print( net.Reader.ReadString() );
+                        QConsole.Print( net.Reader.ReadString() );
                         break;
 
                     case protocol.svc_centerprint:
@@ -189,7 +189,7 @@ namespace SharpQuake
                         sbar.Changed();
                         i = net.Reader.ReadByte();
                         if( i >= cl.maxclients )
-                            host.Error( "CL_ParseServerMessage: svc_updatename > MAX_SCOREBOARD" );
+                            QHost.Error( "CL_ParseServerMessage: svc_updatename > MAX_SCOREBOARD" );
                         cl.scores[i].name = net.Reader.ReadString();
                         break;
 
@@ -197,7 +197,7 @@ namespace SharpQuake
                         sbar.Changed();
                         i = net.Reader.ReadByte();
                         if( i >= cl.maxclients )
-                            host.Error( "CL_ParseServerMessage: svc_updatefrags > MAX_SCOREBOARD" );
+                            QHost.Error( "CL_ParseServerMessage: svc_updatefrags > MAX_SCOREBOARD" );
                         cl.scores[i].frags = net.Reader.ReadShort();
                         break;
 
@@ -205,7 +205,7 @@ namespace SharpQuake
                         sbar.Changed();
                         i = net.Reader.ReadByte();
                         if( i >= cl.maxclients )
-                            host.Error( "CL_ParseServerMessage: svc_updatecolors > MAX_SCOREBOARD" );
+                            QHost.Error( "CL_ParseServerMessage: svc_updatecolors > MAX_SCOREBOARD" );
                         cl.scores[i].colors = net.Reader.ReadByte();
                         NewTranslation( i );
                         break;
@@ -246,7 +246,7 @@ namespace SharpQuake
                     case protocol.svc_signonnum:
                         i = net.Reader.ReadByte();
                         if( i <= cls.signon )
-                            host.Error( "Received signon {0} when at {1}", i, cls.signon );
+                            QHost.Error( "Received signon {0} when at {1}", i, cls.signon );
                         cls.signon = i;
                         SignonReply();
                         break;
@@ -309,7 +309,7 @@ namespace SharpQuake
         private static void ShowNet( string s )
         {
             if( _ShowNet.Value == 2 )
-                Con.Print( "{0,3}:{1}\n", net.Reader.Position - 1, s );
+                QConsole.Print( "{0,3}:{1}\n", net.Reader.Position - 1, s );
         }
 
         /// <summary>
@@ -356,7 +356,7 @@ namespace SharpQuake
             {
                 modnum = net.Reader.ReadByte();
                 if( modnum >= QDef.MAX_MODELS )
-                    host.Error( "CL_ParseModel: bad modnum" );
+                    QHost.Error( "CL_ParseModel: bad modnum" );
             }
             else
                 modnum = ent.baseline.modelindex;
@@ -580,7 +580,7 @@ namespace SharpQuake
         /// </summary>
         private static void ParseServerInfo()
         {
-            Con.DPrint( "Serverinfo packet received.\n" );
+            QConsole.DPrint( "Serverinfo packet received.\n" );
 
             //
             // wipe the QClientState struct
@@ -591,7 +591,7 @@ namespace SharpQuake
             int i = net.Reader.ReadLong();
             if( i != protocol.PROTOCOL_VERSION )
             {
-                Con.Print( "Server returned version {0}, not {1}", i, protocol.PROTOCOL_VERSION );
+                QConsole.Print( "Server returned version {0}, not {1}", i, protocol.PROTOCOL_VERSION );
                 return;
             }
 
@@ -599,7 +599,7 @@ namespace SharpQuake
             cl.maxclients = net.Reader.ReadByte();
             if( cl.maxclients < 1 || cl.maxclients > QDef.MAX_SCOREBOARD )
             {
-                Con.Print( "Bad maxclients ({0}) from server\n", cl.maxclients );
+                QConsole.Print( "Bad maxclients ({0}) from server\n", cl.maxclients );
                 return;
             }
 
@@ -615,8 +615,8 @@ namespace SharpQuake
             cl.levelname = QCommon.Copy( str, 40 );
 
             // seperate the printfs so the server message can have a color
-            Con.Print( ConsoleBar );
-            Con.Print( "{0}{1}\n", (char) 2, str );
+            QConsole.Print( ConsoleBar );
+            QConsole.Print( "{0}{1}\n", (char) 2, str );
 
             //
             // first we go through and touch all of the precache data that still
@@ -631,12 +631,12 @@ namespace SharpQuake
             for( nummodels = 1;; nummodels++ )
             {
                 str = net.Reader.ReadString();
-                if( String.IsNullOrEmpty( str ) )
+                if( string.IsNullOrEmpty( str ) )
                     break;
 
                 if( nummodels == QDef.MAX_MODELS )
                 {
-                    Con.Print( "Server sent too many model precaches\n" );
+                    QConsole.Print( "Server sent too many model precaches\n" );
                     return;
                 }
 
@@ -651,11 +651,11 @@ namespace SharpQuake
             for( numsounds = 1;; numsounds++ )
             {
                 str = net.Reader.ReadString();
-                if( String.IsNullOrEmpty( str ) )
+                if( string.IsNullOrEmpty( str ) )
                     break;
                 if( numsounds == QDef.MAX_SOUNDS )
                 {
-                    Con.Print( "Server sent too many sound precaches\n" );
+                    QConsole.Print( "Server sent too many sound precaches\n" );
                     return;
                 }
 
@@ -671,7 +671,7 @@ namespace SharpQuake
                 cl.model_precache[i] = Mod.ForName( model_precache[i], false );
                 if( cl.model_precache[i] == null )
                 {
-                    Con.Print( "Model {0} not found\n", model_precache[i] );
+                    QConsole.Print( "Model {0} not found\n", model_precache[i] );
                     return;
                 }
 
@@ -692,7 +692,7 @@ namespace SharpQuake
 
             render.NewMap();
 
-            host.NoClipAngleHack = false; // noclip is turned off at start
+            QHost.NoClipAngleHack = false; // noclip is turned off at start
 
             GC.Collect();
         }
@@ -721,7 +721,7 @@ namespace SharpQuake
             channel &= 7;
 
             if( ent > QDef.MAX_EDICTS )
-                host.Error( "CL_ParseStartSoundPacket: ent = {0}", ent );
+                QHost.Error( "CL_ParseStartSoundPacket: ent = {0}", ent );
 
             Vector3 pos = net.Reader.ReadCoords();
             QSound.StartSound( ent, channel, cl.sound_precache[sound_num], ref pos, volume / 255.0f, attenuation );
@@ -772,7 +772,7 @@ namespace SharpQuake
             if( num >= cl.num_entities )
             {
                 if( num >= QDef.MAX_EDICTS )
-                    host.Error( "CL_EntityNum: %i is an invalid number", num );
+                    QHost.Error( "CL_EntityNum: %i is an invalid number", num );
                 while( cl.num_entities <= num )
                 {
                     _Entities[cl.num_entities].colormap = Scr.vid.colormap;
@@ -808,7 +808,7 @@ namespace SharpQuake
         {
             int i = cl.num_statics;
             if( i >= MAX_STATIC_ENTITIES )
-                host.Error( "Too many static entities" );
+                QHost.Error( "Too many static entities" );
 
             entity_t ent = _StaticEntities[i];
             cl.num_statics++;
@@ -860,19 +860,19 @@ namespace SharpQuake
                 switch( ret )
                 {
                     default:
-                        host.Error( "CL_KeepaliveMessage: CL_GetMessage failed" );
+                        QHost.Error( "CL_KeepaliveMessage: CL_GetMessage failed" );
                         break;
 
                     case 0:
                         break; // nothing waiting
 
                     case 1:
-                        host.Error( "CL_KeepaliveMessage: received a message" );
+                        QHost.Error( "CL_KeepaliveMessage: received a message" );
                         break;
 
                     case 2:
                         if( net.Reader.ReadByte() != protocol.svc_nop )
-                            host.Error( "CL_KeepaliveMessage: datagram wasn't a nop" );
+                            QHost.Error( "CL_KeepaliveMessage: datagram wasn't a nop" );
                         break;
                 }
             }
@@ -888,7 +888,7 @@ namespace SharpQuake
             _LastMsg = time;
 
             // write out a nop
-            Con.Print( "--> QClient to server keepalive\n" );
+            QConsole.Print( "--> QClient to server keepalive\n" );
 
             cls.message.WriteByte( protocol.clc_nop );
             net.SendMessage( cls.netcon, cls.message );

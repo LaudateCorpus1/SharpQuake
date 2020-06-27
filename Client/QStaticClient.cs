@@ -26,7 +26,7 @@ namespace SharpQuake
     // of server connection
     internal class QStaticClient
     {
-        public ServerType state;
+        public QServerType state;
 
         // personalization data sent to server
         public string mapstring;

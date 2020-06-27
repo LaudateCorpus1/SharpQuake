@@ -1,24 +1,22 @@
-/// <copyright>
-///
-/// Rewritten in C# by Yury Kiselev, 2010.
-///
-/// Copyright (C) 1996-1997 Id Software, Inc.
-///
-/// This program is free software; you can redistribute it and/or
-/// modify it under the terms of the GNU General Public License
-/// as published by the Free Software Foundation; either version 2
-/// of the License, or (at your option) any later version.
-///
-/// This program is distributed in the hope that it will be useful,
-/// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-///
-/// See the GNU General Public License for more details.
-///
-/// You should have received a copy of the GNU General Public License
-/// along with this program; if not, write to the Free Software
-/// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-/// </copyright>
+/* Rewritten in C# by Yury Kiselev, 2010.
+ *
+ * Copyright (C) 1996-1997 Id Software, Inc.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 
 using System;
 using System.Runtime.InteropServices;
@@ -29,22 +27,16 @@ using Buffer = System.Buffer;
 
 namespace SharpQuake
 {
-    internal enum MTexTarget
-    {
-        TEXTURE0_SGIS = 0x835E,
-        TEXTURE1_SGIS = 0x835F
-    }
-
     /// <summary>
     /// Draw_functions, GL_functions
     /// </summary>
-    internal static class Drawer
+    internal static partial class QGLDraw
     {
         public static PixelInternalFormat AlphaFormat => _AlphaFormat;
 
         public static PixelInternalFormat SolidFormat => _SolidFormat;
 
-        public static glpic_t Disc => _Disc;
+        public static QGLUITexture Disc => _Disc;
 
         public static float glMaxSize => _glMaxSize.Value;
 
@@ -68,19 +60,18 @@ namespace SharpQuake
 
         private const int BLOCK_HEIGHT = 256;
 
-        private static readonly glmode_t[] _Modes = new glmode_t[]
+        private static readonly QGLTexFilterMode[] _Modes = new QGLTexFilterMode[]
         {
-            new glmode_t("GL_NEAREST", TextureMinFilter.Nearest, TextureMagFilter.Nearest),
-            new glmode_t("GL_LINEAR", TextureMinFilter.Linear, TextureMagFilter.Linear),
-            new glmode_t("GL_NEAREST_MIPMAP_NEAREST", TextureMinFilter.NearestMipmapNearest, TextureMagFilter.Nearest),
-            new glmode_t("GL_LINEAR_MIPMAP_NEAREST", TextureMinFilter.LinearMipmapNearest, TextureMagFilter.Linear),
-            new glmode_t("GL_NEAREST_MIPMAP_LINEAR", TextureMinFilter.NearestMipmapLinear, TextureMagFilter.Nearest),
-            new glmode_t("GL_LINEAR_MIPMAP_LINEAR", TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear)
+            new QGLTexFilterMode( "GL_NEAREST", TextureMinFilter.Nearest, TextureMagFilter.Nearest ), new QGLTexFilterMode( "GL_LINEAR", TextureMinFilter.Linear, TextureMagFilter.Linear ),
+            new QGLTexFilterMode( "GL_NEAREST_MIPMAP_NEAREST", TextureMinFilter.NearestMipmapNearest, TextureMagFilter.Nearest ),
+            new QGLTexFilterMode( "GL_LINEAR_MIPMAP_NEAREST", TextureMinFilter.LinearMipmapNearest, TextureMagFilter.Linear ),
+            new QGLTexFilterMode( "GL_NEAREST_MIPMAP_LINEAR", TextureMinFilter.NearestMipmapLinear, TextureMagFilter.Nearest ),
+            new QGLTexFilterMode( "GL_LINEAR_MIPMAP_LINEAR", TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear )
         };
 
-        private static readonly gltexture_t[] _glTextures = new gltexture_t[MAX_GLTEXTURES];
+        private static readonly QGLTexture[] _glTextures = new QGLTexture[MAX_GLTEXTURES];
 
-        private static readonly cachepic_t[] _MenuCachePics = new cachepic_t[MAX_CACHED_PICS];
+        private static readonly QGLCachedUITexture[] _MenuCachePics = new QGLCachedUITexture[MAX_CACHED_PICS];
 
         private static readonly byte[] _MenuPlayerPixels = new byte[4096];
 
@@ -110,21 +101,21 @@ namespace SharpQuake
         // pic_texels
         private static int _PicCount;
 
-        private static cvar _glNoBind;
+        private static QCVar _glNoBind;
 
         // = {"gl_nobind", "0"};
-        private static cvar _glMaxSize;
+        private static QCVar _glMaxSize;
 
         // = {"gl_max_size", "1024"};
-        private static cvar _glPicMip;
+        private static QCVar _glPicMip;
 
-        private static glpic_t _Disc;
+        private static QGLUITexture _Disc;
 
         // draw_disc
-        private static glpic_t _BackTile;
+        private static QGLUITexture _BackTile;
 
         // draw_backtile
-        private static glpic_t _ConBack;
+        private static QGLUITexture _ConBack;
 
         private static int _CharTexture;
 
@@ -136,7 +127,7 @@ namespace SharpQuake
 
         // texture_extension_number = 1;
         // currenttexture = -1		// to avoid unnecessary texture sets
-        private static MTexTarget _OldTarget = MTexTarget.TEXTURE0_SGIS;
+        private static QMTexTarget _OldTarget = QMTexTarget.TEXTURE0_SGIS;
 
         // oldtarget
         private static int[] _CntTextures = new int[2] { -1, -1 };
@@ -160,33 +151,33 @@ namespace SharpQuake
         public static void Init()
         {
             for( int i = 0; i < _MenuCachePics.Length; i++ )
-                _MenuCachePics[i] = new cachepic_t();
+                _MenuCachePics[i] = new QGLCachedUITexture();
 
             if( _glNoBind == null )
             {
-                _glNoBind = new cvar( "gl_nobind", "0" );
-                _glMaxSize = new cvar( "gl_max_size", "1024" );
-                _glPicMip = new cvar( "gl_picmip", "0" );
+                _glNoBind  = new QCVar( "gl_nobind",   "0" );
+                _glMaxSize = new QCVar( "gl_max_size", "1024" );
+                _glPicMip  = new QCVar( "gl_picmip",   "0" );
             }
 
             // 3dfx can only handle 256 wide textures
             string renderer = GL.GetString( StringName.Renderer );
             if( renderer.Contains( "3dfx" ) || renderer.Contains( "Glide" ) )
-                cvar.Set( "gl_max_size", "256" );
+                QCVar.Set( "gl_max_size", "256" );
 
             QCommand.Add( "gl_texturemode", TextureMode_f );
-            QCommand.Add( "imagelist", Imagelist_f );
+            QCommand.Add( "imagelist",      Imagelist_f );
 
             // load the console background and the charset
             // by hand, because we need to write the version
             // string into the background before turning
             // it into a texture
-            int offset = wad.GetLumpNameOffset( "conchars" );
+            int    offset     = wad.GetLumpNameOffset( "conchars" );
             byte[] draw_chars = wad.Data; // draw_chars
             for( int i = 0; i < 256 * 64; i++ )
             {
                 if( draw_chars[offset + i] == 0 )
-                    draw_chars[offset + i] = 255;	// proper transparent color
+                    draw_chars[offset + i] = 255; // proper transparent color
             }
 
             // now turn them into textures
@@ -200,41 +191,41 @@ namespace SharpQuake
             wad.SwapPic( cbHeader );
 
             // hack the version number directly into the pic
-            string ver = $"(c# {(float) QDef.CSQUAKE_VERSION,7:F2}) {(float) QDef.VERSION,7:F2}";
-            int offset2 = Marshal.SizeOf( typeof( dqpicheader_t ) ) + 320 * 186 + 320 - 11 - 8 * ver.Length;
-            int y = ver.Length;
+            string ver     = $"(c# {(float) QDef.CSQUAKE_VERSION,7:F2}) {(float) QDef.VERSION,7:F2}";
+            int    offset2 = Marshal.SizeOf( typeof( dqpicheader_t ) ) + 320 * 186 + 320 - 11 - 8 * ver.Length;
+            int    y       = ver.Length;
             for( int x = 0; x < y; x++ )
                 CharToConback( ver[x], new QByteArraySegment( buf, offset2 + ( x << 3 ) ), new QByteArraySegment( draw_chars, offset ) );
 
-            _ConBack = new glpic_t();
-            _ConBack.width = cbHeader.width;
+            _ConBack        = new QGLUITexture();
+            _ConBack.width  = cbHeader.width;
             _ConBack.height = cbHeader.height;
             int ncdataIndex = Marshal.SizeOf( typeof( dqpicheader_t ) ); // cb->data;
 
             SetTextureFilters( TextureMinFilter.Nearest, TextureMagFilter.Nearest );
 
             _ConBack.texnum = LoadTexture( "conback", _ConBack.width, _ConBack.height, new QByteArraySegment( buf, ncdataIndex ), false, false );
-            _ConBack.width = Scr.vid.width;
+            _ConBack.width  = Scr.vid.width;
             _ConBack.height = Scr.vid.height;
 
             // save a texture slot for translated picture
             _TranslateTexture = _TextureExtensionNumber++;
 
             // save slots for scraps
-            _ScrapTexNum = _TextureExtensionNumber;
+            _ScrapTexNum            =  _TextureExtensionNumber;
             _TextureExtensionNumber += MAX_SCRAPS;
 
             //
             // get the other pics we need
             //
-            _Disc = PicFromWad( "disc" );
+            _Disc     = PicFromWad( "disc" );
             _BackTile = PicFromWad( "backtile" );
         }
 
         public static void SetTextureFilters( TextureMinFilter min, TextureMagFilter mag )
         {
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)min );
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)mag );
+            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int) min );
+            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int) mag );
         }
 
         /// <summary>
@@ -256,7 +247,7 @@ namespace SharpQuake
         }
 
         // Draw_Pic(int x, int y, qpic_t* pic)
-        public static void DrawPic( int x, int y, glpic_t pic )
+        public static void DrawPic( int x, int y, QGLUITexture pic )
         {
             if( _ScrapDirty )
                 UploadScrap();
@@ -318,15 +309,15 @@ namespace SharpQuake
         }
 
         //qpic_t *Draw_PicFromWad (char *name);
-        public static glpic_t PicFromWad( string name )
+        public static QGLUITexture PicFromWad( string name )
         {
-            int offset = wad.GetLumpNameOffset( name );
-            IntPtr ptr = new IntPtr( wad.DataPointer.ToInt64() + offset );
-            dqpicheader_t header = (dqpicheader_t)Marshal.PtrToStructure( ptr, typeof( dqpicheader_t ) );
-            glpic_t gl = new glpic_t(); // (glpic_t)Marshal.PtrToStructure(ptr, typeof(glpic_t));
-            gl.width = header.width;
-            gl.height = header.height;
-            offset += Marshal.SizeOf( typeof( dqpicheader_t ) );
+            int                offset = wad.GetLumpNameOffset( name );
+            IntPtr             ptr    = new IntPtr( wad.DataPointer.ToInt64() + offset );
+            dqpicheader_t      header = (dqpicheader_t) Marshal.PtrToStructure( ptr, typeof( dqpicheader_t ) );
+            QGLUITexture gl     = new QGLUITexture(); // (QGLUITexture)Marshal.PtrToStructure(ptr, typeof(QGLUITexture));
+            gl.width  =  header.width;
+            gl.height =  header.height;
+            offset    += Marshal.SizeOf( typeof( dqpicheader_t ) );
 
             // load little ones into the scrap
             if( gl.width < 64 && gl.height < 64 )
@@ -339,15 +330,16 @@ namespace SharpQuake
                 {
                     for( int j = 0; j < gl.width; j++, k++ )
                     {
-                        _ScrapTexels[texnum][( y + i ) * BLOCK_WIDTH + x + j] = wad.Data[offset + k];// p->data[k];
+                        _ScrapTexels[texnum][( y + i ) * BLOCK_WIDTH + x + j] = wad.Data[offset + k]; // p->data[k];
                     }
                 }
-                texnum += _ScrapTexNum;
-                gl.texnum = texnum;
-                gl.sl = (float)( ( x + 0.01 ) / (float)BLOCK_WIDTH );
-                gl.sh = (float)( ( x + gl.width - 0.01 ) / (float)BLOCK_WIDTH );
-                gl.tl = (float)( ( y + 0.01 ) / (float)BLOCK_WIDTH );
-                gl.th = (float)( ( y + gl.height - 0.01 ) / (float)BLOCK_WIDTH );
+
+                texnum    += _ScrapTexNum;
+                gl.texnum =  texnum;
+                gl.sl     =  (float) ( ( x             + 0.01 ) / (float) BLOCK_WIDTH );
+                gl.sh     =  (float) ( ( x + gl.width  - 0.01 ) / (float) BLOCK_WIDTH );
+                gl.tl     =  (float) ( ( y             + 0.01 ) / (float) BLOCK_WIDTH );
+                gl.th     =  (float) ( ( y + gl.height - 0.01 ) / (float) BLOCK_WIDTH );
 
                 _PicCount++;
                 _PicTexels += gl.width * gl.height;
@@ -356,6 +348,7 @@ namespace SharpQuake
             {
                 gl.texnum = LoadTexture( gl, new QByteArraySegment( wad.Data, offset ) );
             }
+
             return gl;
         }
 
@@ -378,10 +371,10 @@ namespace SharpQuake
             GL.Color4( 0, 0, 0, 0.8f );
             GL.Begin( PrimitiveType.Quads );
 
-            GL.Vertex2( 0f, 0f );
-            GL.Vertex2( Scr.vid.width, 0f );
-            GL.Vertex2( (float)Scr.vid.width, (float)Scr.vid.height );
-            GL.Vertex2( 0f, Scr.vid.height );
+            GL.Vertex2( 0f,                    0f );
+            GL.Vertex2( Scr.vid.width,         0f );
+            GL.Vertex2( (float) Scr.vid.width, (float) Scr.vid.height );
+            GL.Vertex2( 0f,                    Scr.vid.height );
 
             GL.End();
             GL.Color4( 1f, 1f, 1f, 1f );
@@ -397,11 +390,11 @@ namespace SharpQuake
         public static int LoadTexture( string identifier, int width, int height, QByteArraySegment data, bool mipmap, bool alpha, string owner = "" )
         {
             // see if the texture is allready present
-            if( !String.IsNullOrEmpty( identifier ) )
+            if( !string.IsNullOrEmpty( identifier ) )
             {
                 for( int i = 0; i < _NumTextures; i++ )
                 {
-                    gltexture_t glt = _glTextures[i];
+                    QGLTexture glt = _glTextures[i];
                     if( glt.identifier == identifier && glt.owner == owner )
                     {
                         if( width != glt.width || height != glt.height )
@@ -410,19 +403,20 @@ namespace SharpQuake
                     }
                 }
             }
+
             if( _NumTextures == _glTextures.Length )
                 sys.Error( "GL_LoadTexture: no more texture slots available!" );
 
-            gltexture_t tex = new gltexture_t();
+            QGLTexture tex = new QGLTexture();
             _glTextures[_NumTextures] = tex;
             _NumTextures++;
 
             tex.identifier = identifier;
-            tex.owner = owner;
-            tex.texnum = _TextureExtensionNumber;
-            tex.width = width;
-            tex.height = height;
-            tex.mipmap = mipmap;
+            tex.owner      = owner;
+            tex.texnum     = _TextureExtensionNumber;
+            tex.width      = width;
+            tex.height     = height;
+            tex.mipmap     = mipmap;
 
             Bind( tex.texnum );
 
@@ -441,12 +435,12 @@ namespace SharpQuake
         public static void DrawCharacter( int x, int y, int num )
         {
             if( num == 32 )
-                return;		// space
+                return; // space
 
             num &= 255;
 
             if( y <= -8 )
-                return;			// totally off screen
+                return; // totally off screen
 
             int row = num >> 4;
             int col = num & 15;
@@ -460,12 +454,12 @@ namespace SharpQuake
             GL.Begin( PrimitiveType.Quads );
             GL.TexCoord2( fcol, frow );
             GL.Vertex2( x, y );
-            GL.TexCoord2( fcol + size, frow );
-            GL.Vertex2( x + 8, y );
-            GL.TexCoord2( fcol + size, frow + size );
-            GL.Vertex2( x + 8, y + 8 );
+            GL.TexCoord2( fcol       + size, frow );
+            GL.Vertex2( x            + 8, y );
+            GL.TexCoord2( fcol       + size, frow + size );
+            GL.Vertex2( x            + 8, y       + 8 );
             GL.TexCoord2( fcol, frow + size );
-            GL.Vertex2( x, y + 8 );
+            GL.Vertex2( x, y         + 8 );
             GL.End();
         }
 
@@ -477,19 +471,19 @@ namespace SharpQuake
         }
 
         // Draw_CachePic
-        public static glpic_t CachePic( string path )
+        public static QGLUITexture CachePic( string path )
         {
             for( int i = 0; i < _MenuNumCachePics; i++ )
             {
-                cachepic_t p = _MenuCachePics[i];
-                if( p.name == path )// !strcmp(path, pic->name))
+                QGLCachedUITexture p = _MenuCachePics[i];
+                if( p.name == path ) // !strcmp(path, pic->name))
                     return p.pic;
             }
 
             if( _MenuNumCachePics == MAX_CACHED_PICS )
                 sys.Error( "menu_numcachepics == MAX_CACHED_PICS" );
 
-            cachepic_t pic = _MenuCachePics[_MenuNumCachePics];
+            QGLCachedUITexture pic = _MenuCachePics[_MenuNumCachePics];
             _MenuNumCachePics++;
             pic.name = path;
 
@@ -513,17 +507,17 @@ namespace SharpQuake
                 //memcpy (menuplyr_pixels, dat->data, dat->width*dat->height);
             }
 
-            glpic_t gl = new glpic_t();
-            gl.width = header.width;
+            QGLUITexture gl = new QGLUITexture();
+            gl.width  = header.width;
             gl.height = header.height;
 
-            //gl = (glpic_t *)pic->pic.data;
+            //gl = (QGLUITexture *)pic->pic.data;
             gl.texnum = LoadTexture( gl, new QByteArraySegment( data, headerSize ) );
-            gl.sl = 0;
-            gl.sh = 1;
-            gl.tl = 0;
-            gl.th = 1;
-            pic.pic = gl;
+            gl.sl     = 0;
+            gl.sh     = 1;
+            gl.tl     = 0;
+            gl.th     = 1;
+            pic.pic   = gl;
 
             return gl;
         }
@@ -535,24 +529,24 @@ namespace SharpQuake
         {
             GL.Disable( EnableCap.Texture2D );
 
-            byte[] pal = host.BasePal;
+            byte[] pal = QHost.BasePal;
 
             GL.Color3( pal[c * 3] / 255.0f, pal[c * 3 + 1] / 255.0f, pal[c * 3 + 2] / 255.0f );
             GL.Begin( PrimitiveType.Quads );
-            GL.Vertex2( x, y );
+            GL.Vertex2( x,     y );
             GL.Vertex2( x + w, y );
             GL.Vertex2( x + w, y + h );
-            GL.Vertex2( x, y + h );
+            GL.Vertex2( x,     y + h );
             GL.End();
             GL.Color3( 1f, 1f, 1f );
             GL.Enable( EnableCap.Texture2D );
         }
 
         // Draw_TransPic
-        public static void DrawTransPic( int x, int y, glpic_t pic )
+        public static void DrawTransPic( int x, int y, QGLUITexture pic )
         {
-            if( x < 0 || (uint)( x + pic.width ) > Scr.vid.width ||
-                y < 0 || (uint)( y + pic.height ) > Scr.vid.height )
+            if( x < 0 || (uint) ( x + pic.width )  > Scr.vid.width ||
+                y < 0 || (uint) ( y + pic.height ) > Scr.vid.height )
             {
                 sys.Error( "Draw_TransPic: bad coordinates" );
             }
@@ -564,13 +558,13 @@ namespace SharpQuake
         /// Draw_TransPicTranslate
         /// Only used for the player color selection menu
         /// </summary>
-        public static void TransPicTranslate( int x, int y, glpic_t pic, byte[] translation )
+        public static void TransPicTranslate( int x, int y, QGLUITexture pic, byte[] translation )
         {
             Bind( _TranslateTexture );
 
-            int c = pic.width * pic.height;
-            int destOffset = 0;
-            uint[] trans = new uint[64 * 64];
+            int    c          = pic.width * pic.height;
+            int    destOffset = 0;
+            uint[] trans      = new uint[64 * 64];
 
             for( int v = 0; v < 64; v++, destOffset += 64 )
             {
@@ -588,8 +582,8 @@ namespace SharpQuake
             GCHandle handle = GCHandle.Alloc( trans, GCHandleType.Pinned );
             try
             {
-                GL.TexImage2D( TextureTarget.Texture2D, 0, Drawer.AlphaFormat, 64, 64, 0,
-                    PixelFormat.Rgba, PixelType.UnsignedByte, handle.AddrOfPinnedObject() );
+                GL.TexImage2D( TextureTarget.Texture2D, 0, QGLDraw.AlphaFormat, 64, 64, 0,
+                               PixelFormat.Rgba, PixelType.UnsignedByte, handle.AddrOfPinnedObject() );
             }
             finally
             {
@@ -601,13 +595,13 @@ namespace SharpQuake
             GL.Color3( 1f, 1, 1 );
             GL.Begin( PrimitiveType.Quads );
             GL.TexCoord2( 0f, 0 );
-            GL.Vertex2( (float)x, y );
+            GL.Vertex2( (float) x, y );
             GL.TexCoord2( 1f, 0 );
-            GL.Vertex2( (float)x + pic.width, y );
+            GL.Vertex2( (float) x + pic.width, y );
             GL.TexCoord2( 1f, 1 );
-            GL.Vertex2( (float)x + pic.width, y + pic.height );
+            GL.Vertex2( (float) x + pic.width, y + pic.height );
             GL.TexCoord2( 0f, 1 );
-            GL.Vertex2( (float)x, y + pic.height );
+            GL.Vertex2( (float) x, y + pic.height );
             GL.End();
         }
 
@@ -619,11 +613,11 @@ namespace SharpQuake
             if( lines > y )
                 DrawPic( 0, lines - Scr.vid.height, _ConBack );
             else
-                DrawAlphaPic( 0, lines - Scr.vid.height, _ConBack, (float)( 1.2 * lines ) / y );
+                DrawAlphaPic( 0, lines - Scr.vid.height, _ConBack, (float) ( 1.2 * lines ) / y );
         }
 
         // Draw_AlphaPic
-        public static void DrawAlphaPic( int x, int y, glpic_t pic, float alpha )
+        public static void DrawAlphaPic( int x, int y, QGLUITexture pic, float alpha )
         {
             if( _ScrapDirty )
                 UploadScrap();
@@ -650,18 +644,18 @@ namespace SharpQuake
         /// <summary>
         /// GL_SelectTexture
         /// </summary>
-        public static void SelectTexture( MTexTarget target )
+        public static void SelectTexture( QMTexTarget target )
         {
             if( !vid.glMTexable )
                 return;
 
             switch( target )
             {
-                case MTexTarget.TEXTURE0_SGIS:
+                case QMTexTarget.TEXTURE0_SGIS:
                     GL.Arb.ActiveTexture( TextureUnit.Texture0 );
                     break;
 
-                case MTexTarget.TEXTURE1_SGIS:
+                case QMTexTarget.TEXTURE1_SGIS:
                     GL.Arb.ActiveTexture( TextureUnit.Texture1 );
                     break;
 
@@ -673,9 +667,9 @@ namespace SharpQuake
             if( target == _OldTarget )
                 return;
 
-            _CntTextures[_OldTarget - MTexTarget.TEXTURE0_SGIS] = Drawer.CurrentTexture;
-            Drawer.CurrentTexture = _CntTextures[target - MTexTarget.TEXTURE0_SGIS];
-            _OldTarget = target;
+            _CntTextures[_OldTarget - QMTexTarget.TEXTURE0_SGIS] = QGLDraw.CurrentTexture;
+            QGLDraw.CurrentTexture                               = _CntTextures[target - QMTexTarget.TEXTURE0_SGIS];
+            _OldTarget                                           = target;
         }
 
         /// <summary>
@@ -689,10 +683,11 @@ namespace SharpQuake
                 for( i = 0; i < 6; i++ )
                     if( _MinFilter == _Modes[i].minimize )
                     {
-                        Con.Print( "{0}\n", _Modes[i].name );
+                        QConsole.Print( "{0}\n", _Modes[i].name );
                         return;
                     }
-                Con.Print( "current filter is unknown???\n" );
+
+                QConsole.Print( "current filter is unknown???\n" );
                 return;
             }
 
@@ -701,9 +696,10 @@ namespace SharpQuake
                 if( QCommon.SameText( _Modes[i].name, QCommand.Argv( 1 ) ) )
                     break;
             }
+
             if( i == _Modes.Length )
             {
-                Con.Print( "bad filter name!\n" );
+                QConsole.Print( "bad filter name!\n" );
                 return;
             }
 
@@ -713,7 +709,7 @@ namespace SharpQuake
             // change all the existing mipmap texture objects
             for( i = 0; i < _NumTextures; i++ )
             {
-                gltexture_t glt = _glTextures[i];
+                QGLTexture glt = _glTextures[i];
                 if( glt.mipmap )
                 {
                     Bind( glt.texnum );
@@ -726,43 +722,43 @@ namespace SharpQuake
         {
             short textureCount = 0;
 
-            foreach (gltexture_t glTexture in _glTextures)
+            foreach( QGLTexture glTexture in _glTextures )
             {
-                if (glTexture != null)
+                if( glTexture != null )
                 {
-                    Con.Print( "{0} x {1}   {2}:{3}\n", glTexture.width, glTexture.height,
-                    glTexture.owner, glTexture.identifier );
+                    QConsole.Print( "{0} x {1}   {2}:{3}\n", glTexture.width, glTexture.height,
+                                    glTexture.owner, glTexture.identifier );
                     textureCount++;
                 }
             }
 
-            Con.Print( "{0} textures currently loaded.\n", textureCount );
+            QConsole.Print( "{0} textures currently loaded.\n", textureCount );
         }
 
         /// <summary>
         /// GL_LoadPicTexture
         /// </summary>
-        private static int LoadTexture( glpic_t pic, QByteArraySegment data )
+        private static int LoadTexture( QGLUITexture pic, QByteArraySegment data )
         {
-            return LoadTexture( String.Empty, pic.width, pic.height, data, false, true );
+            return LoadTexture( string.Empty, pic.width, pic.height, data, false, true );
         }
 
         private static void CharToConback( int num, QByteArraySegment dest, QByteArraySegment drawChars )
         {
-            int row = num >> 4;
-            int col = num & 15;
+            int row        = num >> 4;
+            int col        = num & 15;
             int destOffset = dest.StartIndex;
-            int srcOffset = drawChars.StartIndex + ( row << 10 ) + ( col << 3 );
+            int srcOffset  = drawChars.StartIndex + ( row << 10 ) + ( col << 3 );
             //source = draw_chars + (row<<10) + (col<<3);
             int drawline = 8;
 
             while( drawline-- > 0 )
             {
                 for( int x = 0; x < 8; x++ )
-                    if( drawChars.Data[srcOffset + x] != 255 )
-                        dest.Data[destOffset + x] = (byte)( 0x60 + drawChars.Data[srcOffset + x] ); // source[x];
-                srcOffset += 128; // source += 128;
-                destOffset += 320; // dest += 320;
+                    if( drawChars.Data[srcOffset                  + x] != 255 )
+                        dest.Data[destOffset + x] = (byte) ( 0x60 + drawChars.Data[srcOffset + x] ); // source[x];
+                srcOffset  += 128;                                                                   // source += 128;
+                destOffset += 320;                                                                   // dest += 320;
             }
         }
 
@@ -771,11 +767,11 @@ namespace SharpQuake
         /// </summary>
         private static void Upload8( QByteArraySegment data, int width, int height, bool mipmap, bool alpha )
         {
-            int s = width * height;
-            uint[] trans = new uint[s];
-            uint[] table = vid.Table8to24;
-            byte[] data1 = data.Data;
-            int offset = data.StartIndex;
+            int    s      = width * height;
+            uint[] trans  = new uint[s];
+            uint[] table  = vid.Table8to24;
+            byte[] data1  = data.Data;
+            int    offset = data.StartIndex;
 
             // if there are no transparent pixels, make it a 3 component
             // texture even if it was specified as otherwise
@@ -800,7 +796,7 @@ namespace SharpQuake
 
                 for( int i = 0; i < s; i += 4, offset += 4 )
                 {
-                    trans[i] = table[data1[offset]];
+                    trans[i]     = table[data1[offset]];
                     trans[i + 1] = table[data1[offset + 1]];
                     trans[i + 2] = table[data1[offset + 2]];
                     trans[i + 3] = table[data1[offset + 3]];
@@ -815,19 +811,27 @@ namespace SharpQuake
         {
             int scaled_width, scaled_height;
 
-            for( scaled_width = 1; scaled_width < width; scaled_width <<= 1 ){};
-            for( scaled_height = 1; scaled_height < height; scaled_height <<= 1 ){};
+            for( scaled_width = 1; scaled_width < width; scaled_width <<= 1 )
+            {
+            }
 
-            scaled_width >>= (int)_glPicMip.Value;
-            scaled_height >>= (int)_glPicMip.Value;
+            ;
+            for( scaled_height = 1; scaled_height < height; scaled_height <<= 1 )
+            {
+            }
+
+            ;
+
+            scaled_width  >>= (int) _glPicMip.Value;
+            scaled_height >>= (int) _glPicMip.Value;
 
             if( scaled_width > _glMaxSize.Value )
-                scaled_width = (int)_glMaxSize.Value;
+                scaled_width = (int) _glMaxSize.Value;
             if( scaled_height > _glMaxSize.Value )
-                scaled_height = (int)_glMaxSize.Value;
+                scaled_height = (int) _glMaxSize.Value;
 
             PixelInternalFormat samples = alpha ? _AlphaFormat : _SolidFormat;
-            uint[] scaled;
+            uint[]              scaled;
 
             _Texels += scaled_width * scaled_height;
 
@@ -839,14 +843,16 @@ namespace SharpQuake
                     try
                     {
                         GL.TexImage2D( TextureTarget.Texture2D, 0, samples, scaled_width, scaled_height, 0,
-                            PixelFormat.Rgba, PixelType.UnsignedByte, h2.AddrOfPinnedObject() );
+                                       PixelFormat.Rgba, PixelType.UnsignedByte, h2.AddrOfPinnedObject() );
                     }
                     finally
                     {
                         h2.Free();
                     }
+
                     goto Done;
                 }
+
                 scaled = new uint[scaled_width * scaled_height]; // uint[1024 * 512];
                 data.CopyTo( scaled, 0 );
             }
@@ -865,7 +871,7 @@ namespace SharpQuake
                     while( scaled_width > 1 || scaled_height > 1 )
                     {
                         MipMap( scaled, scaled_width, scaled_height );
-                        scaled_width >>= 1;
+                        scaled_width  >>= 1;
                         scaled_height >>= 1;
                         if( scaled_width < 1 )
                             scaled_width = 1;
@@ -881,36 +887,36 @@ namespace SharpQuake
                 h.Free();
             }
 
-Done:
-            ;
+            Done: ;
 
             if( mipmap )
                 SetTextureFilters( _MinFilter, _MagFilter );
             else
-                SetTextureFilters( (TextureMinFilter)_MagFilter, _MagFilter );
+                SetTextureFilters( (TextureMinFilter) _MagFilter, _MagFilter );
         }
 
         // GL_ResampleTexture
         private static void ResampleTexture( uint[] src, int srcWidth, int srcHeight, out uint[] dest, int destWidth, int destHeight )
         {
             dest = new uint[destWidth * destHeight];
-            int fracstep = srcWidth * 0x10000 / destWidth;
+            int fracstep   = srcWidth * 0x10000 / destWidth;
             int destOffset = 0;
             for( int i = 0; i < destHeight; i++ )
             {
                 int srcOffset = srcWidth * ( i * srcHeight / destHeight );
-                int frac = fracstep >> 1;
+                int frac      = fracstep >> 1;
                 for( int j = 0; j < destWidth; j += 4 )
                 {
-                    dest[destOffset + j] = src[srcOffset + ( frac >> 16 )];
-                    frac += fracstep;
-                    dest[destOffset + j + 1] = src[srcOffset + ( frac >> 16 )];
-                    frac += fracstep;
-                    dest[destOffset + j + 2] = src[srcOffset + ( frac >> 16 )];
-                    frac += fracstep;
-                    dest[destOffset + j + 3] = src[srcOffset + ( frac >> 16 )];
-                    frac += fracstep;
+                    dest[destOffset + j]     =  src[srcOffset + ( frac >> 16 )];
+                    frac                     += fracstep;
+                    dest[destOffset + j + 1] =  src[srcOffset + ( frac >> 16 )];
+                    frac                     += fracstep;
+                    dest[destOffset + j + 2] =  src[srcOffset + ( frac >> 16 )];
+                    frac                     += fracstep;
+                    dest[destOffset + j + 3] =  src[srcOffset + ( frac >> 16 )];
+                    frac                     += fracstep;
                 }
+
                 destOffset += destWidth;
             }
         }
@@ -922,12 +928,12 @@ Done:
         {
             QByteUnion4 p1 = QByteUnion4.Empty, p2 = QByteUnion4.Empty, p3 = QByteUnion4.Empty, p4 = QByteUnion4.Empty;
 
-            width >>= 1;
+            width  >>= 1;
             height >>= 1;
 
-            uint[] dest = src;
-            int srcOffset = 0;
-            int destOffset = 0;
+            uint[] dest       = src;
+            int    srcOffset  = 0;
+            int    destOffset = 0;
             for( int i = 0; i < height; i++ )
             {
                 for( int j = 0; j < width; j++ )
@@ -940,15 +946,16 @@ Done:
                     offset = srcOffset + ( width << 1 ) + 1;
                     p4.ui0 = offset < src.Length ? src[offset] : p1.ui0;
 
-                    p1.b0 = (byte)( ( p1.b0 + p2.b0 + p3.b0 + p4.b0 ) >> 2 );
-                    p1.b1 = (byte)( ( p1.b1 + p2.b1 + p3.b1 + p4.b1 ) >> 2 );
-                    p1.b2 = (byte)( ( p1.b2 + p2.b2 + p3.b2 + p4.b2 ) >> 2 );
-                    p1.b3 = (byte)( ( p1.b3 + p2.b3 + p3.b3 + p4.b3 ) >> 2 );
+                    p1.b0 = (byte) ( ( p1.b0 + p2.b0 + p3.b0 + p4.b0 ) >> 2 );
+                    p1.b1 = (byte) ( ( p1.b1 + p2.b1 + p3.b1 + p4.b1 ) >> 2 );
+                    p1.b2 = (byte) ( ( p1.b2 + p2.b2 + p3.b2 + p4.b2 ) >> 2 );
+                    p1.b3 = (byte) ( ( p1.b3 + p2.b3 + p3.b3 + p4.b3 ) >> 2 );
 
                     dest[destOffset] = p1.ui0;
                     destOffset++;
                     srcOffset += 2;
                 }
+
                 srcOffset += width << 1;
             }
         }
@@ -974,6 +981,7 @@ Done:
                         if( _ScrapAllocated[texnum][i + j] > best2 )
                             best2 = _ScrapAllocated[texnum][i + j];
                     }
+
                     if( j == w )
                     {
                         // this is a valid spot
@@ -1003,51 +1011,20 @@ Done:
                 Bind( _ScrapTexNum + i );
                 Upload8( new QByteArraySegment( _ScrapTexels[i] ), BLOCK_WIDTH, BLOCK_HEIGHT, false, true );
             }
+
             _ScrapDirty = false;
         }
 
-        private class glmode_t
-        {
-            public string name;
-            public TextureMinFilter minimize;
-            public TextureMagFilter maximize;
-
-            public glmode_t( string name, TextureMinFilter minFilter, TextureMagFilter magFilter )
-            {
-                this.name = name;
-                this.minimize = minFilter;
-                this.maximize = magFilter;
-            }
-        } //glmode_t;
-
-        private class gltexture_t
-        {
-            public int texnum;
-            public string owner;
-            public string identifier; //char	identifier[64];
-            public int  width, height;
-            public bool mipmap;
-        } //gltexture_t;
-
-        // pic_count
-
-        // = {"gl_picmip", "0"};
-
-        // conback
-
-        // gl_filter_max = GL_LINEAR
-
-        // gl_alpha_format = 4
-
         // menu_numcachepics
         // menuplyr_pixels
-        static Drawer()
+        static QGLDraw()
         {
             _ScrapAllocated = new int[MAX_SCRAPS][]; //[MAX_SCRAPS][BLOCK_WIDTH];
             for( int i = 0; i < _ScrapAllocated.GetLength( 0 ); i++ )
             {
                 _ScrapAllocated[i] = new int[BLOCK_WIDTH];
             }
+
             _ScrapTexels = new byte[MAX_SCRAPS][]; // [MAX_SCRAPS][BLOCK_WIDTH*BLOCK_HEIGHT*4];
             for( int i = 0; i < _ScrapTexels.GetLength( 0 ); i++ )
             {
@@ -1055,25 +1032,4 @@ Done:
             }
         }
     }
-
-    internal class glpic_t
-    {
-        public int width, height;
-        public int texnum;
-        public float sl, tl, sh, th;
-
-        public glpic_t()
-        {
-            sl = 0;
-            sh = 1;
-            tl = 0;
-            th = 1;
-        }
-    } //glpic_t;
-
-    internal class cachepic_t
-    {
-        public string name; //[MAX_QPATH];
-        public glpic_t pic;
-    } // cachepic_t;
 }
